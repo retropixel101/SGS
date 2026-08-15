@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Secret Game Site</title>
+
+<style>
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #0a0a0a;
+    color: #fff;
+    overflow-x: hidden;
+  }
+
+  /* Top Navigation Bar */
+  .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(90deg, #ff0000, #660000);
+    box-shadow: 0 0 20px #ff0000;
+    padding: 12px 20px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    animation: glowPulse 3s infinite alternate;
+  }
+
+  @keyframes glowPulse {
+    from { box-shadow: 0 0 10px #ff0000; }
+    to { box-shadow: 0 0 25px #ff3333; }
+  }
+
+  .left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .logo {
+    font-size: 1.5em;
+    font-weight: bold;
+    letter-spacing: 1px;
+  }
+
+  /* Date + Time */
+  .datetime {
+    font-size: 0.95em;
+    color: #ffd6d6;
+    text-shadow: 0 0 10px #ff0000;
+    white-space: nowrap;
+  }
+
+  /* Center Tabs — ABSOLUTE CENTER */
+  .center {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .tabs {
+    display: flex;
+    gap: 10px;
+  }
+
+  .tab {
+    background: #111;
+    padding: 8px 16px;
+    border-radius: 6px;
+    transition: transform 0.3s ease, background 0.3s ease;
+    cursor: pointer;
+  }
+
+  .tab:hover {
+    transform: scale(1.1);
+    background: #222;
+    box-shadow: 0 0 10px #ff0000;
+  }
+
+  /* Highlight current tab */
+  .active {
+    background: #330000;
+    box-shadow: 0 0 12px #ff0000;
+    transform: scale(1.05);
+  }
+
+  /* Main Content */
+  .main {
+    text-align: center;
+    margin-top: 100px;
+  }
+
+  .main h1 {
+    font-size: 3em;
+    color: #ff0000;
+    text-shadow: 0 0 20px #ff0000;
+    animation: flicker 2s infinite alternate;
+  }
+
+  @keyframes flicker {
+    0% { opacity: 1; }
+    50% { opacity: 0.85; }
+    100% { opacity: 1; }
+  }
+
+  .main p {
+    font-size: 1.2em;
+    color: #ccc;
+    margin-top: 20px;
+  }
+
+  /* Dashboard Section */
+  .dashboard {
+    margin: 60px auto;
+    max-width: 1100px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 25px;
+    padding: 0 20px;
+  }
+
+  .card {
+    background: #111;
+    border: 2px solid #330000;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: left;
+    box-shadow: 0 0 15px #ff0000;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 0 25px #ff3333;
+  }
+
+  .card h2 {
+    margin: 0 0 10px;
+    color: #ff3333;
+    text-shadow: 0 0 10px #ff0000;
+  }
+
+  .card p {
+    color: #ccc;
+    font-size: 0.95em;
+  }
+</style>
+</head>
+<body>
+
+  <div class="navbar">
+
+    <!-- Left side: Logo + Date/Time -->
+    <div class="left">
+      <div class="logo">Secret Game Site</div>
+      <div class="datetime" id="datetime">Loading...</div>
+    </div>
+
+    <!-- ABSOLUTE CENTER: Tabs -->
+    <div class="center">
+      <div class="tabs">
+        <div class="tab active">Home</div>
+        <div class="tab">Browser</div>
+        <div class="tab">Games</div>
+        <div class="tab">Forums</div>
+        <div class="tab">Utilities</div>
+        <div class="tab">Settings</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="main">
+    <h1>Welcome to SGS</h1>
+    <p>Your secret portal to endless games and tools.</p>
+  </div>
+
+  <!-- Dashboard Section -->
+  <div class="dashboard">
+
+    <div class="card">
+      <h2>Quick Launch</h2>
+      <p>Jump straight into your favorite SGS features with one click.</p>
+    </div>
+
+    <div class="card">
+      <h2>Recent Activity</h2>
+      <p>Track your latest games, forum posts, and utility usage.</p>
+    </div>
+
+    <div class="card">
+      <h2>System Status</h2>
+      <p>Monitor SGS uptime, server health, and connection stability.</p>
+    </div>
+
+    <div class="card">
+      <h2>Community Pulse</h2>
+      <p>See what’s trending across the SGS forums and player base.</p>
+    </div>
+
+  </div>
+
+<script>
+  function updateDateTime() {
+    const now = new Date();
+
+    const month = now.toLocaleString('en-US', { month: 'long' });
+    const day = now.getDate();
+    const year = now.getFullYear();
+
+    let hours = now.getHours();
+    const minutes = String(now.getMinutes()).padStart(2,'0');
+    const seconds = String(now.getSeconds()).padStart(2,'0');
+    const ms = String(now.getMilliseconds()).padStart(3,'0');
+
+    const ampm = hours >= 12 ? "PM" : "AM";
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+
+    document.getElementById('datetime').textContent =
+      `${month} ${day}, ${year} — ${hours}:${minutes}:${seconds}:${ms} ${ampm}`;
+  }
+
+  setInterval(updateDateTime, 10);
+  updateDateTime();
+</script>
+
+</body>
+</html>
