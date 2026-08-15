@@ -3,152 +3,328 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Secret Game Site</title>
+<title>SGS - Secret Game Site</title>
 
 <style>
-  body {
-    margin: 0;
-    font-family: 'Segoe UI', Arial, sans-serif;
-    background: #0a0a0a;
-    color: #fff;
-    overflow-x: hidden;
-  }
+/* ========================= */
+/* GLOBAL PAGE STYLING       */
+/* ========================= */
 
-  /* NAVBAR */
-  .navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: linear-gradient(90deg, #ff0000, #660000);
-    box-shadow: 0 0 20px #ff0000;
-    padding: 12px 20px;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    animation: glowPulse 3s infinite alternate;
-  }
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #0a0a0a;
+  color: #fff;
+  overflow-x: hidden;
+}
 
-  @keyframes glowPulse {
-    from { box-shadow: 0 0 10px #ff0000; }
-    to { box-shadow: 0 0 25px #ff3333; }
-  }
+/* ========================= */
+/* NAVBAR                    */
+/* ========================= */
 
-  .left {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-  }
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(90deg, #ff0000, #660000);
+  box-shadow: 0 0 20px #ff0000;
+  padding: 12px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
 
-  .logo {
-    font-size: 1.5em;
-    font-weight: bold;
-    letter-spacing: 1px;
-  }
+.left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
 
-  .datetime {
-    font-size: 0.95em;
-    color: #ffd6d6;
-    text-shadow: 0 0 10px #ff0000;
-    white-space: nowrap;
-  }
+.logo {
+  font-size: 1.5em;
+  font-weight: bold;
+}
 
-  /* CENTERED TABS */
-  .center {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-  }
+.datetime {
+  font-size: 0.95em;
+  color: #ffd6d6;
+  text-shadow: 0 0 10px #ff0000;
+}
 
-  .tabs {
-    display: flex;
-    gap: 10px;
-  }
+.center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
 
-  .tab {
-    background: #111;
-    padding: 8px 16px;
-    border-radius: 6px;
-    transition: transform 0.3s ease, background 0.3s ease;
-    cursor: pointer;
-  }
+.tabs {
+  display: flex;
+  gap: 10px;
+}
 
-  .tab:hover {
-    transform: scale(1.1);
-    background: #222;
-    box-shadow: 0 0 10px #ff0000;
-  }
+.tab {
+  background: #111;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
 
-  .active {
-    background: #330000;
-    box-shadow: 0 0 12px #ff0000;
-    transform: scale(1.05);
-  }
+.tab:hover {
+  background: #222;
+  transform: scale(1.1);
+}
 
-  /* MAIN CONTENT */
-  .main {
-    text-align: center;
-    margin-top: 100px;
-  }
+.active {
+  background: #330000;
+  box-shadow: 0 0 12px #ff0000;
+}
 
-  .main h1 {
-    font-size: 3em;
-    color: #ff0000;
-    text-shadow: 0 0 20px #ff0000;
-    animation: flicker 2s infinite alternate;
-  }
+/* ========================= */
+/* MAIN CONTENT              */
+/* ========================= */
 
-  @keyframes flicker {
-    0% { opacity: 1; }
-    50% { opacity: 0.85; }
-    100% { opacity: 1; }
-  }
+.main {
+  text-align: center;
+  margin-top: 100px;
+  padding: 0 20px;
+}
 
-  .main p {
-    font-size: 1.2em;
-    color: #ccc;
-    margin-top: 20px;
-  }
+.main h1 {
+  font-size: 3em;
+  color: #ff0000;
+  text-shadow: 0 0 20px #ff0000;
+}
 
-  /* DASHBOARD */
-  .dashboard {
-    margin: 60px auto;
-    max-width: 1100px;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 25px;
-    padding: 0 20px;
-  }
+.summary {
+  font-size: 1.25em;
+  color: #ccc;
+  margin-top: 20px;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
 
-  .card {
-    background: #111;
-    border: 2px solid #330000;
-    border-radius: 10px;
-    padding: 20px;
-    text-align: left;
-    box-shadow: 0 0 15px #ff0000;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
+/* ========================= */
+/* BIG BUTTONS               */
+/* ========================= */
 
-  .card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 0 25px #ff3333;
-  }
+.big-buttons {
+  margin-top: 50px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 25px;
+}
 
-  .card h2 {
-    margin: 0 0 10px;
-    color: #ff3333;
-    text-shadow: 0 0 10px #ff0000;
-  }
+.big-btn {
+  background: #111;
+  border: 2px solid #ff0000;
+  padding: 20px 40px;
+  border-radius: 12px;
+  font-size: 1.4em;
+  color: #fff;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
 
-  .card p {
-    color: #ccc;
-    font-size: 0.95em;
-  }
+.big-btn:hover {
+  background: #330000;
+  box-shadow: 0 0 25px #ff3333;
+  transform: scale(1.08);
+}
+
+/* ========================= */
+/* OPEN OPTIONS BUTTONS      */
+/* ========================= */
+
+.bottom-buttons {
+  margin: 80px auto;
+  max-width: 500px;
+  text-align: center;
+}
+
+.bottom-buttons h2 {
+  font-size: 2em;
+  color: #ff3333;
+  margin-bottom: 30px;
+}
+
+.bottom-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.bottom-btn {
+  width: 100%;
+  background: #111;
+  border: 2px solid #ff0000;
+  padding: 18px 35px;
+  border-radius: 10px;
+  font-size: 1.2em;
+  color: #fff;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.bottom-btn:hover {
+  background: #330000;
+  box-shadow: 0 0 25px #ff3333;
+}
+
+/* ========================= */
+/* GAME CARDS (512×512)      */
+/* ========================= */
+
+.games-section {
+  margin: 60px auto;
+  max-width: 1100px;
+  padding: 0 20px;
+}
+
+.games-title {
+  font-size: 2em;
+  color: #ff3333;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 25px;
+}
+
+.game-card {
+  background: #111;
+  border: 2px solid #330000;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 0 15px #ff0000;
+  transition: 0.3s ease;
+  height: 580px; /* 512 image + bar */
+  display: flex;
+  flex-direction: column;
+}
+
+.game-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 0 25px #ff3333;
+}
+
+.game-thumb {
+  width: 100%;
+  height: 512px; /* EXACT SIZE YOU REQUESTED */
+  background-size: cover;
+  background-position: center;
+}
+
+.game-bar {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  padding: 12px;
+  background: #0d0d0d;
+  border-top: 2px solid #330000;
+}
+
+.game-play, .game-info {
+  background: #111;
+  border: 2px solid #ff0000;
+  padding: 10px 18px;
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.game-play:hover, .game-info:hover {
+  background: #330000;
+  box-shadow: 0 0 15px #ff3333;
+}
+
+/* ========================= */
+/* POPUP                     */
+/* ========================= */
+
+#popup {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.8);
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+#popup-box {
+  background: #111;
+  border: 2px solid #ff0000;
+  padding: 25px;
+  border-radius: 12px;
+  width: 350px;
+  text-align: center;
+}
+
+#popup-close {
+  float: right;
+  cursor: pointer;
+  font-size: 1.4em;
+  color: #ff4444;
+}
+
+.popup-btn {
+  width: 100%;
+  background: #111;
+  border: 2px solid #ff0000;
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 10px;
+  color: #fff;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.popup-btn:hover {
+  background: #330000;
+  box-shadow: 0 0 15px #ff3333;
+}
+
+/* ========================= */
+/* EXPLORE MORE              */
+/* ========================= */
+
+.explore-more {
+  margin-top: 40px;
+  text-align: center;
+}
+
+.explore-btn {
+  background: #111;
+  border: 2px solid #ff0000;
+  padding: 18px 40px;
+  border-radius: 12px;
+  font-size: 1.4em;
+  color: #fff;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.explore-btn:hover {
+  background: #330000;
+  box-shadow: 0 0 25px #ff3333;
+}
+
 </style>
-</head>
+
 <body>
 
-<!-- NAVBAR -->
+<!-- ========================= -->
+<!-- NAVBAR                    -->
+<!-- ========================= -->
+
 <div class="navbar">
   <div class="left">
     <div class="logo">Secret Game Site</div>
@@ -158,68 +334,230 @@
   <div class="center">
     <div class="tabs">
       <div class="tab active">Home</div>
-      <div class="tab">Browser</div>
       <div class="tab">Games</div>
+      <div class="tab" onclick="blocked()">Utilities</div>
+      <div class="tab" onclick="blocked()">Browser</div>
+      <div class="tab" onclick="blocked()">Music Player</div>
       <div class="tab">Forums</div>
-      <div class="tab">Utilities</div>
       <div class="tab">Settings</div>
     </div>
   </div>
 </div>
 
-<!-- MAIN -->
+<!-- ========================= -->
+<!-- MAIN CONTENT              -->
+<!-- ========================= -->
+
 <div class="main">
   <h1>Welcome to SGS</h1>
-  <p>Your secret portal to endless games and tools.</p>
-</div>
 
-<!-- DASHBOARD -->
-<div class="dashboard">
-  <div class="card">
-    <h2>Quick Launch</h2>
-    <p>Jump straight into your favorite SGS features with one click.</p>
+  <div class="summary">
+    SGS (Secret Game Site) is your stealthy, fast, and stylish hub for unblocked games, tools, utilities, and community features — built to stay accessible anywhere, anytime.
   </div>
 
-  <div class="card">
-    <h2>Recent Activity</h2>
-    <p>Track your latest games, forum posts, and utility usage.</p>
-  </div>
-
-  <div class="card">
-    <h2>System Status</h2>
-    <p>Monitor SGS uptime, server health, and connection stability.</p>
-  </div>
-
-  <div class="card">
-    <h2>Community Pulse</h2>
-    <p>See what’s trending across the SGS forums and player base.</p>
+  <div class="big-buttons">
+    <a class="big-btn">Games</a>
+    <a class="big-btn" onclick="blocked()">Utilities</a>
+    <a class="big-btn" onclick="blocked()">Browser</a>
+    <a class="big-btn" onclick="blocked()">Music Player</a>
+    <a class="big-btn">Forums</a>
+    <a class="big-btn">Settings</a>
   </div>
 </div>
+
+<!-- ========================= -->
+<!-- OPEN OPTIONS BUTTONS      -->
+<!-- ========================= -->
+
+<div class="bottom-buttons">
+  <h2>Open Options</h2>
+
+  <div class="bottom-grid">
+    <button class="bottom-btn">Open in about:blank window</button>
+    <button class="bottom-btn">Open in about:blank tab</button>
+    <button class="bottom-btn">Open in blob tab</button>
+    <button class="bottom-btn">Open in blob window</button>
+  </div>
+</div>
+
+<!-- ========================= -->
+<!-- POPULAR GAMES             -->
+<!-- ========================= -->
+
+<div class="games-section">
+  <div class="games-title">Popular Games 🔥</div>
+
+  <div class="games-grid">
+
+    <!-- GAME CARD TEMPLATE -->
+    <div class="game-card">
+      <div class="game-thumb" style="background-image: url('Images/retrobowl.png');"></div>
+      <div class="game-bar">
+        <button class="game-play" onclick="openPopup('Games/Retrobowl.html')">▶ Play</button>
+        <button class="game-info" onclick="window.location.href='Info/Retrobowl.html'">ℹ Info</button>
+      </div>
+    </div>
+
+    <div class="game-card">
+      <div class="game-thumb" style="background-image: url('Images/minecraft.png');"></div>
+      <div class="game-bar">
+        <button class="game-play" onclick="openPopup('Games/Minecraft.html')">▶ Play</button>
+        <button class="game-info" onclick="window.location.href='Info/Minecraft.html'">ℹ Info</button>
+      </div>
+    </div>
+
+    <div class="game-card">
+      <div class="game-thumb" style="background-image: url('Images/cookie.png');"></div>
+      <div class="game-bar">
+        <button class="game-play" onclick="openPopup('Games/CookieClicker.html')">▶ Play</button>
+        <button class="game-info" onclick="window.location.href='Info/CookieClicker.html'">ℹ Info</button>
+      </div>
+    </div>
+
+    <div class="game-card">
+      <div class="game-thumb" style="background-image: url('Images/1v1.png');"></div>
+      <div class="game-bar">
+        <button class="game-play" onclick="openPopup('Games/1v1.html')">▶ Play</button>
+        <button class="game-info" onclick="window.location.href='Info/1v1.html'">ℹ Info</button>
+      </div>
+    </div>
+
+    <div class="game-card">
+      <div class="game-thumb" style="background-image: url('Images/drift.png');"></div>
+      <div class="game-bar">
+        <button class="game-play" onclick="openPopup('Games/DriftHunters.html')">▶ Play</button>
+        <button class="game-info" onclick="window.location.href='Info/DriftHunters.html'">ℹ Info</button>
+      </div>
+    </div>
+
+    <div class="game-card">
+      <div class="game-thumb" style="background-image: url('Images/shell.png');"></div>
+      <div class="game-bar">
+        <button class="game-play" onclick="openPopup('Games/ShellShockers.html')">▶ Play</button>
+        <button class="game-info" onclick="window.location.href='Info/ShellShockers.html'">ℹ Info</button>
+      </div>
+    </div>
+
+    <div class="game-card">
+      <div class="game-thumb" style="background-image: url('Images/bitlife.png');"></div>
+      <div class="game-bar">
+        <button class="game-play" onclick="openPopup('Games/BitLife.html')">▶ Play</button>
+        <button class="game-info" onclick="window.location.href='Info/BitLife.html'">ℹ Info</button>
+      </div>
+    </div>
+
+    <div class="game-card">
+      <div class="game-thumb" style="background-image: url('Images/slope.png');"></div>
+      <div class="game-bar">
+        <button class="game-play" onclick="openPopup('Games/Slope.html')">▶ Play</button>
+        <button class="game-info" onclick="window.location.href='Info/Slope.html'">ℹ Info</button>
+      </div>
+    </div>
+
+    <div class="game-card">
+      <div class="game-thumb" style="background-image: url('Images/run3.png');"></div>
+      <div class="game-bar">
+        <button class="game-play" onclick="openPopup('Games/Run3.html')">▶ Play</button>
+        <button class="game-info" onclick="window.location.href='Info/Run3.html'">ℹ Info</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="explore-more">
+    <a class="explore-btn" href="games.html">✨ Explore More</a>
+  </div>
+</div>
+
+<!-- ========================= -->
+<!-- POPUP                     -->
+<!-- ========================= -->
+
+<div id="popup">
+  <div id="popup-box">
+    <div id="popup-close" onclick="closePopup()">✕</div>
+    <h3>Launch Options</h3>
+
+    <button class="popup-btn" onclick="openTab()">Open in Tab</button>
+    <button class="popup-btn" onclick="openABTab()">Open in About:Blank Tab</button>
+    <button class="popup-btn" onclick="openBlobTab()">Open in Blob Tab</button>
+
+    <button class="popup-btn" onclick="openWindow()">Open in Window</button>
+    <button class="popup-btn" onclick="openABWindow()">Open in About:Blank Window</button>
+    <button class="popup-btn" onclick="openBlobWindow()">Open in Blob Window</button>
+  </div>
+</div>
+
+<!-- ========================= -->
+<!-- JAVASCRIPT                -->
+<!-- ========================= -->
 
 <script>
-  /* DATE + TIME */
-  function updateDateTime() {
-    const now = new Date();
+/* DATE + TIME */
+function updateDateTime() {
+  const now = new Date();
+  const month = now.toLocaleString('en-US', { month: 'long' });
+  const day = now.getDate();
+  const year = now.getFullYear();
+  let hours = now.getHours();
+  const minutes = String(now.getMinutes()).padStart(2,'0');
+  const seconds = String(now.getSeconds()).padStart(2,'0');
+  const ms = String(now.getMilliseconds()).padStart(3,'0');
+  const ampm = hours >= 12 ? "PM" : "AM";
+  hours = hours % 12 || 12;
 
-    const month = now.toLocaleString('en-US', { month: 'long' });
-    const day = now.getDate();
-    const year = now.getFullYear();
+  document.getElementById('datetime').textContent =
+    `${month} ${day}, ${year} — ${hours}:${minutes}:${seconds}:${ms} ${ampm}`;
+}
+setInterval(updateDateTime, 10);
+updateDateTime();
 
-    let hours = now.getHours();
-    const minutes = String(now.getMinutes()).padStart(2,'0');
-    const seconds = String(now.getSeconds()).padStart(2,'0');
-    const ms = String(now.getMilliseconds()).padStart(3,'0');
+/* UNDER CONSTRUCTION */
+function blocked() {
+  window.location.href = "under_construction.html";
+}
 
-    const ampm = hours >= 12 ? "PM" : "AM";
-    hours = hours % 12 || 12;
+/* POPUP SYSTEM */
+let currentGameURL = "";
 
-    document.getElementById('datetime').textContent =
-      `${month} ${day}, ${year} — ${hours}:${minutes}:${seconds}:${ms} ${ampm}`;
-  }
+function openPopup(url) {
+  currentGameURL = url;
+  document.getElementById("popup").style.display = "flex";
+}
 
-  setInterval(updateDateTime, 10);
-  updateDateTime();
-</script>
+function closePopup() {
+  document.getElementById("popup").style.display = "none";
+}
 
-</body>
-</html>
+/* LAUNCH OPTIONS */
+function openTab() {
+  window.open(currentGameURL, "_blank");
+  closePopup();
+}
+
+function openABTab() {
+  const win = window.open("about:blank");
+  win.document.write(`<iframe src="${currentGameURL}" style="width:100vw;height:100vh;border:none;"></iframe>`);
+  closePopup();
+}
+
+function openBlobTab() {
+  const blob = new Blob([`<iframe src="${currentGameURL}" style="width:100vw;height:100vh;border:none;"></iframe>`], {type:'text/html'});
+  const url = URL.createObjectURL(blob);
+  window.open(url, "_blank");
+  closePopup();
+}
+
+function openWindow() {
+  window.open(currentGameURL, "", "width=1100,height=700,resizable=yes,scrollbars=yes");
+  closePopup();
+}
+
+function openABWindow() {
+  const win = window.open("", "", "width=1100,height=700,resizable=yes,scrollbars=yes");
+  win.document.write(`<iframe src="${currentGameURL}" style="width:100vw;height:100vh;border:none;"></iframe>`);
+  closePopup();
+}
+
+function openBlobWindow() {
+  const blob = new Blob([`<iframe src="${currentGameURL}" style="width:100vw;height:100vh;border:none
