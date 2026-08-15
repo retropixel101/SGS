@@ -14,7 +14,50 @@
     overflow-x: hidden;
   }
 
-  /* Top Navigation Bar */
+  /* INTRO OVERLAY */
+  #intro {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    overflow: hidden;
+    opacity: 1;
+    transition: opacity 1s ease;
+  }
+
+  #intro-logo {
+    font-size: 4em;
+    font-weight: bold;
+    color: #ff0000;
+    text-shadow: 0 0 20px #ff0000;
+    position: relative;
+    top: -300px;
+    animation: slideToCenter 0.9s ease-out forwards, pauseHold 0.5s ease forwards 0.9s;
+  }
+
+  @keyframes slideToCenter {
+    to { top: 40vh; }
+  }
+
+  @keyframes pauseHold {
+    from { opacity: 1; }
+    to { opacity: 1; }
+  }
+
+  #particles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  /* NAVBAR */
   .navbar {
     display: flex;
     justify-content: space-between;
@@ -45,7 +88,6 @@
     letter-spacing: 1px;
   }
 
-  /* Date + Time */
   .datetime {
     font-size: 0.95em;
     color: #ffd6d6;
@@ -53,7 +95,7 @@
     white-space: nowrap;
   }
 
-  /* Center Tabs — ABSOLUTE CENTER */
+  /* CENTERED TABS */
   .center {
     position: absolute;
     left: 50%;
@@ -79,14 +121,13 @@
     box-shadow: 0 0 10px #ff0000;
   }
 
-  /* Highlight current tab */
   .active {
     background: #330000;
     box-shadow: 0 0 12px #ff0000;
     transform: scale(1.05);
   }
 
-  /* Main Content */
+  /* MAIN CONTENT */
   .main {
     text-align: center;
     margin-top: 100px;
@@ -111,7 +152,7 @@
     margin-top: 20px;
   }
 
-  /* Dashboard Section */
+  /* DASHBOARD */
   .dashboard {
     margin: 60px auto;
     max-width: 1100px;
@@ -150,59 +191,116 @@
 </head>
 <body>
 
-  <div class="navbar">
+<!-- INTRO -->
+<div id="intro">
+  <div id="intro-logo">SGS</div>
+  <canvas id="particles"></canvas>
+</div>
 
-    <!-- Left side: Logo + Date/Time -->
-    <div class="left">
-      <div class="logo">Secret Game Site</div>
-      <div class="datetime" id="datetime">Loading...</div>
-    </div>
-
-    <!-- ABSOLUTE CENTER: Tabs -->
-    <div class="center">
-      <div class="tabs">
-        <div class="tab active">Home</div>
-        <div class="tab">Browser</div>
-        <div class="tab">Games</div>
-        <div class="tab">Forums</div>
-        <div class="tab">Utilities</div>
-        <div class="tab">Settings</div>
-      </div>
-    </div>
-
+<!-- NAVBAR -->
+<div class="navbar">
+  <div class="left">
+    <div class="logo">Secret Game Site</div>
+    <div class="datetime" id="datetime">Loading...</div>
   </div>
 
-  <div class="main">
-    <h1>Welcome to SGS</h1>
-    <p>Your secret portal to endless games and tools.</p>
+  <div class="center">
+    <div class="tabs">
+      <div class="tab active">Home</div>
+      <div class="tab">Browser</div>
+      <div class="tab">Games</div>
+      <div class="tab">Forums</div>
+      <div class="tab">Utilities</div>
+      <div class="tab">Settings</div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <h1>Welcome to SGS</h1>
+  <p>Your secret portal to endless games and tools.</p>
+</div>
+
+<!-- DASHBOARD -->
+<div class="dashboard">
+  <div class="card">
+    <h2>Quick Launch</h2>
+    <p>Jump straight into your favorite SGS features with one click.</p>
   </div>
 
-  <!-- Dashboard Section -->
-  <div class="dashboard">
-
-    <div class="card">
-      <h2>Quick Launch</h2>
-      <p>Jump straight into your favorite SGS features with one click.</p>
-    </div>
-
-    <div class="card">
-      <h2>Recent Activity</h2>
-      <p>Track your latest games, forum posts, and utility usage.</p>
-    </div>
-
-    <div class="card">
-      <h2>System Status</h2>
-      <p>Monitor SGS uptime, server health, and connection stability.</p>
-    </div>
-
-    <div class="card">
-      <h2>Community Pulse</h2>
-      <p>See what’s trending across the SGS forums and player base.</p>
-    </div>
-
+  <div class="card">
+    <h2>Recent Activity</h2>
+    <p>Track your latest games, forum posts, and utility usage.</p>
   </div>
+
+  <div class="card">
+    <h2>System Status</h2>
+    <p>Monitor SGS uptime, server health, and connection stability.</p>
+  </div>
+
+  <div class="card">
+    <h2>Community Pulse</h2>
+    <p>See what’s trending across the SGS forums and player base.</p>
+  </div>
+</div>
 
 <script>
+  /* INTRO SESSION LOGIC */
+  if (!sessionStorage.getItem("sgsIntroPlayed")) {
+    sessionStorage.setItem("sgsIntroPlayed", "true");
+  } else {
+    document.getElementById("intro").style.display = "none";
+  }
+
+  /* PARTICLE POP */
+  const canvas = document.getElementById("particles");
+  const ctx = canvas.getContext("2d");
+
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  let particles = [];
+
+  function popParticles() {
+    for (let i = 0; i < 80; i++) {
+      particles.push({
+        x: canvas.width / 2,
+        y: window.innerHeight * 0.40,
+        size: Math.random() * 4 + 2,
+        speedX: (Math.random() - 0.5) * 5,  // slower
+        speedY: (Math.random() - 0.5) * 5,  // slower
+        alpha: 1
+      });
+    }
+  }
+
+  function animateParticles() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    particles.forEach((p, i) => {
+      p.x += p.speedX;
+      p.y += p.speedY;
+      p.alpha -= 0.015;
+
+      ctx.fillStyle = `rgba(255, 0, 0, ${p.alpha})`;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fill();
+
+      if (p.alpha <= 0) particles.splice(i, 1);
+    });
+
+    requestAnimationFrame(animateParticles);
+  }
+
+  setTimeout(() => {
+    popParticles();
+    animateParticles();
+    document.getElementById("intro").style.opacity = "0";
+  }, 1400);
+
+  /* DATE + TIME */
   function updateDateTime() {
     const now = new Date();
 
@@ -216,8 +314,7 @@
     const ms = String(now.getMilliseconds()).padStart(3,'0');
 
     const ampm = hours >= 12 ? "PM" : "AM";
-    hours = hours % 12;
-    hours = hours ? hours : 12;
+    hours = hours % 12 || 12;
 
     document.getElementById('datetime').textContent =
       `${month} ${day}, ${year} — ${hours}:${minutes}:${seconds}:${ms} ${ampm}`;
