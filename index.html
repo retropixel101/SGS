@@ -14,49 +14,6 @@
     overflow-x: hidden;
   }
 
-  /* INTRO OVERLAY */
-  #intro {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: #000;
-    z-index: 9999;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    overflow: hidden;
-    opacity: 1;
-    transition: opacity 1s ease;
-  }
-
-  #intro-logo {
-    font-size: 4em;
-    font-weight: bold;
-    color: #ff0000;
-    text-shadow: 0 0 20px #ff0000;
-    position: relative;
-    top: -350px;
-    animation: slideToCenter 0.55s ease-out forwards, pauseHold 0.5s ease forwards 0.55s;
-  }
-
-  @keyframes slideToCenter {
-    to { top: 40vh; }
-  }
-
-  @keyframes pauseHold {
-    from { opacity: 1; }
-    to { opacity: 1; }
-  }
-
-  #particles {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-  }
-
   /* NAVBAR */
   .navbar {
     display: flex;
@@ -191,12 +148,6 @@
 </head>
 <body>
 
-<!-- INTRO -->
-<div id="intro">
-  <div id="intro-logo">SGS</div>
-  <canvas id="particles"></canvas>
-</div>
-
 <!-- NAVBAR -->
 <div class="navbar">
   <div class="left">
@@ -246,63 +197,6 @@
 </div>
 
 <script>
-  /* INTRO SESSION LOGIC */
-  if (!sessionStorage.getItem("sgsIntroPlayed")) {
-    sessionStorage.setItem("sgsIntroPlayed", "true");
-  } else {
-    document.getElementById("intro").style.display = "none";
-  }
-
-  /* PARTICLE POP */
-  const canvas = document.getElementById("particles");
-  const ctx = canvas.getContext("2d");
-
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-
-  let particles = [];
-
-  function popParticles() {
-    const centerX = canvas.width / 2;
-    const centerY = window.innerHeight * 0.40;
-
-    for (let i = 0; i < 80; i++) {
-      particles.push({
-        x: centerX,
-        y: centerY,
-        size: Math.random() * 4 + 2,
-        speedX: (Math.random() - 0.5) * 3.5,
-        speedY: (Math.random() - 0.5) * 3.5,
-        alpha: 1
-      });
-    }
-  }
-
-  function animateParticles() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    particles.forEach((p, i) => {
-      p.x += p.speedX;
-      p.y += p.speedY;
-      p.alpha -= 0.012;
-
-      ctx.fillStyle = `rgba(255, 0, 0, ${p.alpha})`;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-      ctx.fill();
-
-      if (p.alpha <= 0) particles.splice(i, 1);
-    });
-
-    requestAnimationFrame(animateParticles);
-  }
-
-  setTimeout(() => {
-    popParticles();
-    animateParticles();
-    document.getElementById("intro").style.opacity = "0";
-  }, 1050);
-
   /* DATE + TIME */
   function updateDateTime() {
     const now = new Date();
