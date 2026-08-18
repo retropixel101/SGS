@@ -870,6 +870,253 @@ body { min-width: 0; }
   }
 }
 
+
+/* === CHROMEBOOK / SMALL LAPTOP LAYOUT FIX === */
+
+/* Keep the fixed ad below the navbar instead of centering it through the navbar. */
+.site-ad-left {
+  position: fixed;
+  left: 0;
+  top: max(58px, calc(58px + (100vh - 683px) / 2));
+  transform: none;
+  width: 160px;
+  height: 625px;
+  margin: 0;
+  padding: 0;
+  z-index: 500;
+}
+
+/* Reserve the ad's horizontal space on screens large enough to show it. */
+@media (min-width: 1201px) {
+  .main,
+  .bottom-buttons,
+  .games-section {
+    width: calc(100% - 190px);
+    max-width: 1180px;
+    margin-left: 180px;
+    margin-right: 10px;
+  }
+
+  .main {
+    padding-left: clamp(12px, 2vw, 28px);
+    padding-right: clamp(12px, 2vw, 28px);
+  }
+
+  .bottom-buttons,
+  .games-section {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .big-buttons {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(170px, 1fr));
+    gap: 16px;
+  }
+
+  .big-btn {
+    width: 100%;
+    min-width: 0;
+    padding: 16px 14px;
+    font-size: clamp(.95em, 1.1vw, 1.15em);
+  }
+
+  .bottom-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Short Chromebook screens cannot physically fit a 600px ad below the header. */
+@media (max-height: 700px) {
+  .site-ad-left {
+    display: none;
+  }
+}
+
+/* Chromebook/tablet widths: eliminate absolute centering that causes nav clipping. */
+@media (max-width: 1200px) {
+  .site-ad-left {
+    display: none;
+  }
+
+  .navbar {
+    position: sticky;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    gap: 9px;
+    padding: 9px 12px;
+  }
+
+  .left {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 5px 12px;
+  }
+
+  .center {
+    position: static;
+    left: auto;
+    transform: none;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .tabs {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .tab {
+    padding: 7px 10px;
+    font-size: .82em;
+    white-space: nowrap;
+  }
+
+  .main {
+    width: 100%;
+    max-width: 100%;
+    margin: clamp(36px, 7vh, 72px) auto 0;
+    padding-left: clamp(12px, 3vw, 28px);
+    padding-right: clamp(12px, 3vw, 28px);
+  }
+
+  .main h1 {
+    font-size: clamp(2.1rem, 7vw, 3.5rem);
+  }
+
+  .summary {
+    max-width: min(760px, 92vw);
+    font-size: clamp(.95rem, 2vw, 1.08rem);
+    line-height: 1.6;
+  }
+
+  .big-buttons {
+    width: min(100%, 860px);
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin: 30px auto 0;
+  }
+
+  .big-btn {
+    width: 100%;
+    min-width: 0;
+    padding: 14px 10px;
+    font-size: clamp(.88rem, 1.7vw, 1.08rem);
+    white-space: normal;
+    transform: none;
+  }
+
+  .big-btn:hover {
+    transform: translateY(-2px);
+  }
+
+  .bottom-buttons,
+  .games-section {
+    width: 100%;
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: clamp(12px, 3vw, 28px);
+    padding-right: clamp(12px, 3vw, 28px);
+  }
+
+  .games-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 300px));
+    justify-content: center;
+    gap: 30px 18px;
+  }
+}
+
+/* Smaller Chromebook/tablet */
+@media (max-width: 900px) {
+  .big-buttons {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: min(100%, 620px);
+  }
+
+  .bottom-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Phone / very narrow Chromebook windows */
+@media (max-width: 620px) {
+  .navbar {
+    padding: 8px 8px;
+  }
+
+  .tabs {
+    gap: 4px;
+  }
+
+  .tab {
+    padding: 6px 8px;
+    font-size: .74em;
+  }
+
+  .main {
+    margin-top: 28px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .hero-badge {
+    font-size: .68em;
+  }
+
+  .main h1 {
+    font-size: clamp(2rem, 11vw, 2.8rem);
+  }
+
+  .summary {
+    font-size: .92rem;
+  }
+
+  .hero-pills {
+    gap: 6px;
+  }
+
+  .big-buttons {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .big-btn {
+    padding: 12px 7px;
+    font-size: .84rem;
+    border-radius: 9px;
+  }
+
+  .bottom-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .game-card {
+    width: min(300px, calc(100vw - 24px));
+  }
+}
+
+/* Stop hover scale effects from making Chromebook buttons look fuzzy/overdriven. */
+@media (hover: none), (max-width: 1200px) {
+  .big-btn:hover,
+  .bottom-btn:hover,
+  .game-card:hover,
+  .explore-btn:hover {
+    transform: none;
+  }
+
+  .big-btn:hover {
+    background: #330000;
+  }
+}
+
 /* RESPONSIVE */
 @media (max-width: 1180px) {
   .center {
@@ -949,6 +1196,446 @@ body { min-width: 0; }
     padding: 20px;
   }
 }
+</style>
+<style>
+
+/* === FINAL HOMEPAGE POSITION FIX ===
+   Keep the main homepage centered in the viewport.
+   The left ad is an overlay and must not push the homepage left.
+*/
+@media (min-width: 1201px) {
+  .main,
+  .bottom-buttons,
+  .games-section {
+    width: min(100% - 40px, 1040px) !important;
+    max-width: 1040px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  .main {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+
+  .bottom-buttons,
+  .games-section {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+
+  .big-buttons {
+    width: 100% !important;
+    max-width: 860px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  /* Keep the ad completely separate from the centered page content. */
+  .site-ad-left {
+    left: 0 !important;
+    margin-left: 0 !important;
+  }
+}
+
+/* On shorter laptop screens, don't let the 600px ad force the layout. */
+@media (min-width: 1201px) and (max-height: 700px) {
+  .site-ad-left {
+    display: none !important;
+  }
+
+  .main,
+  .bottom-buttons,
+  .games-section {
+    width: min(100% - 40px, 1040px) !important;
+  }
+}
+
+</style>
+<style>
+
+/* === NAVBAR + HERO FINAL RESPONSIVE FIX === */
+
+/* Medium laptop / Chromebook landscape:
+   keep everything on one clean row instead of absolutely centering
+   the tabs over the logo/date. */
+@media (max-width: 1200px) and (min-width: 901px) {
+  .navbar {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 14px !important;
+    padding: 9px 16px !important;
+    min-height: 54px !important;
+  }
+
+  .left {
+    flex: 0 1 auto !important;
+    min-width: 0 !important;
+    gap: 12px !important;
+    white-space: nowrap !important;
+  }
+
+  .logo {
+    font-size: 1.25em !important;
+  }
+
+  .datetime {
+    font-size: .78em !important;
+    white-space: nowrap !important;
+  }
+
+  .center {
+    position: static !important;
+    left: auto !important;
+    transform: none !important;
+    flex: 0 1 auto !important;
+    min-width: 0 !important;
+    width: auto !important;
+    margin-left: auto !important;
+  }
+
+  .tabs {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    justify-content: flex-end !important;
+    gap: 6px !important;
+  }
+
+  .tab {
+    flex: 0 0 auto !important;
+    padding: 8px 11px !important;
+    font-size: .78em !important;
+    white-space: nowrap !important;
+  }
+
+  /* Never allow "Music Player" to become two lines on this layout. */
+  .tab:nth-child(5) {
+    min-width: 82px !important;
+  }
+
+  .main {
+    margin-top: 24px !important;
+    padding-top: 18px !important;
+  }
+
+  .main h1 {
+    font-size: clamp(2.4rem, 5vw, 3.5rem) !important;
+  }
+}
+
+/* Smaller Chromebook/tablet: navbar becomes two tidy rows instead of
+   overlapping or squeezing the hero. */
+@media (max-width: 900px) {
+  .navbar {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    padding: 9px 10px !important;
+  }
+
+  .left {
+    width: 100% !important;
+    justify-content: center !important;
+    gap: 8px 12px !important;
+  }
+
+  .center {
+    position: static !important;
+    width: 100% !important;
+    transform: none !important;
+  }
+
+  .tabs {
+    width: 100% !important;
+    justify-content: center !important;
+    flex-wrap: wrap !important;
+    gap: 5px !important;
+  }
+
+  .tab {
+    padding: 7px 10px !important;
+    font-size: .76em !important;
+    white-space: nowrap !important;
+  }
+
+  .main {
+    margin-top: 22px !important;
+    padding-top: 12px !important;
+  }
+}
+
+/* Very narrow screens: keep the navigation compact and readable. */
+@media (max-width: 600px) {
+  .left {
+    flex-direction: column !important;
+    gap: 3px !important;
+  }
+
+  .logo {
+    font-size: 1.25em !important;
+  }
+
+  .datetime {
+    font-size: .72em !important;
+  }
+
+  .tabs {
+    gap: 4px !important;
+  }
+
+  .tab {
+    padding: 6px 8px !important;
+    font-size: .7em !important;
+  }
+
+  .main {
+    margin-top: 14px !important;
+    padding-top: 8px !important;
+  }
+
+  .hero-badge {
+    margin-top: 4px !important;
+  }
+}
+
+</style>
+<style>
+
+/* =========================================================
+   NAVBAR OVERLAP FIX — FINAL
+   The nav switches layouts BEFORE the logo/time and tabs
+   can collide. Tab hover no longer changes their footprint.
+   ========================================================= */
+
+/* Never let a tab physically expand into neighboring content. */
+.navbar .tab,
+.navbar .tab:hover,
+.navbar .tab.active,
+.navbar .active {
+  box-sizing: border-box !important;
+}
+
+.navbar .tab:hover {
+  transform: translateY(-1px) !important;
+}
+
+.navbar .active {
+  transform: none !important;
+}
+
+/* Normal desktop: left branding + centered navigation. */
+@media (min-width: 1401px) {
+  .navbar {
+    min-height: 58px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 20px !important;
+    padding: 9px 18px !important;
+  }
+
+  .navbar .left {
+    flex: 0 1 auto !important;
+    min-width: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 16px !important;
+  }
+
+  .navbar .center {
+    position: static !important;
+    left: auto !important;
+    transform: none !important;
+    flex: 0 0 auto !important;
+    min-width: 0 !important;
+    margin-left: auto !important;
+  }
+
+  .navbar .tabs {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    gap: 7px !important;
+  }
+
+  .navbar .tab {
+    flex: 0 0 auto !important;
+    padding: 8px 13px !important;
+    white-space: nowrap !important;
+    font-size: .86em !important;
+  }
+}
+
+/*
+   IMPORTANT BREAKPOINT:
+   At this width there isn't enough room for the branding,
+   timestamp and all seven buttons. Move the tabs to their
+   own row BEFORE they overlap anything.
+*/
+@media (max-width: 1400px) {
+  .navbar {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    min-height: auto !important;
+    padding: 9px 12px 10px !important;
+  }
+
+  .navbar .left {
+    width: 100% !important;
+    min-width: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 12px !important;
+  }
+
+  .navbar .logo {
+    font-size: clamp(1.15em, 1.7vw, 1.5em) !important;
+    white-space: nowrap !important;
+  }
+
+  .navbar .datetime {
+    font-size: clamp(.72em, 1vw, .9em) !important;
+    white-space: nowrap !important;
+  }
+
+  .navbar .center {
+    position: static !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    transform: none !important;
+  }
+
+  .navbar .tabs {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+  }
+
+  .navbar .tab {
+    flex: 0 0 auto !important;
+    padding: 7px 11px !important;
+    font-size: clamp(.72em, 1.15vw, .86em) !important;
+    line-height: 1.1 !important;
+    white-space: nowrap !important;
+  }
+
+  .navbar .tab:nth-child(5) {
+    min-width: 0 !important;
+  }
+
+  .main {
+    margin-top: 24px !important;
+  }
+}
+
+/* Smaller Chromebook/tablet: compact two-row navigation. */
+@media (max-width: 900px) {
+  .navbar {
+    gap: 7px !important;
+    padding: 8px 8px 9px !important;
+  }
+
+  .navbar .left {
+    gap: 7px 10px !important;
+    flex-wrap: wrap !important;
+  }
+
+  .navbar .tabs {
+    gap: 5px !important;
+  }
+
+  .navbar .tab {
+    padding: 6px 9px !important;
+    font-size: .73em !important;
+  }
+
+  .main {
+    margin-top: 16px !important;
+    padding-top: 10px !important;
+  }
+}
+
+/* Phone / very narrow windows. */
+@media (max-width: 600px) {
+  .navbar .left {
+    flex-direction: column !important;
+    gap: 2px !important;
+  }
+
+  .navbar .logo {
+    font-size: 1.2em !important;
+  }
+
+  .navbar .datetime {
+    font-size: .68em !important;
+  }
+
+  .navbar .tabs {
+    gap: 4px !important;
+  }
+
+  .navbar .tab {
+    padding: 6px 7px !important;
+    font-size: .68em !important;
+  }
+}
+
+</style>
+<style>
+
+/* === FULL-SCREEN CENTERING ===
+   Keep the main navigation bar centered in the viewport on wide screens.
+   The branding remains on the left without affecting the nav's center point.
+*/
+@media (min-width: 1401px) {
+  .navbar {
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+    min-height: 58px !important;
+  }
+
+  .navbar .left {
+    position: absolute !important;
+    left: 18px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    z-index: 2 !important;
+  }
+
+  .navbar .center {
+    position: absolute !important;
+    left: 50% !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: auto !important;
+    margin: 0 !important;
+    z-index: 3 !important;
+  }
+
+  .navbar .tabs {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    flex-wrap: nowrap !important;
+    gap: 7px !important;
+  }
+
+  .navbar .tab {
+    flex: 0 0 auto !important;
+    white-space: nowrap !important;
+  }
+}
+
 </style>
 </head>
 
