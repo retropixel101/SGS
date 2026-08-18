@@ -979,12 +979,12 @@ body { min-width: 0; }
   <div class="center">
     <div class="tabs">
       <div class="tab active">Home</div>
-      <div class="tab">Games</div>
+      <div class="tab" href="games.html">Games</div>
       <div class="tab" onclick="blocked()">Utilities</div>
       <div class="tab" onclick="blocked()">Browser</div>
       <div class="tab" onclick="blocked()">Music Player</div>
-      <div class="tab">Forums</div>
-      <div class="tab">Settings</div>
+      <div class="tab" onclick="blocked()">Forums</div>
+      <div class="tab" onclick="blocked()">Settings</div>
     </div>
   </div>
 </div>
@@ -1010,16 +1010,16 @@ body { min-width: 0; }
     <span>⚡ Fast</span>
     <span>🎮 Games</span>
     <span>🛠 Tools</span>
-    <span>🔒 Low-key</span>
+    <span>🔒 Secure</span>
   </div>
 
   <div class="big-buttons">
-    <a class="big-btn featured">🎮 Games</a>
+    <a class="big-btn featured" href="games.html">🎮 Games</a>
     <a class="big-btn" onclick="blocked()">🛠 Utilities</a>
     <a class="big-btn" onclick="blocked()">🌐 Browser</a>
     <a class="big-btn" onclick="blocked()">🎵 Music Player</a>
-    <a class="big-btn">💬 Forums</a>
-    <a class="big-btn">⚙ Settings</a>
+    <a class="big-btn" onclick="blocked()">💬 Forums</a>
+    <a class="big-btn" onclick="blocked()">⚙ Settings</a>
   </div>
 </div>
 
@@ -1041,7 +1041,7 @@ body { min-width: 0; }
 <div class="games-section">
   <div class="games-heading">
     <div class="games-kicker">THE ARCADE</div>
-    <div class="games-title">Popular Games</div>
+    <div class="games-title">Popular Games 🔥</div>
     <div class="games-subtitle">Jump straight into some of the favorites.</div>
   </div>
 
@@ -1205,7 +1205,7 @@ updateDateTime();
 
 /* UNDER CONSTRUCTION */
 function blocked() {
-  window.location.href = "under_construction.html";
+  window.location.href = "unfin.html";
 }
 
 /* PLAY POPUP */
