@@ -657,6 +657,158 @@ button, a {
   font-size: 0.82em;
 }
 
+
+/* UNIVERSAL RESPONSIVE FIT */
+img, video, iframe { max-width: 100%; }
+body { min-width: 0; }
+
+.navbar { min-height: 58px; }
+.main { width: 100%; max-width: 1400px; margin-left: auto; margin-right: auto; }
+.big-buttons { width: min(100%, 1050px); margin-left: auto; margin-right: auto; }
+.big-btn { flex: 0 1 auto; max-width: 100%; }
+.bottom-buttons, .games-section, .games-grid { width: 100%; }
+.game-card { max-width: 100%; }
+.game-thumb { max-width: calc(100% - 20px); }
+
+@media (max-width: 1100px) {
+  .navbar {
+    position: relative;
+    justify-content: center;
+    padding: 12px 16px;
+  }
+  .left {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .center {
+    position: static;
+    width: 100%;
+    transform: none;
+  }
+  .tabs {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .main {
+    margin-top: 55px;
+    padding-left: clamp(14px, 3vw, 28px);
+    padding-right: clamp(14px, 3vw, 28px);
+  }
+  .big-buttons { gap: 14px; }
+  .big-btn {
+    padding: 16px 24px;
+    font-size: 1.1em;
+  }
+  .bottom-buttons, .games-section {
+    padding-left: clamp(14px, 3vw, 28px);
+    padding-right: clamp(14px, 3vw, 28px);
+  }
+}
+
+@media (max-width: 760px) {
+  .navbar { padding: 10px 12px; }
+  .logo { font-size: 1.25em; }
+  .datetime {
+    font-size: 0.78em;
+    text-align: center;
+  }
+  .tabs { gap: 5px; }
+  .tab {
+    padding: 7px 9px;
+    font-size: 0.78em;
+  }
+  .main { margin-top: 38px; }
+  .main h1 { font-size: clamp(2em, 9vw, 3em); }
+  .summary {
+    font-size: 0.98em;
+    line-height: 1.55em;
+  }
+  .hero-pills { gap: 6px; }
+  .hero-pills span {
+    padding: 6px 9px;
+    font-size: 0.75em;
+  }
+  .big-buttons {
+    margin-top: 28px;
+    gap: 10px;
+  }
+  .big-btn {
+    padding: 13px 16px;
+    font-size: 0.95em;
+    border-radius: 9px;
+  }
+  .bottom-buttons {
+    margin-top: 55px;
+    margin-bottom: 55px;
+  }
+  .bottom-buttons h2 { font-size: 1.55em; }
+  .bottom-grid { grid-template-columns: 1fr; }
+  .games-title { font-size: 1.65em; }
+  .games-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+  }
+  .game-card { width: min(300px, calc(100vw - 32px)); }
+}
+
+@media (max-width: 420px) {
+  .navbar { padding: 8px; }
+  .left { gap: 5px; }
+  .tabs { gap: 4px; }
+  .tab {
+    padding: 6px 7px;
+    font-size: 0.72em;
+  }
+  .main {
+    margin-top: 25px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  .summary { font-size: 0.92em; }
+  .big-buttons {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+  }
+  .big-btn {
+    width: 100%;
+    padding: 12px 8px;
+    font-size: 0.85em;
+  }
+  .games-section, .bottom-buttons {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  .game-card { width: min(300px, calc(100vw - 24px)); }
+  .game-thumb {
+    width: min(256px, calc(100vw - 48px));
+    height: min(256px, calc(100vw - 48px));
+  }
+  #popup-box {
+    width: calc(100vw - 24px);
+    padding: 16px;
+  }
+  .popup-btn {
+    min-height: 50px;
+    font-size: 0.88em;
+  }
+  #info-popup-box { width: calc(100vw - 24px); }
+}
+
+@media (max-height: 700px) and (min-width: 761px) {
+  .main { margin-top: 45px; }
+  .main h1 { margin-top: 10px; }
+  .summary { margin-top: 12px; }
+  .hero-pills { margin-top: 14px; }
+  .big-buttons { margin-top: 24px; }
+  .bottom-buttons {
+    margin-top: 55px;
+    margin-bottom: 55px;
+  }
+}
+
 /* RESPONSIVE */
 @media (max-width: 1180px) {
   .center {
@@ -744,7 +896,7 @@ button, a {
 <!-- NAVBAR -->
 <div class="navbar">
   <div class="left">
-    <div class="logo">Secret Game Site</div>
+    <div class="logo">Game Site</div>
     <div class="datetime" id="datetime">Loading...</div>
   </div>
 
@@ -782,7 +934,7 @@ button, a {
     <span>⚡ Fast</span>
     <span>🎮 Games</span>
     <span>🛠 Tools</span>
-    <span>🔒 Secure</span>
+    <span>🔒 Low-key</span>
   </div>
 
   <div class="big-buttons">
@@ -821,7 +973,7 @@ button, a {
 
     <!-- Retrobowl -->
     <div class="game-card">
-      <div class="game-thumb" style="background-image: url('Img/retrobowl.png');"></div>
+      <div class="game-thumb" style="background-image: url('Images/retrobowl.png');"></div>
       <div class="game-name">Retrobowl</div>
       <div class="game-bar">
         <button class="game-play" onclick="openPlayPopup('Games/Retrobowl.html')">▶ Play</button>
