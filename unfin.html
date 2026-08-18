@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SGS • Under Construction</title>
+
+<link rel="icon" type="image/png" href="Images/favicon.png">
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: "Segoe UI", Arial, sans-serif;
+  background:
+    radial-gradient(circle at 50% 45%, rgba(255, 0, 0, 0.10), transparent 34%),
+    #080808;
+  color: #fff;
+  overflow-x: hidden;
+}
+
+/* TOP BAR */
+.navbar {
+  min-height: 58px;
+  display: flex;
+  align-items: center;
+  background: linear-gradient(90deg, #ff0000, #660000);
+  box-shadow: 0 0 20px #ff0000;
+  padding: 12px 20px;
+}
+
+.logo {
+  font-size: 1.5em;
+  font-weight: 800;
+  text-shadow: 0 0 10px rgba(255, 0, 0, 0.65);
+}
+
+/* LEFT AD */
+.site-ad-left {
+  position: fixed;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 160px;
+  height: 625px;
+  margin: 0;
+  padding: 0;
+  z-index: 5000;
+  overflow: hidden;
+  line-height: 0;
+  text-align: center;
+}
+
+.site-ad-left .ad-label {
+  display: block;
+  width: 160px;
+  height: 25px;
+  padding: 5px 2px;
+  color: #888;
+  background: #080808;
+  font-size: 10px;
+  line-height: 15px;
+  font-family: "Segoe UI", Arial, sans-serif;
+  white-space: nowrap;
+}
+
+.site-ad-left iframe {
+  display: block;
+  width: 160px !important;
+  height: 600px !important;
+  max-width: none;
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+/* PAGE */
+.page {
+  min-height: calc(100vh - 58px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 50px 190px 60px 190px;
+  position: relative;
+}
+
+.card {
+  width: min(680px, 90vw);
+  padding: 42px 38px 38px;
+  background: linear-gradient(180deg, #151515, #0f0f0f);
+  border: 2px solid #ff1111;
+  border-radius: 16px;
+  box-shadow:
+    0 0 25px rgba(255, 0, 0, 0.55),
+    0 0 70px rgba(255, 0, 0, 0.12);
+  animation: cardIn 0.7s ease both;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 7px 13px;
+  border: 1px solid #5a1111;
+  border-radius: 999px;
+  background: #180909;
+  color: #ff6b6b;
+  font-size: 0.75em;
+  font-weight: 800;
+  letter-spacing: 1.8px;
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #ff2222;
+  box-shadow: 0 0 10px #ff0000;
+  animation: blink 1.4s ease-in-out infinite;
+}
+
+h1 {
+  margin: 0 0 14px;
+  font-size: clamp(2.1em, 6vw, 3.5em);
+  color: #fff;
+  text-shadow:
+    0 0 12px rgba(255, 255, 255, 0.18),
+    0 0 25px rgba(255, 0, 0, 0.55);
+}
+
+.message {
+  margin: 0 auto;
+  max-width: 560px;
+  color: #c7c7c7;
+  font-size: 1.08em;
+  line-height: 1.7;
+}
+
+.home-btn {
+  display: inline-block;
+  margin-top: 28px;
+  padding: 13px 28px;
+  border: 2px solid #ff0000;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #250000, #111);
+  color: #fff;
+  font-size: 1em;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 0 16px rgba(255, 0, 0, 0.45);
+  transition: 0.25s ease;
+}
+
+.home-btn:hover {
+  transform: translateY(-2px) scale(1.03);
+  background: #330000;
+  box-shadow: 0 0 24px rgba(255, 0, 0, 0.7);
+}
+
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+/* RESPONSIVE */
+@media (max-width: 1200px) {
+  .site-ad-left {
+    display: none;
+  }
+
+  .page {
+    padding: 40px 20px 50px;
+  }
+}
+
+@media (max-width: 560px) {
+  .navbar {
+    padding: 10px 14px;
+  }
+
+  .logo {
+    font-size: 1.25em;
+  }
+
+  .page {
+    min-height: calc(100vh - 54px);
+    padding: 24px 12px 40px;
+  }
+
+  .card {
+    width: min(680px, calc(100vw - 24px));
+    padding: 32px 20px 28px;
+    border-radius: 13px;
+  }
+
+  .message {
+    font-size: 0.98em;
+  }
+
+  .home-btn {
+    width: 100%;
+    max-width: 280px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- LEFT SIDE AD -->
+<div class="site-ad-left" aria-label="Advertisement">
+  <div class="ad-label">We use ads to keep our site free!</div>
+  <script>
+    atOptions = {
+      'key' : 'ce22089231487568bb823d6480e5026d',
+      'format' : 'iframe',
+      'height' : 600,
+      'width' : 160,
+      'params' : {}
+    };
+  </script>
+  <script src="https://www.highperformanceformat.com/ce22089231487568bb823d6480e5026d/invoke.js"></script>
+</div>
+
+<!-- TOP BAR -->
+<header class="navbar">
+  <div class="logo">Secret Game Site</div>
+</header>
+
+<!-- PAGE -->
+<main class="page">
+  <section class="card">
+    <div class="badge">
+      <span class="dot"></span>
+      SG​S • UNDER CONSTRUCTION
+    </div>
+
+    <h1>Uh Oh!</h1>
+
+    <p class="message">
+      This page isn't finished yet! Please come back later.
+    </p>
+
+    <a class="home-btn" href="index.html">← Back to Home</a>
+  </section>
+</main>
+
+</body>
+</html>
