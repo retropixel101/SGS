@@ -658,6 +658,34 @@ button, a {
 }
 
 
+
+/* LEFT-SIDE AD */
+.site-ad-left {
+  position: fixed;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 160px;
+  height: 600px;
+  margin: 0;
+  padding: 0;
+  z-index: 5000;
+  overflow: hidden;
+  line-height: 0;
+}
+.site-ad-left iframe {
+  display: block;
+  width: 160px !important;
+  height: 600px !important;
+  max-width: none;
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+@media (max-width: 1200px) {
+  .site-ad-left { display: none; }
+}
+
 /* UNIVERSAL RESPONSIVE FIT */
 img, video, iframe { max-width: 100%; }
 body { min-width: 0; }
@@ -892,6 +920,20 @@ body { min-width: 0; }
 </head>
 
 <body>
+<!-- LEFT SIDE AD -->
+<div class="site-ad-left" aria-label="Advertisement">
+  <script>
+    atOptions = {
+      'key' : 'ce22089231487568bb823d6480e5026d',
+      'format' : 'iframe',
+      'height' : 600,
+      'width' : 160,
+      'params' : {}
+    };
+  </script>
+  <script src="https://www.highperformanceformat.com/ce22089231487568bb823d6480e5026d/invoke.js"></script>
+</div>
+
 
 <!-- NAVBAR -->
 <div class="navbar">
@@ -952,12 +994,12 @@ body { min-width: 0; }
   <h2>Open Options</h2>
 
   <div class="bottom-grid">
-    <button class="bottom-btn">Open in Normal Tab</button>
-    <button class="bottom-btn">Open in About:Blank Tab</button>
-    <button class="bottom-btn">Open in Blob Tab</button>
-    <button class="bottom-btn">Open in Normal Window</button>
-    <button class="bottom-btn">Open in About:Blank Window</button>
-    <button class="bottom-btn">Open in Blob Window</button>
+    <button class="bottom-btn" onclick="openSiteTab()">Open In Normal Tab</button>
+    <button class="bottom-btn" onclick="openSiteABTab()">Open In About:Blank Tab</button>
+    <button class="bottom-btn" onclick="openSiteBlobTab()">Open In Blob Tab</button>
+    <button class="bottom-btn" onclick="openSiteWindow()">Open In Normal Window</button>
+    <button class="bottom-btn" onclick="openSiteABWindow()">Open In About:Blank Window</button>
+    <button class="bottom-btn" onclick="openSiteBlobWindow()">Open In Blob Window</button>
   </div>
 </div>
 
@@ -976,7 +1018,7 @@ body { min-width: 0; }
       <div class="game-thumb" style="background-image: url('Images/retrobowl.png');"></div>
       <div class="game-name">Retrobowl</div>
       <div class="game-bar">
-        <button class="game-play" onclick="openPlayPopup('https://retropixel101.github.io/SGS/')">▶ Play</button>
+        <button class="game-play" onclick="openPlayPopup('Games/Retrobowl.html')">▶ Play</button>
         <button class="game-info" onclick="openInfoPopup('Retrobowl','A retro-style football game.')">ℹ Info</button>
       </div>
     </div>
@@ -1174,6 +1216,94 @@ document.addEventListener("keydown", function(event) {
     closeInfoPopup();
   }
 });
+
+
+/* HOMEPAGE LAUNCH OPTIONS */
+function getSiteURL() {
+  return window.location.href;
+}
+
+function createSiteWrapper(url) {
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <title>SGS</title>
+      <style>
+        html, body {
+          margin: 0;
+          padding: 0;
+          width: 100%;
+          height: 100%;
+          overflow: hidden;
+          background: #000;
+        }
+        iframe {
+          position: fixed;
+          inset: 0;
+          width: 100vw;
+          height: 100vh;
+          border: none;
+          background: #000;
+          display: block;
+        }
+      </style>
+    </head>
+    <body>
+      <iframe src="${url}"></iframe>
+    </body>
+    </html>
+  `;
+}
+
+function openSiteTab() {
+  window.open(getSiteURL(), "_blank");
+}
+
+function openSiteABTab() {
+  const win = window.open("about:blank", "_blank");
+  if (!win) return;
+  win.document.open();
+  win.document.write(createSiteWrapper(getSiteURL()));
+  win.document.close();
+}
+
+function openSiteBlobTab() {
+  const blob = new Blob([createSiteWrapper(getSiteURL())], { type: "text/html" });
+  const url = URL.createObjectURL(blob);
+  window.open(url, "_blank");
+}
+
+function openSiteWindow() {
+  window.open(
+    getSiteURL(),
+    "",
+    "width=1100,height=700,resizable=yes,scrollbars=yes"
+  );
+}
+
+function openSiteABWindow() {
+  const win = window.open(
+    "about:blank",
+    "",
+    "width=1100,height=700,resizable=yes,scrollbars=yes"
+  );
+  if (!win) return;
+  win.document.open();
+  win.document.write(createSiteWrapper(getSiteURL()));
+  win.document.close();
+}
+
+function openSiteBlobWindow() {
+  const blob = new Blob([createSiteWrapper(getSiteURL())], { type: "text/html" });
+  const url = URL.createObjectURL(blob);
+  window.open(
+    url,
+    "",
+    "width=1100,height=700,resizable=yes,scrollbars=yes"
+  );
+}
 
 /* LAUNCH OPTIONS */
 function openTab() {
