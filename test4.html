@@ -5,194 +5,196 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Retro Bowl Diagnostic</title>
 <style>
-*{box-sizing:border-box}
-body{margin:0;background:#080808;color:#eee;font:14px Arial,sans-serif}
-header{background:#e00000;padding:18px 22px}
-h1{margin:0 0 5px;font-size:23px}.sub{opacity:.88}
-main{max-width:1100px;margin:20px auto;padding:0 16px}
-.panel{background:#151515;border:1px solid #333;border-radius:12px;padding:16px;margin-bottom:16px}
-button{background:#191919;color:#fff;border:1px solid #e33;border-radius:7px;padding:10px 14px;cursor:pointer}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.test{background:#101010;border:1px solid #333;border-radius:9px;padding:12px;min-height:76px}
-.ok{color:#45df91}.bad{color:#ff5050}.warn{color:#f1c05b}.muted{color:#aaa}
-#log{white-space:pre-wrap;background:#050505;border:1px solid #333;border-radius:8px;padding:12px;max-height:260px;overflow:auto;font:12px Consolas,monospace}
-#game{display:none;width:960px;height:540px;max-width:100%;background:#000;border:1px solid #444}
-@media(max-width:700px){.grid{grid-template-columns:1fr}}
+  html,body{margin:0;background:#090909;color:#eee;font-family:Arial,sans-serif}
+  #top{padding:14px;border-bottom:1px solid #333;position:sticky;top:0;background:#111;z-index:10}
+  button{padding:9px 13px;margin:4px;border:1px solid #555;border-radius:6px;background:#222;color:#fff;cursor:pointer}
+  button:hover{background:#333}
+  #status{margin:10px 4px;font-weight:bold}
+  #checks{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:8px;padding:10px}
+  .check{padding:10px;background:#151515;border:1px solid #333;border-radius:6px}
+  .ok{border-color:#247a3b}.bad{border-color:#8a2525}.warn{border-color:#806b22}
+  .label{font-weight:bold}.detail{font-size:12px;color:#bbb;margin-top:5px;word-break:break-word}
+  #gameWrap{margin:10px;padding:10px;background:#000;border:1px solid #333;text-align:center}
+  #canvas{width:min(960px,100%);height:auto;background:#000;display:block;margin:auto}
+  #log{margin:10px;padding:10px;background:#050505;border:1px solid #333;white-space:pre-wrap;font:12px monospace;max-height:300px;overflow:auto}
 </style>
 </head>
 <body>
-<header>
-<h1>Retro Bowl / GameMaker HTML5 Diagnostic</h1>
-<div class="sub">Checks the exact runtime pieces used by the supplied page. It does not modify the game.</div>
-</header>
-
-<main>
-<div class="panel">
-<button onclick="runDiagnostic()">Run diagnostic</button>
-<button onclick="loadGame()">Attempt to load Retro Bowl</button>
-<button onclick="clearLog()">Clear</button>
-<div id="summary" class="muted" style="margin-top:12px"></div>
+<div id="top">
+  <button id="diagBtn">Run diagnostics</button>
+  <button id="gameBtn">Load Retro Bowl</button>
+  <button id="clearBtn">Clear log</button>
+  <div id="status">Ready.</div>
 </div>
 
-<div class="panel">
-<div class="grid">
-<div class="test"><b>GameMaker script</b><div id="gm">Not tested</div></div>
-<div class="test"><b>GameMaker_Init</b><div id="init">Not tested</div></div>
-<div class="test"><b>Canvas 960×540</b><div id="canvas">Not tested</div></div>
-<div class="test"><b>Canvas 2D rendering</b><div id="ctx2d">Not tested</div></div>
-<div class="test"><b>WebGL</b><div id="webgl">Not tested</div></div>
-<div class="test"><b>requestAnimationFrame</b><div id="raf">Not tested</div></div>
-<div class="test"><b>Keyboard input</b><div id="keys">Not tested</div></div>
-<div class="test"><b>Game asset base URL</b><div id="base">Not tested</div></div>
-<div class="test"><b>Splash asset</b><div id="splash">Not tested</div></div>
-<div class="test"><b>RetroBowl.js response</b><div id="scriptload">Not tested</div></div>
-</div>
+<div id="checks"></div>
+
+<div id="gameWrap">
+  <canvas id="canvas" width="960" height="540">
+    Canvas fallback text.
+  </canvas>
 </div>
 
-<div class="panel">
-<h3 style="margin-top:0">Game attempt</h3>
-<canvas id="game" width="960" height="540"></canvas>
-<div id="gameStatus" class="muted">The game is not loaded yet.</div>
+<div id="log">Diagnostic log:
 </div>
-
-<div class="panel">
-<h3 style="margin-top:0">Diagnostic log</h3>
-<div id="log"></div>
-</div>
-</main>
 
 <script>
-const GAME_BASE =
-'https://cdn.jsdelivr.net/gh/selenite-cc/selenite-old@9c743188888af0986c8c7b293dbac8f9e421a4ee/retrobowl/';
+(function () {
+  "use strict";
 
-const GAME_SCRIPT = GAME_BASE + 'html5game/RetroBowl.js?WAEAC=1633155445';
-const SPLASH = GAME_BASE + 'html5game/splash.png';
+  var CDN = "https://cdn.jsdelivr.net/gh/selenite-cc/selenite-old@9c743188888af0986c8c7b293dbac8f9e421a4ee/retrobowl/";
+  var GAME = CDN + "html5game/RetroBowl.js?WAEAC=1633155445";
+  var SPLASH = CDN + "html5game/splash.png";
+  var checks = document.getElementById("checks");
+  var logBox = document.getElementById("log");
+  var status = document.getElementById("status");
+  var gameLoaded = false;
 
-function setResult(id, state, text){
-  const e=document.getElementById(id);
-  e.className=state;
-  e.textContent=(state==='ok'?'PASS':state==='bad'?'FAIL':state==='warn'?'WARN':'INFO')+' — '+text;
-}
-function log(x){
-  const l=document.getElementById('log');
-  l.textContent += '['+new Date().toLocaleTimeString()+'] '+x+'\n';
-  l.scrollTop=l.scrollHeight;
-}
-function clearLog(){
-  document.getElementById('log').textContent='';
-  document.getElementById('summary').textContent='';
-}
-function testCanvas(){
-  const c=document.createElement('canvas');
-  c.width=960;c.height=540;
-  const ctx=c.getContext('2d');
-  setResult('canvas',c.width===960&&c.height===540?'ok':'bad',
-    c.width+'×'+c.height+' canvas element created.'');
-  if(ctx){
-    ctx.fillStyle='#19a974';ctx.fillRect(10,10,80,50);
-    const p=ctx.getImageData(20,20,1,1).data;
-    setResult('ctx2d',p[1]>0?'ok':'bad','2D canvas drawing test completed.');
-  }else setResult('ctx2d','bad','2D context could not be created.');
-}
-function testGraphics(){
-  const c=document.createElement('canvas');
-  let gl=null;
-  try{gl=c.getContext('webgl')||c.getContext('experimental-webgl')}catch(e){}
-  setResult('webgl',gl?'ok':'warn',gl?'WebGL context created.':'WebGL context unavailable.');
-}
-function testRAF(){
-  let called=false;
-  requestAnimationFrame(()=>called=true);
-  setTimeout(()=>{
-    setResult('raf',called?'ok':'bad',
-      called?'Animation frame callback executed.':'Animation frame callback did not execute.');
-  },100);
-}
-function testKeyboard(){
-  setResult('keys','warn','Waiting for a key: click this page and press any key.');
-  window.addEventListener('keydown',()=>{
-    setResult('keys','ok','Keyboard event received.');
-  },{once:true});
-}
-async function testResources(){
-  setResult('base','ok','Expected base: '+GAME_BASE);
-  const img=new Image();
-  img.onload=()=>setResult('splash','ok','Splash PNG loaded successfully.');
-  img.onerror=()=>setResult('splash','bad','Splash PNG failed to load.');
-  img.src=SPLASH;
-
-  try{
-    const r=await fetch(GAME_SCRIPT,{method:'GET',cache:'no-store'});
-    setResult('scriptload',r.ok?'ok':'bad',
-      'HTTP '+r.status+' '+r.statusText+'; '+r.type);
-    log('RetroBowl.js fetch: '+r.status+' '+r.statusText);
-  }catch(e){
-    setResult('scriptload','bad','Fetch failed: '+e.message);
-    log('RetroBowl.js fetch exception: '+e.message);
+  function log(msg) {
+    logBox.textContent += new Date().toLocaleTimeString() + "  " + msg + "\n";
+    logBox.scrollTop = logBox.scrollHeight;
   }
-}
-function runDiagnostic(){
-  clearLog();
-  log('Starting diagnostic.');
-  testCanvas();
-  testGraphics();
-  testRAF();
-  testKeyboard();
-  testResources();
 
-  setResult('gm','warn','Not loaded yet; diagnostic page has not injected the game script.');
-  setResult('init','warn','Will be checked after the game script is loaded.');
-  document.getElementById('summary').textContent =
-    'Run complete. Press a key for the keyboard test. Then use “Attempt to load Retro Bowl”.';
-}
-function loadGame(){
-  const canvas=document.getElementById('game');
-  canvas.style.display='block';
-  document.getElementById('gameStatus').textContent='Loading Retro Bowl runtime...';
-  log('Attempting to load '+GAME_SCRIPT);
+  function check(name, state, detail) {
+    var box = document.createElement("div");
+    box.className = "check " + state;
+    var label = document.createElement("div");
+    label.className = "label";
+    label.textContent = name + ": " + state.toUpperCase();
+    var d = document.createElement("div");
+    d.className = "detail";
+    d.textContent = detail || "";
+    box.appendChild(label);
+    box.appendChild(d);
+    checks.appendChild(box);
+  }
 
-  window.addEventListener('error',e=>{
-    log('WINDOW ERROR: '+(e.message||'unknown error')+
-        ' at '+(e.filename||'unknown file')+':'+(e.lineno||'?'));
-  });
-  window.addEventListener('unhandledrejection',e=>{
-    log('UNHANDLED PROMISE: '+(e.reason||'unknown reason'));
-  });
+  function clearChecks() {
+    checks.textContent = "";
+  }
 
-  const s=document.createElement('script');
-  s.type='text/javascript';
-  s.src=GAME_SCRIPT;
-  s.onload=()=>{
-    log('RetroBowl.js script tag loaded.');
-    setResult('gm','ok','RetroBowl.js executed/loaded as a script.');
-    if(typeof window.GameMaker_Init==='function'){
-      setResult('init','ok','GameMaker_Init exists.');
-      document.getElementById('gameStatus').textContent='GameMaker_Init found. Starting game...';
-      try{
-        window.GameMaker_Init();
-        log('GameMaker_Init() called.');
-        setTimeout(()=>{
-          document.getElementById('gameStatus').textContent =
-            'Game initialization was attempted. If the canvas stays black, check the log above.';
-        },1500);
-      }catch(e){
-        setResult('init','bad','GameMaker_Init threw: '+e.message);
-        log('GameMaker_Init exception: '+e.stack);
-        document.getElementById('gameStatus').textContent='GameMaker_Init threw an exception.';
-      }
-    }else{
-      setResult('init','bad','GameMaker_Init is not defined after script load.');
-      document.getElementById('gameStatus').textContent='RetroBowl.js loaded but GameMaker_Init was not found.';
+  window.addEventListener("error", function (e) {
+    var target = e.target;
+    if (target && target !== window && target.tagName) {
+      log("RESOURCE ERROR: " + target.tagName + " " + (target.src || target.href || ""));
+    } else {
+      log("JS ERROR: " + e.message + " @ " + e.filename + ":" + e.lineno + ":" + e.colno);
     }
-  };
-  s.onerror=()=>{
-    setResult('gm','bad','RetroBowl.js script failed to load/execute.');
-    document.getElementById('gameStatus').textContent='RetroBowl.js failed to load.';
-    log('SCRIPT ERROR: RetroBowl.js failed to load.');
-  };
-  document.head.appendChild(s);
-}
-runDiagnostic();
+  }, true);
+
+  window.addEventListener("unhandledrejection", function (e) {
+    log("UNHANDLED PROMISE: " + String(e.reason));
+  });
+
+  function runDiagnostics() {
+    clearChecks();
+    status.textContent = "Running diagnostics...";
+    log("===== diagnostics started =====");
+
+    check("JavaScript", "ok", "This diagnostic script is executing.");
+
+    var c = document.getElementById("canvas");
+    check("Canvas element", c ? "ok" : "bad",
+      c ? "Found #canvas, size " + c.width + "x" + c.height + "." : "Could not find #canvas.");
+
+    var ctx = null;
+    try { ctx = c.getContext("2d"); } catch (e) { log("2D context exception: " + e); }
+    check("Canvas 2D", ctx ? "ok" : "bad",
+      ctx ? "2D context was created successfully." : "2D context could not be created.");
+
+    var gl = null;
+    try {
+      gl = c.getContext("webgl") || c.getContext("experimental-webgl");
+    } catch (e) { log("WebGL exception: " + e); }
+    check("WebGL", gl ? "ok" : "warn",
+      gl ? "WebGL context was created." : "WebGL context unavailable (not necessarily fatal for this game).");
+
+    check("requestAnimationFrame", typeof window.requestAnimationFrame === "function" ? "ok" : "bad",
+      typeof window.requestAnimationFrame === "function" ? "API is available." : "API is missing.");
+
+    check("Keyboard API", typeof window.addEventListener === "function" ? "ok" : "bad",
+      "Event listener API is available.");
+
+    var img = new Image();
+    img.onload = function () {
+      check("splash.png", "ok", "Loaded successfully: " + img.naturalWidth + "x" + img.naturalHeight);
+      log("splash.png loaded.");
+    };
+    img.onerror = function () {
+      check("splash.png", "bad", "The browser could not load the CDN image.");
+      log("splash.png FAILED: " + SPLASH);
+    };
+    img.src = SPLASH;
+
+    var base = document.createElement("base");
+    base.href = CDN;
+    check("Game CDN", "ok", "Game assets are expected at the Selenite CDN URL.");
+
+    check("GameMaker_Init before load",
+      typeof window.GameMaker_Init === "function" ? "ok" : "warn",
+      typeof window.GameMaker_Init === "function"
+        ? "Already defined."
+        : "Not defined yet; this is normal before RetroBowl.js loads.");
+
+    status.textContent = "Diagnostics finished. Check the results above.";
+    log("===== diagnostics finished =====");
+  }
+
+  function loadGame() {
+    if (gameLoaded) {
+      log("RetroBowl.js was already requested.");
+      return;
+    }
+
+    status.textContent = "Loading RetroBowl.js...";
+    log("Requesting: " + GAME);
+
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src = GAME;
+
+    script.onload = function () {
+      gameLoaded = true;
+      log("RetroBowl.js LOAD EVENT fired.");
+      check("RetroBowl.js", "ok", "The browser reported the script loaded.");
+      check("GameMaker_Init after load",
+        typeof window.GameMaker_Init === "function" ? "ok" : "bad",
+        typeof window.GameMaker_Init === "function"
+          ? "GameMaker_Init exists."
+          : "Script loaded but GameMaker_Init was not created.");
+
+      if (typeof window.GameMaker_Init === "function") {
+        log("Calling GameMaker_Init()...");
+        try {
+          window.GameMaker_Init();
+          status.textContent = "GameMaker_Init() was called. Watch the canvas and log.";
+          log("GameMaker_Init() returned without throwing.");
+        } catch (e) {
+          status.textContent = "GameMaker_Init() THREW an error.";
+          log("GameMaker_Init EXCEPTION: " + (e && e.stack ? e.stack : e));
+          check("GameMaker_Init execution", "bad", String(e));
+        }
+      }
+    };
+
+    script.onerror = function () {
+      status.textContent = "RetroBowl.js FAILED TO LOAD.";
+      log("RetroBowl.js ERROR EVENT fired.");
+      check("RetroBowl.js", "bad",
+        "The browser refused or failed to load the game script. This is the most important result.");
+    };
+
+    document.head.appendChild(script);
+  }
+
+  document.getElementById("diagBtn").addEventListener("click", runDiagnostics);
+  document.getElementById("gameBtn").addEventListener("click", loadGame);
+  document.getElementById("clearBtn").addEventListener("click", function () {
+    logBox.textContent = "Diagnostic log:\n";
+  });
+
+  runDiagnostics();
+})();
 </script>
 </body>
 </html>
