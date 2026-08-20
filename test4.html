@@ -87,7 +87,7 @@ function testCanvas(){
   c.width=960;c.height=540;
   const ctx=c.getContext('2d');
   setResult('canvas',c.width===960&&c.height===540?'ok':'bad',
-    c.width+'×'+c.height canvas element created.');
+    c.width+'×'+c.height+' canvas element created.'');
   if(ctx){
     ctx.fillStyle='#19a974';ctx.fillRect(10,10,80,50);
     const p=ctx.getImageData(20,20,1,1).data;
@@ -109,9 +109,6 @@ function testRAF(){
   },100);
 }
 function testKeyboard(){
-  let received=false;
-  const fn=()=>{received=true};
-  window.addEventListener('keydown',fn,{once:true});
   setResult('keys','warn','Waiting for a key: click this page and press any key.');
   window.addEventListener('keydown',()=>{
     setResult('keys','ok','Keyboard event received.');
