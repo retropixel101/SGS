@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SGS HTML Loading Diagnostic 2</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#090909;color:#eee;font:14px Arial,sans-serif}
+header{background:#e00000;padding:18px 22px;box-shadow:0 3px 18px #e0000066}
+h1{margin:0 0 5px;font-size:23px}.sub{opacity:.85}
+main{max-width:1100px;margin:22px auto;padding:0 16px}
+.panel{background:#151515;border:1px solid #333;border-radius:12px;padding:16px;margin-bottom:16px}
+button{background:#181818;color:#fff;border:1px solid #f22;border-radius:7px;padding:9px 13px;cursor:pointer}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.test{background:#101010;border:1px solid #333;border-radius:9px;padding:12px}
+.ok{color:#45df91}.bad{color:#ff5252}.warn{color:#f0c15a}
+iframe{width:100%;height:170px;background:#000;border:1px solid #444;border-radius:7px;margin-top:8px}
+@media(max-width:700px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+<h1>SGS HTML Loading Diagnostic 2</h1>
+<div class="sub">Controlled tests for determining which browser capability or policy prevents a game document from loading.</div>
+</header>
+<main>
+<div class="panel">
+<button onclick="run()">Run diagnostic</button>
+<button onclick="location.reload()">Reset</button>
+<div id="summary" style="margin-top:12px"></div>
+</div>
+
+<div class="grid">
+<div class="test"><b>1. Same-document iframe</b><div id="r1"></div>
+<iframe id="same" title="same document"></iframe></div>
+
+<div class="test"><b>2. External HTTPS iframe</b><div id="r2"></div>
+<iframe id="external" title="external document" src="https://example.com/"></iframe></div>
+
+<div class="test"><b>3. Blob HTML document</b><div id="r3"></div>
+<iframe id="blob" title="blob document"></iframe></div>
+
+<div class="test"><b>4. Data HTML document</b><div id="r4"></div>
+<iframe id="data" title="data document"></iframe></div>
+
+<div class="test"><b>5. External JavaScript</b><div id="r5"></div></div>
+
+<div class="test"><b>6. Dynamic script execution</b><div id="r6"></div></div>
+</div>
+
+<div class="panel">
+<b>What the results mean</b>
+<ul>
+<li>If <b>same-document</b> works but <b>external HTTPS iframe</b> fails, investigate URL/domain filtering or frame navigation policy.</li>
+<li>If external iframe works but <b>blob/data</b> fails, investigate restrictions on special URL schemes.</li>
+<li>If all iframe tests work but external JavaScript fails, investigate script/content filtering.</li>
+<li>If all of these pass, the game's own JavaScript/runtime is the next thing to inspect.</li>
+</ul>
+</div>
+</main>
+
+<script>
+function result(id, ok, text, warn=false){
+ const e=document.getElementById(id);
+ e.innerHTML='<span class="'+(warn?'warn':ok?'ok':'bad')+'">'+(ok?'PASS':warn?'WARN':'FAIL')+'</span> — '+text;
+}
+
+function run(){
+ const same=document.getElementById('same');
+ same.srcdoc='<!doctype html><html><body style="margin:0;background:#151515;color:#fff;font:18px Arial;display:grid;place-items:center;height:100vh">Same-document HTML loaded.</body></html>';
+ same.onload=()=>result('r1',true,'iframe navigation works.');
+
+ const external=document.getElementById('external');
+ external.onload=()=>result('r2',true,'External HTTPS HTML loaded.');
+ external.onerror=()=>result('r2',false,'External iframe navigation reported an error.');
+
+ try{
+   const b=new Blob(['<!doctype html><html><body style="background:#151515;color:white;font:18px Arial">Blob HTML loaded.</body></html>'],{type:'text/html'});
+   const u=URL.createObjectURL(b);
+   const f=document.getElementById('blob');
+   f.onload=()=>{result('r3',true,'Blob HTML loaded.');URL.revokeObjectURL(u)};
+   f.src=u;
+ }catch(e){result('r3',false,'Blob document could not be created.');}
+
+ try{
+   const d='data:text/html,<body style="background:%23151515;color:white;font:18px Arial">Data HTML loaded.</body>';
+   const f=document.getElementById('data');
+   f.onload=()=>result('r4',true,'Data HTML loaded.');
+   f.src=d;
+ }catch(e){result('r4',false,'Data document could not be created.');}
+
+ const s=document.createElement('script');
+ s.src='https://cdnjs.cloudflare.com/ajax/libs/uuid/11.0.3/uuid.min.js';
+ s.onload=()=>result('r5',true,'External JavaScript resource loaded.');
+ s.onerror=()=>result('r5',false,'External JavaScript resource was blocked or unavailable.');
+ document.head.appendChild(s);
+
+ try{
+   const fn=new Function('return 2+2');
+   result('r6',fn()===4,'Dynamically generated JavaScript executed.');
+ }catch(e){result('r6',false,'Dynamic script execution was blocked.');}
+
+ document.getElementById('summary').innerHTML='<span class="warn">Diagnostic complete. Compare the individual tests rather than treating one failure as proof of a specific policy.</span>';
+}
+run();
+</script>
+</body>
+</html>
