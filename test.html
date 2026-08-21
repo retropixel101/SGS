@@ -1,34 +1,288 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game</title>
-
-    <style>
-        html, body {
-            margin: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            overflow: hidden;
-        }
-
-        iframe {
-            display: block;
-            width: 100%;
-            height: 100%;
-            border: 0;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SGS Game Loading Diagnostic</title>
+<style>
+    * { box-sizing: border-box; }
+    html, body {
+        margin: 0;
+        min-height: 100%;
+        background: #0b0b0b;
+        color: #eee;
+        font-family: Arial, sans-serif;
+    }
+    body { padding: 18px; }
+    h1 { margin: 0 0 6px; font-size: 24px; }
+    .sub { color: #aaa; margin-bottom: 16px; }
+    .controls {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+    }
+    input {
+        flex: 1 1 500px;
+        min-width: 240px;
+        padding: 11px;
+        border: 1px solid #444;
+        border-radius: 6px;
+        background: #151515;
+        color: white;
+    }
+    button {
+        padding: 10px 14px;
+        border: 0;
+        border-radius: 6px;
+        background: #e00000;
+        color: white;
+        cursor: pointer;
+        font-weight: bold;
+    }
+    button:hover { background: #ff2222; }
+    .grid {
+        display: grid;
+        grid-template-columns: minmax(0, 2fr) minmax(300px, 1fr);
+        gap: 12px;
+    }
+    .panel {
+        background: #111;
+        border: 1px solid #292929;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    .title {
+        padding: 9px 12px;
+        background: #171717;
+        border-bottom: 1px solid #292929;
+        font-weight: bold;
+    }
+    #frameWrap {
+        height: 620px;
+        background: #222;
+    }
+    iframe {
+        width: 100%;
+        height: 100%;
+        display: block;
+        border: 0;
+        background: #222;
+    }
+    #results {
+        padding: 10px;
+        max-height: 620px;
+        overflow: auto;
+    }
+    .row {
+        padding: 9px 10px;
+        margin-bottom: 7px;
+        border-radius: 5px;
+        background: #181818;
+        border-left: 4px solid #777;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+    }
+    .ok { border-left-color: #35c759; }
+    .warn { border-left-color: #ffb020; }
+    .bad { border-left-color: #ff3b30; }
+    .info { border-left-color: #4da3ff; }
+    .small { color: #999; font-size: 12px; }
+    code {
+        color: #ddd;
+        background: #202020;
+        padding: 2px 4px;
+        border-radius: 3px;
+    }
+    @media (max-width: 900px) {
+        .grid { grid-template-columns: 1fr; }
+        #frameWrap { height: 520px; }
+    }
+</style>
 </head>
-
 <body>
 
-    <iframe
-        src="HTML/ESCR.html"
-        allowfullscreen>
-    </iframe>
+<h1>SGS Game Loading Diagnostic</h1>
+<div class="sub">
+    Diagnostic only — this does not bypass network or school restrictions.
+    It checks whether the browser can load and initialize the supplied game.
+</div>
+
+<div class="controls">
+    <input id="url" type="text"
+        placeholder="HTML/ESCR.html"
+        value="">
+    <button id="loadBtn">Load Game</button>
+    <button id="testBtn">Run Tests</button>
+    <button id="clearBtn">Clear Log</button>
+</div>
+
+<div class="grid">
+    <section class="panel">
+        <div class="title">Game</div>
+        <div id="frameWrap">
+            <iframe id="gameFrame"
+                title="Game diagnostic frame"
+                allowfullscreen></iframe>
+        </div>
+    </section>
+
+    <section class="panel">
+        <div class="title">Diagnostic Results</div>
+        <div id="results"></div>
+    </section>
+</div>
+
+<script>
+"use strict";
+
+const frame = document.getElementById("gameFrame");
+const urlBox = document.getElementById("url");
+const results = document.getElementById("results");
+
+let loadStarted = 0;
+let loadFinished = false;
+let lastURL = "";
+
+function log(type, message) {
+    const div = document.createElement("div");
+    div.className = "row " + type;
+    div.textContent = message;
+    results.appendChild(div);
+    results.scrollTop = results.scrollHeight;
+}
+
+function clearLog() {
+    results.innerHTML = "";
+}
+
+function runBasicTests() {
+    log("info", "=== Browser capability tests ===");
+
+    const canvas = document.createElement("canvas");
+    log(canvas.getContext("2d") ? "ok" : "bad",
+        "Canvas 2D: " + (canvas.getContext("2d") ? "AVAILABLE" : "FAILED"));
+
+    let gl = null;
+    try {
+        gl = canvas.getContext("webgl2") ||
+             canvas.getContext("webgl") ||
+             canvas.getContext("experimental-webgl");
+    } catch (e) {}
+
+    log(gl ? "ok" : "bad",
+        "WebGL: " + (gl ? "AVAILABLE" : "FAILED"));
+
+    log(typeof WebAssembly !== "undefined" ? "ok" : "warn",
+        "WebAssembly: " + (typeof WebAssembly !== "undefined" ? "AVAILABLE" : "NOT AVAILABLE"));
+
+    log("info", "User agent: " + navigator.userAgent);
+    log("info", "Online status: " + (navigator.onLine ? "ONLINE" : "OFFLINE"));
+    log("info", "Viewport: " + innerWidth + " × " + innerHeight);
+}
+
+function loadGame() {
+    const url = urlBox.value.trim();
+
+    if (!url) {
+        log("warn", "Enter a game URL first.");
+        return;
+    }
+
+    clearLog();
+    loadStarted = performance.now();
+    loadFinished = false;
+    lastURL = url;
+
+    log("info", "Loading: " + url);
+    log("info", "Waiting for iframe load event...");
+
+    frame.src = url;
+}
+
+frame.addEventListener("load", () => {
+    loadFinished = true;
+    const seconds = ((performance.now() - loadStarted) / 1000).toFixed(2);
+
+    log("ok", "Iframe load event fired after " + seconds + " seconds.");
+    log("info",
+        "This proves the iframe document itself reached the browser. " +
+        "It does NOT prove that every game JS/asset request succeeded.");
+
+    try {
+        const doc = frame.contentDocument;
+        if (doc) {
+            log("ok", "Same-origin access: YES.");
+            log("info", "Loaded document title: " + (doc.title || "(none)"));
+
+            const scripts = [...doc.scripts].map(s => s.src || "(inline)");
+            log("info", "Scripts visible to diagnostic: " + scripts.length);
+
+            if (scripts.length) {
+                scripts.forEach(src => log("info", "  script: " + src));
+            }
+        }
+    } catch (e) {
+        log("info",
+            "Same-origin access: NO. This is normal for a cross-origin game. " +
+            "The parent page cannot inspect its internal JS/errors.");
+    }
+});
+
+frame.addEventListener("error", (event) => {
+    log("bad", "Iframe element reported an error.");
+});
+
+window.addEventListener("error", (event) => {
+    const target = event.target;
+
+    if (target && target.tagName) {
+        log("bad",
+            "Resource error in diagnostic page: " +
+            target.tagName +
+            (target.src || target.href ? " → " + (target.src || target.href) : ""));
+    } else {
+        log("bad",
+            "JavaScript error: " +
+            (event.message || "unknown error") +
+            (event.filename ? " | " + event.filename : "") +
+            (event.lineno ? ":" + event.lineno : ""));
+    }
+}, true);
+
+window.addEventListener("unhandledrejection", event => {
+    log("bad",
+        "Unhandled promise rejection: " +
+        (event.reason && event.reason.message
+            ? event.reason.message
+            : String(event.reason)));
+});
+
+document.getElementById("loadBtn").addEventListener("click", loadGame);
+
+document.getElementById("testBtn").addEventListener("click", () => {
+    runBasicTests();
+
+    if (!lastURL) {
+        log("warn", "No game has been loaded yet.");
+        return;
+    }
+
+    if (!loadFinished) {
+        log("warn", "The iframe has not fired its load event yet.");
+    } else {
+        log("ok", "The iframe has fired its load event.");
+    }
+
+    log("info",
+        "If the game is black/grey while these tests pass, " +
+        "the failure is likely inside the game's own resources or initialization.");
+});
+
+document.getElementById("clearBtn").addEventListener("click", clearLog);
+
+runBasicTests();
+</script>
 
 </body>
 </html>
