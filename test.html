@@ -1,106 +1,70 @@
-// =======================================================
-// START: ULTIMATE DIAGNOSTIC TEST SCRIPT
-// This script runs sequentially to prove all dependencies are available.
-// =======================================================
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SGS Embed Test</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#000;color:#fff;font-family:Arial,sans-serif}
+.controls{width:min(1060px,calc(100% - 24px));margin:14px auto 10px;display:flex;gap:8px}
+#gamePath{flex:1;min-width:0;padding:10px 12px;border:1px solid #444;border-radius:6px;background:#151515;color:#fff;outline:none}
+button{padding:10px 14px;border:0;border-radius:6px;background:#e11;color:#fff;font-weight:bold;cursor:pointer}
+button:hover{background:#c00}
+.gameContent,.hero,.wrapper{width:100%}
+.wrapper{margin:0 auto}
+.wrapper center{display:block}
+.gameFrameWrap{width:min(1060px,calc(100% - 24px));height:650px;margin:0 auto;background:#111;overflow:hidden}
+#gameFrame{display:block;width:100%;height:100%;border:0;margin:0;padding:0}
+@media(max-width:700px){.controls{flex-direction:column}.gameFrameWrap{height:70vh}}
+</style>
+</head>
+<body>
+<div class="controls">
+<input id="gamePath" type="text" placeholder="Enter game path or URL">
+<button id="loadButton">Load Game</button>
+<button id="fullscreenButton">Fullscreen</button>
+</div>
 
-async function runDiagnosticTest() {
-    console.log("===========================================");
-    console.log("STARTING WEB GAME DIAGNOSTICS TEST...");
-    let results = {
-        structural: false,
-        dependencies: false,
-        assets: false,
-        execution: false
-    };
+<main class="gameContent" id="gameContent">
+<div class="hero">
+<div class="wrapper">
+<center>
+<div class="gameFrameWrap" id="gameFrameWrap">
+<iframe id="gameFrame" width="1060" height="650"
+src="about:blank" marginwidth="0" marginheight="0"
+hspace="0" vspace="0" frameborder="0" scrolling="no"
+allowfullscreen></iframe>
+</div>
+</center>
+</div>
+</div>
+</main>
 
-    // --- PHASE 1: Structural Integrity Test (HTML/CSS/Paths) ---
-    console.log("\n[Phase 1] Testing Core Structure and CSS Loading...");
-    try {
-        const styleSheet = document.querySelector('link[rel="stylesheet"][href*="style.css"]');
-        if (styleSheet && styleSheet.href !== "about:blank") {
-            console.log("✅ PASS: Basic CSS link found and appears to be resolved.");
-            results.structural = true;
-        } else {
-            console.error("❌ FAIL: Could not find or load core style sheets. Check pathing.");
-        }
-    } catch (e) {
-        console.error(`❌ CRITICAL FAIL: Structure test failed due to an unexpected error: ${e}`);
-    }
+<script>
+const input=document.getElementById("gamePath");
+const frame=document.getElementById("gameFrame");
+const frameWrap=document.getElementById("gameFrameWrap");
 
-    // --- PHASE 2: External Dependency Loading Test (JS Libraries) ---
-    await new Promise(resolve => setTimeout(resolve, 100)); // Wait a moment for any background loads
-    console.log("\n[Phase 2] Testing Major Third-Party Dependencies...");
-    
-    let firebaseReady = typeof firebase !== 'undefined' && firebase.initializeApp;
-    if (firebaseReady) {
-        console.log("✅ PASS: Firebase SDK loaded and initialized successfully.");
-        results.dependencies = true;
-    } else {
-        console.error("❌ FAIL: Firebase SDK failed to load or initialize. Check external scripts/network block.");
-    }
-
-    let erudaReady = window.eruda ? window.eruda.init : false;
-    if (erudaReady) {
-         console.log("✅ PASS: Eruda Developer Tool library loaded successfully.");
-         results.dependencies = true;
-    } else {
-        console.error("❌ FAIL: Eruda tool script failed to load. Check external scripts/network block.");
-    }
-
-
-    // --- PHASE 3: Critical Asset Fetch Test (Network Dependency) ---
-    console.log("\n[Phase 3] Testing Mandatory External Assets (Requires Network Access)...");
-    let testAssets = [
-        { name: "Loading Image", url: "./loading.png" }, // Must be in the root directory
-        { name: "Icon", url: "./icon.png" },             // Must be in the root directory
-        { name: "Logo Asset", url: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Google_logo.svg/1200px-Google_logo.svg.png" } // Use a known, reliable external URL for comparison
-    ];
-
-    let assetsPassed = true;
-    for (const asset of testAssets) {
-        fetch(asset.url).then(() => {
-            console.log(`✅ PASS: Asset '${asset.name}' successfully fetched from ${asset.url}`);
-            results.assets = true;
-        }).catch((error) => {
-            console.error(`❌ FAIL: Network request for '${asset.name}' (${asset.url}) failed. Reason: ${error.message}. This strongly indicates a network/firewall block.`);
-            results.assets = false;
-            assetsPassed = false; // We fail the test if any asset fails
-        });
-    }
-
-    // Wait for all fetch promises to resolve (This is an approximation)
-    await new Promise(resolve => setTimeout(resolve, 3000));
-
-
-    // --- PHASE 4: Game Execution Test ---
-    console.log("\n[Phase 4] Testing Main Game Initialization...");
-    try {
-        // This mimics the start of your game logic execution
-        if (typeof createUnityInstance === 'function') {
-            console.log("✅ PASS: Unity WebGL loader function found and ready to execute.");
-            results.execution = true;
-        } else {
-             throw new Error("createUnityInstance is not defined.");
-        }
-    } catch(e) {
-        console.error(`❌ FAIL: Game execution failed at the start. Check game data/framework paths. Error: ${e.message}`);
-        results.execution = false;
-    }
-
-
-    // --- FINAL REPORT ---
-    console.log("\n===========================================");
-    if (results.structural && results.dependencies && results.assets && results.execution) {
-         console.log("👑 ULTIMATE TEST SUCCESS! All components loaded and executed correctly.");
-         console.log("   CONCLUSION: The code is sound, and the assets are accessible via HTTP.");
-    } else {
-        console.warn("\n🚨 ULTIMATE TEST FAILED! See detailed logs above for failures.");
-        console.log(`   FINAL STATUS: Structural=${results.structural ? '✅' : '❌'}, Dependencies=${results.dependencies ? '✅' : '❌'}, Assets=${results.assets ? '✅' : '❌'}, Execution=${results.execution ? '✅' : '❌'}`);
-    }
-
+function loadGame(){
+  const value=input.value.trim();
+  if(!value){alert("Enter a game path or URL first.");return;}
+  try{
+    frame.src=new URL(value,window.location.href).href;
+  }catch(e){alert("Invalid game path or URL.");}
 }
 
-// Execute the test when all scripts are loaded
-runDiagnosticTest();
+function toggleFullscreen(){
+  if(!document.fullscreenElement){
+    frameWrap.requestFullscreen().catch(()=>alert("Fullscreen was not allowed by the browser."));
+  }else{
+    document.exitFullscreen();
+  }
+}
 
-// =======================================================
+document.getElementById("loadButton").addEventListener("click",loadGame);
+document.getElementById("fullscreenButton").addEventListener("click",toggleFullscreen);
+input.addEventListener("keydown",e=>{if(e.key==="Enter")loadGame();});
+</script>
+</body>
+</html>
