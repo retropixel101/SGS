@@ -41,8 +41,10 @@ body {
   background: linear-gradient(90deg, #ff0000, #660000);
   box-shadow: 0 0 20px #ff0000;
   padding: 9px 18px;
-  position: sticky;
-  top: 0;
+
+  /* NORMAL PAGE POSITION — DOES NOT FOLLOW SCREEN */
+  position: relative;
+  top: auto;
   z-index: 6000;
 }
 
@@ -457,7 +459,9 @@ body {
   display: flex;
 }
 
-/* LAUNCH OPTIONS */
+/* =========================================================
+   LAUNCH OPTIONS
+   ========================================================= */
 
 #popup-box {
   width: min(700px, 95vw);
@@ -497,7 +501,6 @@ body {
   text-shadow: 0 0 12px #ff0000;
 }
 
-/* Only normal + about:blank options remain */
 .launch-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -646,11 +649,6 @@ body {
 
 @media (min-width: 1401px) {
 
-  .navbar {
-    position: sticky;
-    top: 0;
-  }
-
   .navbar .left {
     position: absolute;
     left: 18px;
@@ -684,7 +682,6 @@ body {
 @media (max-width: 1400px) {
 
   .navbar {
-    position: sticky;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1037,11 +1034,6 @@ body {
       Game <span>Vault</span>
     </h1>
 
-    <p>
-      Browse the SGS collection, search for something specific, and jump into
-      your next game without digging through a messy page.
-    </p>
-
   </section>
 
 
@@ -1102,8 +1094,6 @@ body {
 
 <!-- =======================================================
      PLAY / LAUNCH OPTIONS
-     
-     Blob options have been removed.
      ======================================================= -->
 
 <div
@@ -1276,14 +1266,6 @@ const games = [
   },
 
   {
-    name: "Shell Shockers",
-    image: "Img/shellshockers.png",
-    url: "Games/ShellShockers.html",
-    category: "Action",
-    description: "Egg-themed FPS with online multiplayer battles."
-  },
-
-  {
     name: "BitLife",
     image: "Img/bitlife.png",
     url: "Games/BitLife.html",
@@ -1329,7 +1311,6 @@ const gameCount =
 const activeFilterText =
   document.getElementById("active-filter");
 
-
 let selectedCategory = "All";
 let currentGameURL = "";
 
@@ -1358,9 +1339,11 @@ function renderFilters() {
       data-category="${escapeHTML(category)}"
       aria-pressed="${category === selectedCategory}"
     >
-      ${category === "All"
-        ? "All Games"
-        : escapeHTML(category)}
+      ${
+        category === "All"
+          ? "All Games"
+          : escapeHTML(category)
+      }
     </button>
 
   `).join("");
@@ -1672,7 +1655,7 @@ function goHome() {
 function blocked() {
 
   window.location.href =
-    "under_construction.html";
+    "unfin.html";
 
 }
 
@@ -1790,10 +1773,6 @@ document.addEventListener(
    GAME LAUNCHERS
    ========================================================= */
 
-/*
-  Normal Tab
-*/
-
 function openTab() {
 
   window.open(
@@ -1806,9 +1785,9 @@ function openTab() {
 }
 
 
-/*
-  About:Blank wrapper
-*/
+/* =========================================================
+   ABOUT:BLANK WRAPPER
+   ========================================================= */
 
 function wrapper(url) {
 
@@ -1864,9 +1843,9 @@ function wrapper(url) {
 }
 
 
-/*
-  About:Blank Tab
-*/
+/* =========================================================
+   ABOUT:BLANK TAB
+   ========================================================= */
 
 function openABTab() {
 
@@ -1895,9 +1874,9 @@ function openABTab() {
 }
 
 
-/*
-  Normal Window
-*/
+/* =========================================================
+   NORMAL WINDOW
+   ========================================================= */
 
 function openWindow() {
 
@@ -1912,9 +1891,9 @@ function openWindow() {
 }
 
 
-/*
-  About:Blank Window
-*/
+/* =========================================================
+   ABOUT:BLANK WINDOW
+   ========================================================= */
 
 function openABWindow() {
 
