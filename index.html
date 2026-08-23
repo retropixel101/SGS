@@ -687,51 +687,6 @@ button, a {
   font-size: 0.82em;
 }
 
-/* LEFT-SIDE AD */
-.site-ad-left {
-  position: fixed;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 160px;
-  height: 625px;
-  margin: 0;
-  padding: 0;
-  z-index: 5000;
-  overflow: hidden;
-  line-height: 0;
-  text-align: center;
-}
-
-.site-ad-left .ad-label {
-  display: block;
-  width: 160px;
-  height: 25px;
-  padding: 5px 2px;
-  color: #888;
-  background: #0a0a0a;
-  font-size: 10px;
-  line-height: 15px;
-  font-family: 'Segoe UI', Arial, sans-serif;
-  white-space: nowrap;
-}
-
-.site-ad-left iframe {
-  display: block;
-  width: 160px !important;
-  height: 600px !important;
-  max-width: none;
-  border: 0;
-  margin: 0;
-  padding: 0;
-}
-
-@media (max-width: 1200px) {
-  .site-ad-left {
-    display: none;
-  }
-}
-
 /* UNIVERSAL RESPONSIVE FIT */
 img,
 video,
@@ -1006,244 +961,6 @@ body {
   }
 }
 
-/* CHROMEBOOK / SMALL LAPTOP LAYOUT FIX */
-.site-ad-left {
-  position: fixed;
-  left: 0;
-  top: max(58px, calc(58px + (100vh - 683px) / 2));
-  transform: none;
-  width: 160px;
-  height: 625px;
-  margin: 0;
-  padding: 0;
-  z-index: 500;
-}
-
-@media (min-width: 1201px) {
-  .main,
-  .bottom-buttons,
-  .games-section {
-    width: calc(100% - 190px);
-    max-width: 1180px;
-    margin-left: 180px;
-    margin-right: 10px;
-  }
-
-  .main {
-    padding-left: clamp(12px, 2vw, 28px);
-    padding-right: clamp(12px, 2vw, 28px);
-  }
-
-  .bottom-buttons,
-  .games-section {
-    padding-left: 12px;
-    padding-right: 12px;
-  }
-
-  .big-buttons {
-    width: 100%;
-    display: grid;
-    grid-template-columns: repeat(3, minmax(170px, 1fr));
-    gap: 16px;
-  }
-
-  .big-btn {
-    width: 100%;
-    min-width: 0;
-    padding: 16px 14px;
-    font-size: clamp(.95em, 1.1vw, 1.15em);
-  }
-
-  .bottom-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
-@media (max-height: 700px) {
-  .site-ad-left {
-    display: none;
-  }
-}
-
-@media (max-width: 1200px) {
-  .site-ad-left {
-    display: none;
-  }
-
-  .navbar {
-    position: sticky;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    justify-items: center;
-    gap: 9px;
-    padding: 9px 12px;
-  }
-
-  .left {
-    width: 100%;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 5px 12px;
-  }
-
-  .center {
-    position: static;
-    left: auto;
-    transform: none;
-    width: 100%;
-    min-width: 0;
-  }
-
-  .tabs {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-
-  .tab {
-    padding: 7px 10px;
-    font-size: .82em;
-    white-space: nowrap;
-  }
-
-  .main {
-    width: 100%;
-    max-width: 100%;
-    margin: clamp(36px, 7vh, 72px) auto 0;
-    padding-left: clamp(12px, 3vw, 28px);
-    padding-right: clamp(12px, 3vw, 28px);
-  }
-
-  .main h1 {
-    font-size: clamp(2.1rem, 7vw, 3.5rem);
-  }
-
-  .summary {
-    max-width: min(760px, 92vw);
-    font-size: clamp(.95rem, 2vw, 1.08rem);
-    line-height: 1.6;
-  }
-
-  .big-buttons {
-    width: min(100%, 860px);
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 12px;
-    margin: 30px auto 0;
-  }
-
-  .big-btn {
-    width: 100%;
-    min-width: 0;
-    padding: 14px 10px;
-    font-size: clamp(.88rem, 1.7vw, 1.08rem);
-    white-space: normal;
-    transform: none;
-  }
-
-  .big-btn:hover {
-    transform: translateY(-2px);
-  }
-
-  .bottom-buttons,
-  .games-section {
-    width: 100%;
-    max-width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: clamp(12px, 3vw, 28px);
-    padding-right: clamp(12px, 3vw, 28px);
-  }
-
-  .games-grid {
-    grid-template-columns: repeat(auto-fit, minmax(280px, 300px));
-    justify-content: center;
-    gap: 30px 18px;
-  }
-}
-
-@media (max-width: 900px) {
-  .big-buttons {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    width: min(100%, 620px);
-  }
-
-  .bottom-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 620px) {
-  .navbar {
-    padding: 8px 8px;
-  }
-
-  .tabs {
-    gap: 4px;
-  }
-
-  .tab {
-    padding: 6px 8px;
-    font-size: .74em;
-  }
-
-  .main {
-    margin-top: 28px;
-    padding-left: 10px;
-    padding-right: 10px;
-  }
-
-  .hero-badge {
-    font-size: .68em;
-  }
-
-  .main h1 {
-    font-size: clamp(2rem, 11vw, 2.8rem);
-  }
-
-  .summary {
-    font-size: .92rem;
-  }
-
-  .hero-pills {
-    gap: 6px;
-  }
-
-  .big-buttons {
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
-
-  .big-btn {
-    padding: 12px 7px;
-    font-size: .84rem;
-    border-radius: 9px;
-  }
-
-  .bottom-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .game-card {
-    width: min(300px, calc(100vw - 24px));
-  }
-}
-
-@media (hover: none), (max-width: 1200px) {
-  .big-btn:hover,
-  .bottom-btn:hover,
-  .game-card:hover,
-  .explore-btn:hover {
-    transform: none;
-  }
-
-  .big-btn:hover {
-    background: #330000;
-  }
-}
-
 /* RESPONSIVE */
 @media (max-width: 1180px) {
   .center {
@@ -1354,23 +1071,6 @@ body {
     max-width: 860px !important;
     margin-left: auto !important;
     margin-right: auto !important;
-  }
-
-  .site-ad-left {
-    left: 0 !important;
-    margin-left: 0 !important;
-  }
-}
-
-@media (min-width: 1201px) and (max-height: 700px) {
-  .site-ad-left {
-    display: none !important;
-  }
-
-  .main,
-  .bottom-buttons,
-  .games-section {
-    width: min(100% - 40px, 1040px) !important;
   }
 }
 
@@ -1728,23 +1428,6 @@ body {
 
 <body>
 
-<!-- LEFT SIDE AD -->
-<div class="site-ad-left" aria-label="Advertisement">
-  <div class="ad-label">We use ads to keep our site free!</div>
-
-  <script>
-    atOptions = {
-      'key' : 'ce22089231487568bb823d6480e5026d',
-      'format' : 'iframe',
-      'height' : 600,
-      'width' : 160,
-      'params' : {}
-    };
-  </script>
-
-  <script src="https://www.highperformanceformat.com/ce22089231487568bb823d6480e5026d/invoke.js"></script>
-</div>
-
 <!-- NAVBAR -->
 <div class="navbar">
 
@@ -1804,7 +1487,6 @@ body {
 </div>
 
 <!-- OPEN OPTIONS -->
-<!-- KEEPING BLOB OPTIONS HERE -->
 <div class="bottom-buttons">
 
   <h2>Open Options</h2>
@@ -1971,30 +1653,6 @@ body {
       </div>
     </div>
 
-    <!-- Shell Shockers -->
-    <div class="game-card">
-      <div
-        class="game-thumb"
-        style="background-image: url('Img/shellshockers.png');">
-      </div>
-
-      <div class="game-name">Shell Shockers</div>
-
-      <div class="game-bar">
-        <button
-          class="game-play"
-          onclick="openPlayPopup('Games/ShellShockers.html')">
-          ▶ Play
-        </button>
-
-        <button
-          class="game-info"
-          onclick="openInfoPopup('Shell Shockers','Egg-themed FPS with online multiplayer battles.')">
-          ℹ Info
-        </button>
-      </div>
-    </div>
-
     <!-- BitLife -->
     <div class="game-card">
       <div
@@ -2078,7 +1736,6 @@ body {
 </div>
 
 <!-- PLAY POPUP -->
-<!-- ONLY FOUR OPTIONS HERE: NO BLOB OPTIONS -->
 <div id="popup" class="modal" onclick="closePlayPopupOnBackdrop(event)">
 
   <div id="popup-box" onclick="event.stopPropagation()">
@@ -2090,7 +1747,6 @@ body {
 
     <div class="launch-grid">
 
-      <!-- Row 1 -->
       <button class="popup-btn" onclick="openTab()">
         Open In Normal Tab
       </button>
@@ -2099,7 +1755,6 @@ body {
         Open In About:Blank Tab
       </button>
 
-      <!-- Row 2 -->
       <button class="popup-btn" onclick="openWindow()">
         Open In Normal Window
       </button>
@@ -2304,8 +1959,7 @@ document.addEventListener(
 
 /* =========================================================
    HOMEPAGE LAUNCH OPTIONS
-   IMPORTANT:
-   Blob options remain here.
+   BLOB OPTIONS REMAIN HERE
    ========================================================= */
 
 function getSiteURL() {
@@ -2488,9 +2142,6 @@ function openSiteBlobWindow() {
    NO BLOB FUNCTIONS HERE
    ========================================================= */
 
-
-/* NORMAL TAB */
-
 function openTab() {
 
   window.open(
@@ -2501,8 +2152,6 @@ function openTab() {
   closePlayPopup();
 }
 
-
-/* ABOUT:BLANK TAB */
 
 function openABTab() {
 
@@ -2570,8 +2219,6 @@ function openABTab() {
 }
 
 
-/* NORMAL WINDOW */
-
 function openWindow() {
 
   window.open(
@@ -2583,8 +2230,6 @@ function openWindow() {
   closePlayPopup();
 }
 
-
-/* ABOUT:BLANK WINDOW */
 
 function openABWindow() {
 
