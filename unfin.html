@@ -27,7 +27,10 @@ body {
   overflow-x: hidden;
 }
 
-/* TOP BAR */
+/* =========================================================
+   TOP BAR
+   ========================================================= */
+
 .navbar {
   min-height: 58px;
   display: flex;
@@ -43,53 +46,17 @@ body {
   text-shadow: 0 0 10px rgba(255, 0, 0, 0.65);
 }
 
-/* LEFT AD */
-.site-ad-left {
-  position: fixed;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 160px;
-  height: 625px;
-  margin: 0;
-  padding: 0;
-  z-index: 5000;
-  overflow: hidden;
-  line-height: 0;
-  text-align: center;
-}
+/* =========================================================
+   PAGE
+   ========================================================= */
 
-.site-ad-left .ad-label {
-  display: block;
-  width: 160px;
-  height: 25px;
-  padding: 5px 2px;
-  color: #888;
-  background: #080808;
-  font-size: 10px;
-  line-height: 15px;
-  font-family: "Segoe UI", Arial, sans-serif;
-  white-space: nowrap;
-}
-
-.site-ad-left iframe {
-  display: block;
-  width: 160px !important;
-  height: 600px !important;
-  max-width: none;
-  border: 0;
-  margin: 0;
-  padding: 0;
-}
-
-/* PAGE */
 .page {
   min-height: calc(100vh - 58px);
   display: flex;
   justify-content: center;
   align-items: center;
   text-align: center;
-  padding: 50px 190px 60px 190px;
+  padding: 50px 20px 60px;
   position: relative;
 }
 
@@ -167,11 +134,16 @@ h1 {
   box-shadow: 0 0 24px rgba(255, 0, 0, 0.7);
 }
 
+/* =========================================================
+   ANIMATIONS
+   ========================================================= */
+
 @keyframes cardIn {
   from {
     opacity: 0;
     transform: translateY(18px) scale(0.98);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -179,22 +151,21 @@ h1 {
 }
 
 @keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.35; }
-}
-
-/* RESPONSIVE */
-@media (max-width: 1200px) {
-  .site-ad-left {
-    display: none;
+  0%, 100% {
+    opacity: 1;
   }
 
-  .page {
-    padding: 40px 20px 50px;
+  50% {
+    opacity: 0.35;
   }
 }
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
 
 @media (max-width: 560px) {
+
   .navbar {
     padding: 10px 14px;
   }
@@ -228,42 +199,55 @@ h1 {
 
 <body>
 
-<!-- LEFT SIDE AD -->
-<div class="site-ad-left" aria-label="Advertisement">
-  <div class="ad-label">We use ads to keep our site free!</div>
-  <script>
-    atOptions = {
-      'key' : 'ce22089231487568bb823d6480e5026d',
-      'format' : 'iframe',
-      'height' : 600,
-      'width' : 160,
-      'params' : {}
-    };
-  </script>
-  <script src="https://www.highperformanceformat.com/ce22089231487568bb823d6480e5026d/invoke.js"></script>
-</div>
+<!-- =======================================================
+     TOP BAR
+     ======================================================= -->
 
-<!-- TOP BAR -->
 <header class="navbar">
-  <div class="logo">Secret Game Site</div>
+
+  <div class="logo">
+    Secret Game Site
+  </div>
+
 </header>
 
-<!-- PAGE -->
+
+<!-- =======================================================
+     PAGE
+     ======================================================= -->
+
 <main class="page">
+
   <section class="card">
+
     <div class="badge">
+
       <span class="dot"></span>
-      SG​S • UNDER CONSTRUCTION
+
+      SGS • UNDER CONSTRUCTION
+
     </div>
 
-    <h1>Uh Oh!</h1>
+
+    <h1>
+      Uh Oh!
+    </h1>
+
 
     <p class="message">
       This page isn't finished yet! Please come back later.
     </p>
 
-    <a class="home-btn" href="index.html">← Back to Home</a>
+
+    <a
+      class="home-btn"
+      href="index.html"
+    >
+      ← Back to Home
+    </a>
+
   </section>
+
 </main>
 
 </body>
