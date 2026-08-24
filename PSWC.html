@@ -68,7 +68,7 @@ body {
 }
 
 /* =========================================================
-   CONTROL CARD
+   CARD
    ========================================================= */
 
 .card {
@@ -322,6 +322,7 @@ button:disabled {
    ========================================================= */
 
 @media (max-width: 600px) {
+
     .page {
         padding: 25px 14px;
     }
@@ -351,6 +352,7 @@ button:disabled {
 <div class="topbar">
     Secret Game Site
 </div>
+
 
 <!-- =======================================================
      PAGE
@@ -410,13 +412,15 @@ button:disabled {
 
 </div>
 
+
 <script>
 /* =========================================================
-   CONFIG
+   WORKER
    ========================================================= */
 
 const WORKER_URL =
     "https://sgs-pswrd.retropixel404.workers.dev";
+
 
 /* =========================================================
    ELEMENTS
@@ -440,21 +444,26 @@ const currentPassword =
 const countdown =
     document.getElementById("countdown");
 
+
 /* =========================================================
    STATE
    ========================================================= */
 
-let adminPasswordValue = "";
-
-let timer = null;
+let adminToken = "";
 
 let expiresAt = 0;
 
+let timer = null;
+
+let loadingPassword = false;
+
+
 /* =========================================================
-   SHOW STATUS
+   STATUS
    ========================================================= */
 
 function showStatus(message, error = true) {
+
     status.textContent = message;
 
     status.style.color =
@@ -463,18 +472,177 @@ function showStatus(message, error = true) {
             : "#aaaaaa";
 }
 
+
 /* =========================================================
-   FORMAT COUNTDOWN
+   GET CURRENT PASSWORD
    ========================================================= */
 
-function updateCountdown() {
-    if (!expiresAt) {
-        countdown.textContent = "--";
+async function loadPassword() {
+
+    if (!adminToken) {
         return;
     }
 
+    if (loadingPassword) {
+        return;
+    }
+
+    loadingPassword = true;
+
+    try {
+
+        const response =
+            await fetch(
+                `${WORKER_URL}/password`,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json",
+
+                        "Authorization":
+                            `Bearer ${adminToken}`
+                    },
+
+                    cache: "no-store"
+                }
+            );
+
+
+        /* ---------------------------------------------
+           READ RESPONSE
+           --------------------------------------------- */
+
+        let data;
+
+        try {
+
+            data =
+                await response.json();
+
+        } catch {
+
+            throw new Error(
+                "Invalid response from password server."
+            );
+        }
+
+
+        /* ---------------------------------------------
+           ERROR
+           --------------------------------------------- */
+
+        if (!response.ok) {
+
+            if (response.status === 401) {
+
+                adminToken = "";
+
+                result.classList.remove(
+                    "visible"
+                );
+
+                throw new Error(
+                    "Administrator session expired."
+                );
+            }
+
+            throw new Error(
+                data.error ||
+                data.message ||
+                "Password server error."
+            );
+        }
+
+
+        /* ---------------------------------------------
+           SUCCESS CHECK
+           --------------------------------------------- */
+
+        if (
+            !data.success ||
+            !data.password
+        ) {
+
+            throw new Error(
+                data.error ||
+                "Could not retrieve the current password."
+            );
+        }
+
+
+        /* ---------------------------------------------
+           DISPLAY PASSWORD
+           --------------------------------------------- */
+
+        currentPassword.textContent =
+            data.password;
+
+
+        /*
+         * Worker should return the Unix timestamp
+         * when this password expires.
+         */
+
+        expiresAt =
+            Number(data.expiresAt) || 0;
+
+
+        result.classList.add(
+            "visible"
+        );
+
+
+        showStatus(
+            "Password retrieved successfully.",
+            false
+        );
+
+
+        updateCountdown();
+
+
+    } catch (error) {
+
+        console.error(
+            "SGS password error:",
+            error
+        );
+
+        showStatus(
+            error.message ||
+            "Could not contact the password server.",
+            true
+        );
+
+    } finally {
+
+        loadingPassword = false;
+    }
+}
+
+
+/* =========================================================
+   COUNTDOWN
+   ========================================================= */
+
+function updateCountdown() {
+
+    if (!expiresAt) {
+
+        countdown.textContent =
+            "--";
+
+        return;
+    }
+
+
     const now =
-        Math.floor(Date.now() / 1000);
+        Math.floor(
+            Date.now() / 1000
+        );
+
 
     const remaining =
         Math.max(
@@ -482,48 +650,99 @@ function updateCountdown() {
             expiresAt - now
         );
 
+
     countdown.textContent =
         remaining;
 
-    /*
-     * When the password changes, automatically
-     * request the new one from the Worker.
-     */
+
+    /* ---------------------------------------------
+       PASSWORD EXPIRED
+       --------------------------------------------- */
+
     if (remaining <= 0) {
+
+        /*
+         * Immediately request the new
+         * password from the Worker.
+         */
+
         loadPassword();
     }
 }
 
+
 /* =========================================================
-   START TIMER
+   TIMER
    ========================================================= */
 
 function startTimer() {
+
     if (timer) {
+
         clearInterval(timer);
     }
 
-    updateCountdown();
 
-    timer = setInterval(
-        updateCountdown,
-        1000
-    );
+    timer =
+        setInterval(
+            updateCountdown,
+            1000
+        );
+
+
+    updateCountdown();
 }
 
+
 /* =========================================================
-   LOAD CURRENT PASSWORD
+   ADMINISTRATOR VERIFICATION
    ========================================================= */
 
-async function loadPassword() {
-    if (!adminPasswordValue) {
+async function verifyAdmin() {
+
+    const password =
+        adminPassword.value;
+
+
+    if (!password) {
+
+        showStatus(
+            "Enter the administrator password.",
+            true
+        );
+
         return;
     }
 
+
+    unlockButton.disabled =
+        true;
+
+    unlockButton.textContent =
+        "Checking...";
+
+
+    showStatus(
+        "Verifying administrator password...",
+        false
+    );
+
+
+    result.classList.remove(
+        "visible"
+    );
+
+
     try {
+
+        /* ---------------------------------------------
+           STEP 1
+           Verify administrator password
+           --------------------------------------------- */
+
         const response =
             await fetch(
-                `${WORKER_URL}/password`,
+                `${WORKER_URL}/admin/verify`,
                 {
                     method: "POST",
 
@@ -533,74 +752,101 @@ async function loadPassword() {
                     },
 
                     body: JSON.stringify({
-                        password:
-                            adminPasswordValue
+                        password: password
                     }),
 
                     cache: "no-store"
                 }
             );
 
+
+        /* ---------------------------------------------
+           READ RESPONSE
+           --------------------------------------------- */
+
         let data;
 
         try {
+
             data =
                 await response.json();
+
         } catch {
+
             throw new Error(
-                "Invalid server response."
+                "Invalid response from administrator server."
             );
         }
 
-        if (!response.ok) {
-            if (
-                response.status === 401
-            ) {
-                throw new Error(
-                    "Incorrect administrator password."
-                );
-            }
 
-            throw new Error(
-                data.error ||
-                "Password server error."
-            );
-        }
-
-        if (
-            !data.success ||
-            !data.password
-        ) {
-            throw new Error(
-                data.error ||
-                "Could not retrieve password."
-            );
-        }
-
-        /* ---------------------------------------------
-           DISPLAY PASSWORD
-           --------------------------------------------- */
-
-        currentPassword.textContent =
-            data.password;
-
-        expiresAt =
-            Number(data.expiresAt) || 0;
-
-        result.classList.add(
-            "visible"
+        console.log(
+            "Admin verification:",
+            data
         );
 
+
+        /* ---------------------------------------------
+           ADMIN PASSWORD WRONG
+           --------------------------------------------- */
+
+        if (!response.ok || !data.success) {
+
+            adminToken = "";
+
+            throw new Error(
+                data.error ||
+                data.message ||
+                "Incorrect administrator password."
+            );
+        }
+
+
+        /* ---------------------------------------------
+           GET TOKEN
+           --------------------------------------------- */
+
+        if (!data.token) {
+
+            adminToken = "";
+
+            throw new Error(
+                "Administrator verification succeeded, but the Worker did not return a token."
+            );
+        }
+
+
+        adminToken =
+            data.token;
+
+
+        /* ---------------------------------------------
+           STEP 2
+           Get current SGS password
+           --------------------------------------------- */
+
         showStatus(
-            "Password retrieved successfully.",
+            "Administrator verified. Loading password...",
             false
         );
 
-        startTimer();
+
+        await loadPassword();
+
+
+        /* ---------------------------------------------
+           START COUNTDOWN
+           --------------------------------------------- */
+
+        if (adminToken) {
+
+            startTimer();
+        }
+
 
     } catch (error) {
+
         console.error(
-            "Password server error:",
+            "SGS admin verification error:",
             error
         );
 
@@ -609,48 +855,17 @@ async function loadPassword() {
             "Could not contact the password server.",
             true
         );
+
+    } finally {
+
+        unlockButton.disabled =
+            false;
+
+        unlockButton.textContent =
+            "Unlock Password";
     }
 }
 
-/* =========================================================
-   UNLOCK
-   ========================================================= */
-
-async function unlock() {
-    const value =
-        adminPassword.value.trim();
-
-    if (!value) {
-        showStatus(
-            "Enter the administrator password."
-        );
-
-        return;
-    }
-
-    adminPasswordValue = value;
-
-    unlockButton.disabled = true;
-
-    unlockButton.textContent =
-        "Checking...";
-
-    showStatus(
-        "Contacting password server...",
-        false
-    );
-
-    result.classList.remove(
-        "visible"
-    );
-
-    await loadPassword();
-
-    unlockButton.disabled = false;
-
-    unlockButton.textContent =
-        "Unlock Password";
-}
 
 /* =========================================================
    EVENTS
@@ -658,14 +873,35 @@ async function unlock() {
 
 unlockButton.addEventListener(
     "click",
-    unlock
+    verifyAdmin
 );
+
 
 adminPassword.addEventListener(
     "keydown",
-    (event) => {
+    function (event) {
+
         if (event.key === "Enter") {
-            unlock();
+
+            event.preventDefault();
+
+            verifyAdmin();
+        }
+    }
+);
+
+
+/* =========================================================
+   CLEANUP
+   ========================================================= */
+
+window.addEventListener(
+    "beforeunload",
+    function () {
+
+        if (timer) {
+
+            clearInterval(timer);
         }
     }
 );
