@@ -1,6 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script>
+(async function () {
+
+    /* =====================================================
+       SGS PASSWORD PROTECTION
+       ===================================================== */
+
+    const VERIFY_SERVER =
+        "https://sgs-pswrd.retropixel404.workers.dev";
+
+    /*
+       Change this ONLY if your password page has a
+       different filename.
+    */
+    const PASSWORD_PAGE =
+        "PSP.html";
+
+
+    /* =====================================================
+       DON'T CHECK THE PASSWORD PAGE ITSELF
+       ===================================================== */
+
+    if (window.location.href === PASSWORD_PAGE) {
+        return;
+    }
+
+
+    /* =====================================================
+       CHECK WORKER SESSION
+       ===================================================== */
+
+    try {
+
+        const response = await fetch(
+            `${VERIFY_SERVER}/current`,
+            {
+                method: "GET",
+                credentials: "include",
+                cache: "no-store"
+            }
+        );
+
+        if (!response.ok) {
+            window.location.replace(PASSWORD_PAGE);
+            return;
+        }
+
+        const data = await response.json();
+
+
+        /* =================================================
+           NOT AUTHENTICATED
+           ================================================= */
+
+        if (!data.authenticated) {
+            window.location.replace(PASSWORD_PAGE);
+            return;
+        }
+
+
+        /* =================================================
+           AUTHENTICATED
+           LET THE PAGE LOAD
+           ================================================= */
+
+        console.log("SGS: Access verified.");
+
+    } catch (error) {
+
+        /*
+           If the password server cannot be reached,
+           don't allow the protected page to continue.
+        */
+
+        console.error(
+            "SGS: Could not verify access.",
+            error
+        );
+
+        window.location.replace(PASSWORD_PAGE);
+    }
+
+})();
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SGS - Home</title>
