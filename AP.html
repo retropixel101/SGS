@@ -110,7 +110,7 @@ body {
 
 
 /* =========================================================
-   LOGIN SECTION
+   LOGIN
    ========================================================= */
 
 .login-section {
@@ -613,6 +613,9 @@ button:disabled {
 
     gap:
         8px;
+
+    flex-wrap:
+        wrap;
 }
 
 .ip-actions button {
@@ -634,6 +637,16 @@ button:disabled {
 .unblock-btn {
     border-color:
         #32ff32;
+}
+
+.info-btn {
+    border-color:
+        #4d9dff;
+}
+
+.info-btn:hover {
+    box-shadow:
+        0 0 14px rgba(77, 157, 255, 0.55);
 }
 
 
@@ -694,6 +707,11 @@ button:disabled {
         12px;
 }
 
+
+/* =========================================================
+   EMPTY
+   ========================================================= */
+
 .empty {
     padding:
         20px;
@@ -724,6 +742,310 @@ button:disabled {
 
     background:
         #160000;
+}
+
+
+/* =========================================================
+   IP INFO MODAL
+   ========================================================= */
+
+.info-overlay {
+    position:
+        fixed;
+
+    inset:
+        0;
+
+    display:
+        none;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    padding:
+        20px;
+
+    background:
+        rgba(0, 0, 0, 0.78);
+
+    backdrop-filter:
+        blur(5px);
+
+    z-index:
+        9999;
+}
+
+.info-overlay.visible {
+    display:
+        flex;
+}
+
+.info-modal {
+    width:
+        min(760px, 100%);
+
+    max-height:
+        90vh;
+
+    overflow-y:
+        auto;
+
+    padding:
+        26px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #181818,
+            #0d0d0d
+        );
+
+    border:
+        2px solid #ff1010;
+
+    border-radius:
+        16px;
+
+    box-shadow:
+        0 0 25px rgba(255, 0, 0, 0.55),
+        0 0 60px rgba(255, 0, 0, 0.20);
+}
+
+.info-header {
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    align-items:
+        center;
+
+    gap:
+        15px;
+
+    margin-bottom:
+        22px;
+}
+
+.info-header h2 {
+    margin:
+        0;
+
+    color:
+        #ff2222;
+
+    font-size:
+        25px;
+}
+
+.info-close {
+    width:
+        42px;
+
+    height:
+        42px;
+
+    padding:
+        0;
+
+    border-color:
+        #555;
+
+    font-size:
+        20px;
+}
+
+.info-ip {
+    margin-bottom:
+        20px;
+
+    padding:
+        14px;
+
+    border:
+        1px solid #3a0000;
+
+    border-radius:
+        10px;
+
+    background:
+        #080808;
+
+    color:
+        #ff4444;
+
+    font-family:
+        monospace;
+
+    font-size:
+        18px;
+
+    font-weight:
+        700;
+}
+
+.info-grid {
+    display:
+        grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap:
+        10px;
+}
+
+.info-item {
+    padding:
+        14px;
+
+    border:
+        1px solid #282828;
+
+    border-radius:
+        10px;
+
+    background:
+        #111111;
+
+    min-width:
+        0;
+}
+
+.info-label {
+    margin-bottom:
+        6px;
+
+    color:
+        #777;
+
+    font-size:
+        11px;
+
+    font-weight:
+        700;
+
+    letter-spacing:
+        1px;
+
+    text-transform:
+        uppercase;
+}
+
+.info-value {
+    color:
+        #eeeeee;
+
+    font-size:
+        14px;
+
+    line-height:
+        1.5;
+
+    overflow-wrap:
+        anywhere;
+}
+
+.info-value.highlight {
+    color:
+        #ff4444;
+
+    font-weight:
+        700;
+}
+
+.info-value.good {
+    color:
+        #65ff65;
+}
+
+.info-value.warning {
+    color:
+        #ffb347;
+}
+
+.info-map {
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    margin-top:
+        18px;
+
+    width:
+        100%;
+
+    height:
+        45px;
+
+    border:
+        1px solid #4d9dff;
+
+    border-radius:
+        10px;
+
+    background:
+        #0d1724;
+
+    color:
+        #78b5ff;
+
+    text-decoration:
+        none;
+
+    font-weight:
+        700;
+}
+
+.info-map:hover {
+    background:
+        #13243a;
+
+    box-shadow:
+        0 0 14px rgba(77, 157, 255, 0.35);
+}
+
+.info-loading {
+    padding:
+        40px;
+
+    text-align:
+        center;
+
+    color:
+        #aaa;
+
+    font-size:
+        15px;
+}
+
+.info-error {
+    padding:
+        18px;
+
+    border:
+        1px solid #5c0000;
+
+    border-radius:
+        10px;
+
+    background:
+        #180808;
+
+    color:
+        #ff5555;
+
+    line-height:
+        1.6;
 }
 
 
@@ -786,6 +1108,16 @@ button:disabled {
         align-items:
             stretch;
     }
+
+    .blocked-row button {
+        width:
+            100% !important;
+    }
+
+    .info-grid {
+        grid-template-columns:
+            1fr;
+    }
 }
 
 @media (max-width: 600px) {
@@ -801,6 +1133,11 @@ button:disabled {
 
         letter-spacing:
             5px;
+    }
+
+    .info-modal {
+        padding:
+            18px;
     }
 }
 
@@ -1046,6 +1383,52 @@ button:disabled {
 </div>
 
 
+<!-- =====================================================
+     IP INFORMATION MODAL
+     ===================================================== -->
+
+<div
+    id="infoOverlay"
+    class="info-overlay"
+>
+
+    <div class="info-modal">
+
+        <div class="info-header">
+
+            <h2>
+                IP Information
+            </h2>
+
+            <button
+                id="infoClose"
+                class="info-close"
+            >
+                ×
+            </button>
+
+        </div>
+
+        <div
+            id="infoIP"
+            class="info-ip"
+        >
+            ---
+        </div>
+
+        <div
+            id="infoContent"
+        >
+            <div class="info-loading">
+                Loading IP information...
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+
 <script>
 
 /* =========================================================
@@ -1128,6 +1511,26 @@ const logoutAdminButton =
 const resetSessionsButton =
     document.getElementById(
         "resetSessionsButton"
+    );
+
+const infoOverlay =
+    document.getElementById(
+        "infoOverlay"
+    );
+
+const infoClose =
+    document.getElementById(
+        "infoClose"
+    );
+
+const infoIP =
+    document.getElementById(
+        "infoIP"
+    );
+
+const infoContent =
+    document.getElementById(
+        "infoContent"
     );
 
 
@@ -1456,6 +1859,414 @@ function formatBlockExpiration(
 
 
 /* =========================================================
+   IP INFORMATION
+   ========================================================= */
+
+async function showIPInfo(ip) {
+
+    infoOverlay.classList.add(
+        "visible"
+    );
+
+    infoIP.textContent =
+        ip;
+
+    infoContent.innerHTML =
+        '<div class="info-loading">Loading IP information...</div>';
+
+
+    try {
+
+        /*
+         * Public IP lookup.
+         *
+         * This returns approximate network/location
+         * information. It does NOT provide an exact
+         * street address or identify a person.
+         */
+
+        const response =
+            await fetch(
+                `https://ipapi.co/${encodeURIComponent(ip)}/json/`,
+                {
+                    method:
+                        "GET",
+
+                    cache:
+                        "no-store"
+                }
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "IP lookup service returned an error."
+            );
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            data.error
+        ) {
+
+            throw new Error(
+                data.reason ||
+                "Could not look up this IP."
+            );
+        }
+
+
+        renderIPInfo(
+            ip,
+            data
+        );
+
+    } catch (error) {
+
+        console.error(
+            "IP information lookup:",
+            error
+        );
+
+
+        infoContent.innerHTML = `
+            <div class="info-error">
+                <strong>Could not retrieve IP information.</strong>
+                <br><br>
+                ${escapeHTML(
+                    error.message ||
+                    "Unknown lookup error."
+                )}
+                <br><br>
+                The IP may be invalid, private,
+                unavailable, or the lookup service
+                may be temporarily unavailable.
+            </div>
+        `;
+    }
+}
+
+
+/* =========================================================
+   ESCAPE HTML
+   ========================================================= */
+
+function escapeHTML(value) {
+
+    return String(
+        value ?? "Unknown"
+    )
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+    .replace(
+        /</g,
+        "&lt;"
+    )
+    .replace(
+        />/g,
+        "&gt;"
+    )
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+    .replace(
+        /'/g,
+        "&#039;"
+    );
+}
+
+
+/* =========================================================
+   INFO VALUE
+   ========================================================= */
+
+function infoItem(
+    label,
+    value,
+    className = ""
+) {
+
+    return `
+        <div class="info-item">
+
+            <div class="info-label">
+                ${escapeHTML(label)}
+            </div>
+
+            <div class="info-value ${className}">
+                ${escapeHTML(
+                    value ||
+                    "Unknown"
+                )}
+            </div>
+
+        </div>
+    `;
+}
+
+
+/* =========================================================
+   RENDER IP INFORMATION
+   ========================================================= */
+
+function renderIPInfo(
+    ip,
+    data
+) {
+
+    const latitude =
+        data.latitude;
+
+    const longitude =
+        data.longitude;
+
+
+    let location =
+        "Unknown";
+
+
+    if (
+        data.city &&
+        data.region
+    ) {
+
+        location =
+            `${data.city}, ${data.region}`;
+
+    } else if (
+        data.city
+    ) {
+
+        location =
+            data.city;
+
+    } else if (
+        data.region
+    ) {
+
+        location =
+            data.region;
+    }
+
+
+    const country =
+        data.country_name
+            ? `${data.country_name}${
+                data.country_code
+                    ? ` (${data.country_code})`
+                    : ""
+              }`
+            : "Unknown";
+
+
+    const coordinates =
+        latitude !== undefined &&
+        longitude !== undefined
+            ? `${latitude}, ${longitude}`
+            : "Unknown";
+
+
+    let network =
+        data.network ||
+        "Unknown";
+
+
+    let timezone =
+        data.timezone ||
+        "Unknown";
+
+
+    let utcOffset =
+        data.utc_offset ||
+        "Unknown";
+
+
+    let postal =
+        data.postal ||
+        "Unknown";
+
+
+    let currency =
+        data.currency ||
+        "Unknown";
+
+
+    let language =
+        data.languages ||
+        "Unknown";
+
+
+    infoContent.innerHTML = `
+
+        <div class="info-grid">
+
+            ${infoItem(
+                "IP Address",
+                ip,
+                "highlight"
+            )}
+
+            ${infoItem(
+                "Country",
+                country
+            )}
+
+            ${infoItem(
+                "Region / State",
+                data.region
+            )}
+
+            ${infoItem(
+                "City",
+                data.city
+            )}
+
+            ${infoItem(
+                "Postal Code",
+                postal
+            )}
+
+            ${infoItem(
+                "Approx. Location",
+                location
+            )}
+
+            ${infoItem(
+                "Latitude / Longitude",
+                coordinates
+            )}
+
+            ${infoItem(
+                "Time Zone",
+                timezone
+            )}
+
+            ${infoItem(
+                "UTC Offset",
+                utcOffset
+            )}
+
+            ${infoItem(
+                "ISP",
+                data.org
+            )}
+
+            ${infoItem(
+                "Organization",
+                data.org
+            )}
+
+            ${infoItem(
+                "ASN",
+                data.asn
+            )}
+
+            ${infoItem(
+                "Network",
+                network
+            )}
+
+            ${infoItem(
+                "Country Code",
+                data.country_code
+            )}
+
+            ${infoItem(
+                "Currency",
+                currency
+            )}
+
+            ${infoItem(
+                "Languages",
+                language
+            )}
+
+        </div>
+
+        ${
+            latitude !== undefined &&
+            longitude !== undefined
+                ? `
+                    <a
+                        class="info-map"
+                        href="https://www.google.com/maps?q=${encodeURIComponent(
+                            `${latitude},${longitude}`
+                        )}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        View Approximate Location on Map
+                    </a>
+                  `
+                : ""
+        }
+
+    `;
+}
+
+
+/* =========================================================
+   CLOSE INFO MODAL
+   ========================================================= */
+
+function closeInfo() {
+
+    infoOverlay.classList.remove(
+        "visible"
+    );
+
+    infoContent.innerHTML =
+        '<div class="info-loading">Loading IP information...</div>';
+}
+
+
+infoClose.addEventListener(
+    "click",
+    closeInfo
+);
+
+
+infoOverlay.addEventListener(
+    "click",
+    event => {
+
+        if (
+            event.target ===
+            infoOverlay
+        ) {
+
+            closeInfo();
+        }
+    }
+);
+
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key === "Escape" &&
+            infoOverlay.classList.contains(
+                "visible"
+            )
+        ) {
+
+            closeInfo();
+        }
+    }
+);
+
+
+/* =========================================================
    RENDER IPs
    ========================================================= */
 
@@ -1543,6 +2354,31 @@ function renderIPs(ips) {
 
         actions.className =
             "ip-actions";
+
+
+        /* =====================================================
+           INFO BUTTON
+           ===================================================== */
+
+        const info =
+            document.createElement(
+                "button"
+            );
+
+        info.className =
+            "info-btn";
+
+        info.textContent =
+            "Info";
+
+        info.onclick =
+            () => showIPInfo(
+                item.ip
+            );
+
+        actions.appendChild(
+            info
+        );
 
 
         if (item.blocked) {
@@ -1698,6 +2534,32 @@ function renderBlockedIPs(
         );
 
 
+        const actions =
+            document.createElement(
+                "div"
+            );
+
+        actions.className =
+            "ip-actions";
+
+
+        const infoButton =
+            document.createElement(
+                "button"
+            );
+
+        infoButton.className =
+            "info-btn";
+
+        infoButton.textContent =
+            "Info";
+
+        infoButton.onclick =
+            () => showIPInfo(
+                item.ip
+            );
+
+
         const unblock =
             document.createElement(
                 "button"
@@ -1705,9 +2567,6 @@ function renderBlockedIPs(
 
         unblock.className =
             "unblock-btn";
-
-        unblock.style.width =
-            "130px";
 
         unblock.textContent =
             "Revoke Block";
@@ -1718,12 +2577,21 @@ function renderBlockedIPs(
             );
 
 
+        actions.appendChild(
+            infoButton
+        );
+
+        actions.appendChild(
+            unblock
+        );
+
+
         row.appendChild(
             info
         );
 
         row.appendChild(
-            unblock
+            actions
         );
 
 
@@ -2153,6 +3021,9 @@ function lockPanel() {
 
     countdown.textContent =
         "--";
+
+    closeInfo();
+
 
     if (timer) {
 
