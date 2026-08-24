@@ -12,50 +12,21 @@
         "https://sgs-pswrd.retropixel404.workers.dev";
 
     const PASSWORD_PAGE =
-        "https://retropixel101.github.io/SGS/password.html";
+        "PSP.html";
 
 
     /* =====================================================
-       SESSION STORAGE KEY
+       DON'T PROTECT THE PASSWORD PAGE ITSELF
        ===================================================== */
 
-    const SESSION_KEY =
-        "sgs_session_token";
+    const currentPath =
+        window.location.pathname.replace(/\/+$/, "");
 
+    const passwordPath =
+        new URL(PASSWORD_PAGE).pathname.replace(/\/+$/, "");
 
-    /* =====================================================
-       DON'T REDIRECT THE PASSWORD PAGE
-       ===================================================== */
-
-    if (
-        window.location.href === PASSWORD_PAGE
-    ) {
+    if (currentPath === passwordPath) {
         return;
-    }
-
-
-    /* =====================================================
-       GET SAVED SESSION TOKEN
-       ===================================================== */
-
-    const token =
-        localStorage.getItem(
-            SESSION_KEY
-        );
-
-
-    /* =====================================================
-       NO TOKEN
-       ===================================================== */
-
-    if (!token) {
-
-        window.location.replace(
-            PASSWORD_PAGE
-        );
-
-        return;
-
     }
 
 
@@ -65,37 +36,36 @@
 
     try {
 
-        const response =
-            await fetch(
+        const response = await fetch(
+            `${VERIFY_SERVER}/current`,
+            {
+                method: "GET",
 
-                `${VERIFY_SERVER}/current`,
+                /*
+                 * IMPORTANT:
+                 * The Worker stores authentication in
+                 * the HttpOnly sgs_session cookie.
+                 *
+                 * This allows the browser to send the
+                 * cookie even though JavaScript cannot
+                 * read it.
+                 */
+                credentials: "include",
 
-                {
-
-                    method: "GET",
-
-                    headers: {
-
-                        "Authorization":
-                            `Bearer ${token}`
-
-                    },
-
-                    cache: "no-store"
-
-                }
-
-            );
+                cache: "no-store"
+            }
+        );
 
 
         /* =================================================
            SERVER ERROR
-        ================================================= */
+           ================================================= */
 
         if (!response.ok) {
 
-            localStorage.removeItem(
-                SESSION_KEY
+            console.error(
+                "SGS: Password server returned HTTP",
+                response.status
             );
 
             window.location.replace(
@@ -103,24 +73,41 @@
             );
 
             return;
-
         }
 
 
-        const data =
-            await response.json();
+        /* =================================================
+           READ RESPONSE
+           ================================================= */
+
+        let data;
+
+        try {
+
+            data = await response.json();
+
+        } catch {
+
+            console.error(
+                "SGS: Invalid response from password server."
+            );
+
+            window.location.replace(
+                PASSWORD_PAGE
+            );
+
+            return;
+        }
 
 
         /* =================================================
            SESSION INVALID
-        ================================================= */
+           ================================================= */
 
-        if (
-            !data.authenticated
-        ) {
+        if (!data.authenticated) {
 
-            localStorage.removeItem(
-                SESSION_KEY
+            console.log(
+                "SGS: No valid session."
             );
 
             window.location.replace(
@@ -128,13 +115,12 @@
             );
 
             return;
-
         }
 
 
         /* =================================================
            ACCESS GRANTED
-        ================================================= */
+           ================================================= */
 
         console.log(
             "SGS: Access verified."
@@ -146,17 +132,6 @@
         console.error(
             "SGS: Could not contact password server.",
             error
-        );
-
-
-        /*
-         * Don't allow the protected page
-         * to continue if the Worker can't
-         * be reached.
-         */
-
-        localStorage.removeItem(
-            SESSION_KEY
         );
 
         window.location.replace(
