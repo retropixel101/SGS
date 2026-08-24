@@ -9,6 +9,7 @@
 <link rel="icon" type="image/png" href="Img/SGS.png">
 
 <style>
+
 * {
     box-sizing: border-box;
 }
@@ -18,9 +19,14 @@ body {
     margin: 0;
     padding: 0;
     min-height: 100%;
+
     background: #080808;
     color: white;
-    font-family: Arial, Helvetica, sans-serif;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
 }
 
 body {
@@ -28,385 +34,1455 @@ body {
     overflow-x: hidden;
 }
 
+
 /* =========================================================
    TOP BAR
-   ========================================================= */
+========================================================= */
 
 .topbar {
+
     width: 100%;
-    height: 50px;
+    min-height: 50px;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    background: linear-gradient(
-        90deg,
-        #ff0000,
-        #d00000
-    );
+    padding: 10px 16px;
 
-    border-bottom: 3px solid #500000;
+    background:
+        linear-gradient(
+            90deg,
+            #ff0000,
+            #d00000
+        );
+
+    border-bottom:
+        3px solid #500000;
 
     box-shadow:
-        0 0 12px rgba(255, 0, 0, 0.45);
+        0 0 12px rgba(255,0,0,.45);
 
     font-size: 22px;
     font-weight: 700;
 }
 
+
 /* =========================================================
    PAGE
-   ========================================================= */
+========================================================= */
 
 .page {
-    min-height: calc(100vh - 50px);
+
+    width: 100%;
+
+    min-height:
+        calc(100vh - 50px);
+
+    padding:
+        40px 20px 60px;
 
     display: flex;
-    align-items: center;
     justify-content: center;
-
-    padding: 40px 20px;
 }
+
+
+/* =========================================================
+   MAIN WRAPPER
+========================================================= */
+
+.wrapper {
+
+    width: 100%;
+    max-width: 1100px;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 25px;
+}
+
 
 /* =========================================================
    CARD
-   ========================================================= */
+========================================================= */
 
 .card {
+
     width: 100%;
-    max-width: 560px;
 
-    padding: 34px 36px;
+    padding: 32px;
 
-    background: linear-gradient(
-        145deg,
-        #171717,
-        #101010
-    );
+    background:
+        linear-gradient(
+            145deg,
+            #171717,
+            #101010
+        );
 
-    border: 2px solid #ff1010;
+    border:
+        2px solid #ff1010;
+
     border-radius: 18px;
 
     box-shadow:
-        0 0 15px rgba(255, 0, 0, 0.65),
-        0 0 35px rgba(255, 0, 0, 0.30);
+        0 0 15px rgba(255,0,0,.65),
+        0 0 35px rgba(255,0,0,.25);
+}
+
+
+/* =========================================================
+   LOGIN CARD
+========================================================= */
+
+.login-card {
+
+    max-width: 560px;
+
+    margin: 0 auto;
 
     text-align: center;
 }
 
+
 /* =========================================================
    BADGE
-   ========================================================= */
+========================================================= */
 
 .badge {
+
     display: inline-flex;
+
     align-items: center;
     justify-content: center;
 
     gap: 8px;
 
-    padding: 8px 14px;
+    padding:
+        8px 14px;
 
-    border: 1px solid #700000;
+    border:
+        1px solid #700000;
+
     border-radius: 999px;
 
-    background: #0b0b0b;
+    background:
+        #0b0b0b;
 
-    color: #ff3333;
+    color:
+        #ff3333;
 
     font-size: 12px;
     font-weight: 800;
 
     letter-spacing: 2px;
 
-    margin-bottom: 25px;
+    margin-bottom: 24px;
 }
 
 .badge-dot {
+
     width: 8px;
     height: 8px;
 
     border-radius: 50%;
 
-    background: #ff2020;
+    background:
+        #ff2020;
 
     box-shadow:
         0 0 8px #ff0000;
+
+    animation:
+        blink 1.5s infinite;
 }
+
 
 /* =========================================================
-   TITLE
-   ========================================================= */
+   TITLES
+========================================================= */
 
 h1 {
-    margin: 0 0 12px;
 
-    color: #ff1717;
+    margin:
+        0 0 12px;
 
-    font-size: 46px;
-    line-height: 1.1;
+    color:
+        #ff1717;
+
+    font-size:
+        clamp(34px, 5vw, 46px);
+
+    line-height:
+        1.1;
 
     text-shadow:
-        0 0 10px rgba(255, 0, 0, 0.65),
-        0 0 25px rgba(255, 0, 0, 0.35);
+        0 0 10px rgba(255,0,0,.65),
+        0 0 25px rgba(255,0,0,.35);
 }
+
+h2 {
+
+    margin:
+        0 0 18px;
+
+    color:
+        #ff2727;
+
+    font-size:
+        24px;
+}
+
 
 /* =========================================================
    DESCRIPTION
-   ========================================================= */
+========================================================= */
 
 .description {
-    max-width: 420px;
 
-    margin: 0 auto 26px;
+    max-width: 500px;
 
-    color: #bcbcbc;
+    margin:
+        0 auto 26px;
 
-    font-size: 15px;
-    line-height: 1.7;
+    color:
+        #bcbcbc;
+
+    font-size:
+        15px;
+
+    line-height:
+        1.7;
 }
+
 
 /* =========================================================
    INPUT
-   ========================================================= */
+========================================================= */
 
-input {
+input,
+select {
+
     width: 100%;
 
-    height: 52px;
+    height: 50px;
 
-    padding: 0 18px;
+    padding:
+        0 16px;
 
-    border: 1px solid #550000;
-    border-radius: 11px;
+    border:
+        1px solid #550000;
 
-    outline: none;
+    border-radius:
+        10px;
 
-    background: #080808;
-    color: white;
+    outline:
+        none;
 
-    text-align: center;
+    background:
+        #080808;
 
-    font-size: 16px;
+    color:
+        white;
+
+    font-size:
+        15px;
 
     transition:
-        border-color 0.2s,
-        box-shadow 0.2s;
+        .2s ease;
 }
 
-input:focus {
-    border-color: #ff1616;
+input:focus,
+select:focus {
+
+    border-color:
+        #ff1616;
 
     box-shadow:
-        0 0 12px rgba(255, 0, 0, 0.35);
+        0 0 12px
+        rgba(255,0,0,.35);
 }
+
 
 /* =========================================================
    BUTTON
-   ========================================================= */
+========================================================= */
 
 button {
+
     width: 100%;
 
-    height: 52px;
+    min-height:
+        50px;
 
-    margin-top: 13px;
+    margin-top:
+        12px;
 
-    border: 2px solid #ff1515;
-    border-radius: 11px;
+    padding:
+        10px 16px;
 
-    background: #111111;
-    color: white;
+    border:
+        2px solid #ff1515;
 
-    font-size: 16px;
-    font-weight: 700;
+    border-radius:
+        10px;
 
-    cursor: pointer;
+    background:
+        #111111;
+
+    color:
+        white;
+
+    font-size:
+        15px;
+
+    font-weight:
+        700;
+
+    cursor:
+        pointer;
 
     transition:
-        background 0.2s,
-        box-shadow 0.2s,
-        transform 0.1s;
+        background .2s,
+        box-shadow .2s,
+        transform .1s;
 }
 
 button:hover {
-    background: #1b1b1b;
+
+    background:
+        #1b1b1b;
 
     box-shadow:
-        0 0 14px rgba(255, 0, 0, 0.65);
+        0 0 14px
+        rgba(255,0,0,.65);
 }
 
 button:active {
-    transform: scale(0.99);
+
+    transform:
+        scale(.99);
 }
 
 button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
+
+    opacity:
+        .55;
+
+    cursor:
+        not-allowed;
 }
+
 
 /* =========================================================
    STATUS
-   ========================================================= */
+========================================================= */
 
 .status {
-    min-height: 24px;
 
-    margin-top: 18px;
+    min-height:
+        24px;
 
-    color: #ff3a3a;
+    margin-top:
+        16px;
 
-    font-size: 14px;
+    color:
+        #ff3333;
+
+    font-size:
+        14px;
 }
+
 
 /* =========================================================
-   PASSWORD RESULT
-   ========================================================= */
+   HIDDEN
+========================================================= */
 
-.result {
-    display: none;
-
-    margin-top: 26px;
-
-    padding: 24px;
-
-    border: 1px solid #650000;
-    border-radius: 13px;
-
-    background: #0a0a0a;
+.hidden {
+    display: none !important;
 }
 
-.result.visible {
-    display: block;
+
+/* =========================================================
+   ADMIN DASHBOARD
+========================================================= */
+
+.dashboard {
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    gap:
+        25px;
+}
+
+
+/* =========================================================
+   DASHBOARD HEADER
+========================================================= */
+
+.dashboard-header {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    gap:
+        20px;
+
+    padding:
+        24px 28px;
+
+    background:
+        #111;
+
+    border:
+        1px solid #520000;
+
+    border-radius:
+        14px;
+}
+
+.dashboard-header-text {
+
+    min-width:
+        0;
+}
+
+.dashboard-header h2 {
+
+    margin:
+        0 0 6px;
+}
+
+.dashboard-header p {
+
+    margin:
+        0;
+
+    color:
+        #999;
+
+    font-size:
+        14px;
+}
+
+.logout-button {
+
+    width:
+        auto;
+
+    min-width:
+        130px;
+
+    margin:
+        0;
+
+    border-color:
+        #777;
+}
+
+
+/* =========================================================
+   GRID
+========================================================= */
+
+.admin-grid {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(0, 1fr)
+        );
+
+    gap:
+        25px;
+}
+
+
+/* =========================================================
+   PASSWORD CARD
+========================================================= */
+
+.password-box {
+
+    text-align:
+        center;
 }
 
 .result-label {
-    color: #999;
 
-    font-size: 12px;
-    font-weight: 700;
+    color:
+        #999;
 
-    letter-spacing: 2px;
+    font-size:
+        12px;
 
-    margin-bottom: 10px;
+    font-weight:
+        700;
+
+    letter-spacing:
+        2px;
+
+    margin-bottom:
+        12px;
 }
 
 .current-password {
-    color: #ff1a1a;
 
-    font-size: 42px;
-    font-weight: 900;
+    color:
+        #ff1a1a;
 
-    letter-spacing: 7px;
+    font-size:
+        clamp(30px, 5vw, 42px);
+
+    font-weight:
+        900;
+
+    letter-spacing:
+        6px;
 
     text-shadow:
-        0 0 10px rgba(255, 0, 0, 0.7),
-        0 0 25px rgba(255, 0, 0, 0.4);
+        0 0 10px rgba(255,0,0,.7),
+        0 0 25px rgba(255,0,0,.4);
 
-    word-break: break-all;
+    word-break:
+        break-all;
 }
 
 .timer {
-    margin-top: 15px;
 
-    color: #cfcfcf;
+    margin-top:
+        15px;
 
-    font-size: 15px;
+    color:
+        #cfcfcf;
+
+    font-size:
+        15px;
 }
 
 .timer strong {
-    color: #ff2727;
+
+    color:
+        #ff2727;
 }
+
+
+/* =========================================================
+   ACTION CARD
+========================================================= */
+
+.action-card {
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+}
+
+
+/* =========================================================
+   DANGER BUTTON
+========================================================= */
+
+.danger-button {
+
+    border-color:
+        #ff0000;
+
+    background:
+        #160000;
+}
+
+.danger-button:hover {
+
+    background:
+        #2b0000;
+
+    box-shadow:
+        0 0 18px
+        rgba(255,0,0,.8);
+}
+
+
+/* =========================================================
+   IP SECTION
+========================================================= */
+
+.section-card {
+
+    width:
+        100%;
+
+    background:
+        linear-gradient(
+            145deg,
+            #151515,
+            #0f0f0f
+        );
+
+    border:
+        1px solid #500000;
+
+    border-radius:
+        15px;
+
+    padding:
+        26px;
+}
+
+.section-heading {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    gap:
+        15px;
+
+    margin-bottom:
+        18px;
+}
+
+.section-heading h2 {
+
+    margin:
+        0;
+}
+
+.refresh-button {
+
+    width:
+        auto;
+
+    margin:
+        0;
+
+    min-height:
+        42px;
+
+    padding:
+        8px 16px;
+
+    font-size:
+        13px;
+}
+
+
+/* =========================================================
+   IP LIST
+========================================================= */
+
+.ip-list {
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    gap:
+        10px;
+}
+
+.ip-row {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        auto;
+
+    align-items:
+        center;
+
+    gap:
+        15px;
+
+    padding:
+        15px 16px;
+
+    background:
+        #090909;
+
+    border:
+        1px solid #2d2d2d;
+
+    border-radius:
+        10px;
+}
+
+.ip-address {
+
+    color:
+        #eee;
+
+    font-family:
+        Consolas,
+        monospace;
+
+    font-size:
+        14px;
+
+    word-break:
+        break-all;
+}
+
+.ip-meta {
+
+    color:
+        #777;
+
+    font-size:
+        12px;
+
+    margin-top:
+        4px;
+}
+
+.ip-actions {
+
+    display:
+        flex;
+
+    gap:
+        8px;
+
+    align-items:
+        center;
+}
+
+.ip-actions button {
+
+    width:
+        auto;
+
+    min-height:
+        38px;
+
+    margin:
+        0;
+
+    padding:
+        7px 12px;
+
+    font-size:
+        12px;
+}
+
+.block-button {
+
+    border-color:
+        #ff2020;
+}
+
+.empty {
+
+    padding:
+        25px;
+
+    text-align:
+        center;
+
+    color:
+        #777;
+
+    border:
+        1px dashed #333;
+
+    border-radius:
+        10px;
+}
+
+
+/* =========================================================
+   BLOCK CONTROLS
+========================================================= */
+
+.block-controls {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        1fr
+        1fr;
+
+    gap:
+        12px;
+
+    margin-top:
+        15px;
+}
+
+.block-controls button {
+
+    grid-column:
+        1 / -1;
+}
+
+
+/* =========================================================
+   BLOCKED IP
+========================================================= */
+
+.blocked-row {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        auto;
+
+    align-items:
+        center;
+
+    gap:
+        15px;
+
+    padding:
+        15px 16px;
+
+    background:
+        #160000;
+
+    border:
+        1px solid #550000;
+
+    border-radius:
+        10px;
+}
+
+.block-info {
+
+    min-width:
+        0;
+}
+
+.block-status {
+
+    display:
+        inline-block;
+
+    margin-top:
+        5px;
+
+    color:
+        #ff3333;
+
+    font-size:
+        12px;
+}
+
+.unblock-button {
+
+    width:
+        auto;
+
+    min-height:
+        38px;
+
+    margin:
+        0;
+
+    padding:
+        7px 14px;
+}
+
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+.modal {
+
+    position:
+        fixed;
+
+    inset:
+        0;
+
+    z-index:
+        9999;
+
+    display:
+        none;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    padding:
+        20px;
+
+    background:
+        rgba(0,0,0,.82);
+
+    backdrop-filter:
+        blur(5px);
+}
+
+.modal.visible {
+
+    display:
+        flex;
+}
+
+.modal-card {
+
+    width:
+        min(460px, 100%);
+
+    padding:
+        28px;
+
+    background:
+        #111;
+
+    border:
+        2px solid #ff1010;
+
+    border-radius:
+        16px;
+
+    box-shadow:
+        0 0 35px
+        rgba(255,0,0,.45);
+
+    text-align:
+        center;
+}
+
+.modal-card h2 {
+
+    margin:
+        0 0 10px;
+}
+
+.modal-card p {
+
+    color:
+        #aaa;
+
+    font-size:
+        14px;
+
+    line-height:
+        1.6;
+}
+
+.modal-actions {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap:
+        10px;
+
+    margin-top:
+        15px;
+}
+
+.modal-actions button {
+
+    margin:
+        0;
+}
+
+.cancel-button {
+
+    border-color:
+        #555;
+}
+
+
+/* =========================================================
+   ANIMATION
+========================================================= */
+
+@keyframes blink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: .35;
+    }
+}
+
 
 /* =========================================================
    RESPONSIVE
-   ========================================================= */
+========================================================= */
+
+@media (max-width: 850px) {
+
+    .admin-grid {
+
+        grid-template-columns:
+            1fr;
+    }
+
+    .dashboard-header {
+
+        flex-direction:
+            column;
+
+        align-items:
+            stretch;
+    }
+
+    .logout-button {
+
+        width:
+            100%;
+    }
+}
+
 
 @media (max-width: 600px) {
 
     .page {
-        padding: 25px 14px;
+
+        padding:
+            25px 12px 40px;
     }
 
-    .card {
-        padding: 28px 20px;
+    .card,
+    .section-card {
+
+        padding:
+            24px 18px;
     }
 
-    h1 {
-        font-size: 36px;
+    .ip-row,
+    .blocked-row {
+
+        grid-template-columns:
+            1fr;
     }
 
-    .current-password {
-        font-size: 34px;
-        letter-spacing: 5px;
+    .ip-actions {
+
+        width:
+            100%;
+    }
+
+    .ip-actions button,
+    .unblock-button {
+
+        width:
+            100%;
+    }
+
+    .block-controls {
+
+        grid-template-columns:
+            1fr;
+    }
+
+    .modal-actions {
+
+        grid-template-columns:
+            1fr;
     }
 }
+
 </style>
 </head>
 
 <body>
-
-<!-- =======================================================
-     TOP BAR
-     ======================================================= -->
 
 <div class="topbar">
     Secret Game Site
 </div>
 
 
-<!-- =======================================================
-     PAGE
-     ======================================================= -->
-
 <div class="page">
 
-    <div class="card">
+<div class="wrapper">
 
-        <div class="badge">
-            <span class="badge-dot"></span>
-            SGS • CONTROL
-        </div>
 
-        <h1>Admin Panel</h1>
+<!-- =====================================================
+     LOGIN
+===================================================== -->
 
-        <p class="description">
-            Enter the administrator password to view the
-            Admin Panel.
+<div
+    id="loginCard"
+    class="card login-card"
+>
+
+    <div class="badge">
+        <span class="badge-dot"></span>
+        SGS • CONTROL
+    </div>
+
+    <h1>
+        Admin Panel
+    </h1>
+
+    <p class="description">
+        Enter the administrator password to
+        access the SGS control panel.
+    </p>
+
+    <input
+        id="adminPassword"
+        type="password"
+        placeholder="Administrator password"
+        autocomplete="off"
+    >
+
+    <button id="unlockButton">
+        Enter
+    </button>
+
+    <div
+        id="status"
+        class="status"
+    ></div>
+
+</div>
+
+
+<!-- =====================================================
+     DASHBOARD
+===================================================== -->
+
+<div
+    id="dashboard"
+    class="dashboard hidden"
+>
+
+
+<!-- =====================================================
+     HEADER
+===================================================== -->
+
+<div class="dashboard-header">
+
+    <div class="dashboard-header-text">
+
+        <h2>
+            SGS Control Center
+        </h2>
+
+        <p>
+            Administrator access active.
         </p>
 
+    </div>
+
+    <button
+        id="logoutButton"
+        class="logout-button"
+    >
+        Lock Panel
+    </button>
+
+</div>
+
+
+<!-- =====================================================
+     PASSWORD + SESSION ACTIONS
+===================================================== -->
+
+<div class="admin-grid">
+
+
+<div class="card password-box">
+
+    <div class="result-label">
+        CURRENT SGS PASSWORD
+    </div>
+
+    <div
+        id="currentPassword"
+        class="current-password"
+    >
+        ------
+    </div>
+
+    <div class="timer">
+
+        Changes in
+
+        <strong id="countdown">
+            --
+        </strong>
+
+        seconds
+
+    </div>
+
+    <div
+        id="passwordStatus"
+        class="status"
+    ></div>
+
+</div>
+
+
+<div class="card action-card">
+
+    <h2>
+        Session Control
+    </h2>
+
+    <p class="description">
+        Force every currently authenticated
+        visitor to sign in again.
+    </p>
+
+    <button
+        id="resetSessionsButton"
+        class="danger-button"
+    >
+        Sign Everyone Out
+    </button>
+
+    <div
+        id="sessionStatus"
+        class="status"
+    ></div>
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+     LOGGED IPS
+===================================================== -->
+
+<div class="section-card">
+
+    <div class="section-heading">
+
+        <h2>
+            Logged IP's
+        </h2>
+
+        <button
+            id="refreshIpsButton"
+            class="refresh-button"
+        >
+            Refresh
+        </button>
+
+    </div>
+
+    <div
+        id="ipList"
+        class="ip-list"
+    >
+
+        <div class="empty">
+            Loading IP addresses...
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     BLOCK IP
+===================================================== -->
+
+<div class="section-card">
+
+    <div class="section-heading">
+
+        <h2>
+            Block IP
+        </h2>
+
+    </div>
+
+    <p class="description">
+        Enter an IP address and choose how long
+        the block should last.
+        Examples:
+        <strong>3s</strong>,
+        <strong>30m</strong>,
+        <strong>2h</strong>,
+        <strong>7d</strong>,
+        or <strong>permanent</strong>.
+    </p>
+
+    <input
+        id="blockIpInput"
+        type="text"
+        placeholder="IP address"
+        autocomplete="off"
+    >
+
+    <div class="block-controls">
+
         <input
-            id="adminPassword"
-            type="password"
-            placeholder="Administrator password"
+            id="blockDurationInput"
+            type="text"
+            placeholder="Duration e.g. 30m"
             autocomplete="off"
         >
 
-        <button id="unlockButton">
-            Enter
+        <select id="blockPreset">
+
+            <option value="">
+                Quick duration
+            </option>
+
+            <option value="1m">
+                1 minute
+            </option>
+
+            <option value="5m">
+                5 minutes
+            </option>
+
+            <option value="30m">
+                30 minutes
+            </option>
+
+            <option value="1h">
+                1 hour
+            </option>
+
+            <option value="24h">
+                24 hours
+            </option>
+
+            <option value="7d">
+                7 days
+            </option>
+
+            <option value="permanent">
+                Permanent
+            </option>
+
+        </select>
+
+        <button
+            id="blockIpButton"
+            class="danger-button"
+        >
+            Block IP
         </button>
 
-        <div id="status" class="status"></div>
+    </div>
 
-        <div id="result" class="result">
+    <div
+        id="blockStatus"
+        class="status"
+    ></div>
 
-            <div class="result-label">
-                CURRENT SGS PASSWORD
-            </div>
+</div>
 
-            <div
-                id="currentPassword"
-                class="current-password"
+
+<!-- =====================================================
+     BLOCKED IPS
+===================================================== -->
+
+<div class="section-card">
+
+    <div class="section-heading">
+
+        <h2>
+            Blocked IP's
+        </h2>
+
+        <button
+            id="refreshBlockedButton"
+            class="refresh-button"
+        >
+            Refresh
+        </button>
+
+    </div>
+
+    <div
+        id="blockedList"
+        class="ip-list"
+    >
+
+        <div class="empty">
+            Loading blocked IP addresses...
+        </div>
+
+    </div>
+
+</div>
+
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+     CONFIRM MODAL
+===================================================== -->
+
+<div
+    id="confirmModal"
+    class="modal"
+>
+
+    <div class="modal-card">
+
+        <h2>
+            Confirm Action
+        </h2>
+
+        <p id="modalText">
+            Are you sure?
+        </p>
+
+        <div class="modal-actions">
+
+            <button
+                id="cancelModalButton"
+                class="cancel-button"
             >
-                ------
-            </div>
+                Cancel
+            </button>
 
-            <div class="timer">
-                Changes in
-                <strong id="countdown">--</strong>
-                seconds
-            </div>
+            <button
+                id="confirmModalButton"
+                class="danger-button"
+            >
+                Confirm
+            </button>
 
         </div>
 
@@ -416,9 +1492,10 @@ button:disabled {
 
 
 <script>
+
 /* =========================================================
    WORKER
-   ========================================================= */
+========================================================= */
 
 const WORKER_URL =
     "https://sgs-pswrd.retropixel404.workers.dev";
@@ -426,49 +1503,158 @@ const WORKER_URL =
 
 /* =========================================================
    ELEMENTS
-   ========================================================= */
+========================================================= */
+
+const loginCard =
+    document.getElementById(
+        "loginCard"
+    );
+
+const dashboard =
+    document.getElementById(
+        "dashboard"
+    );
 
 const adminPassword =
-    document.getElementById("adminPassword");
+    document.getElementById(
+        "adminPassword"
+    );
 
 const unlockButton =
-    document.getElementById("unlockButton");
+    document.getElementById(
+        "unlockButton"
+    );
 
 const status =
-    document.getElementById("status");
+    document.getElementById(
+        "status"
+    );
 
-const result =
-    document.getElementById("result");
+const passwordStatus =
+    document.getElementById(
+        "passwordStatus"
+    );
 
 const currentPassword =
-    document.getElementById("currentPassword");
+    document.getElementById(
+        "currentPassword"
+    );
 
 const countdown =
-    document.getElementById("countdown");
+    document.getElementById(
+        "countdown"
+    );
+
+const ipList =
+    document.getElementById(
+        "ipList"
+    );
+
+const blockedList =
+    document.getElementById(
+        "blockedList"
+    );
+
+const blockIpInput =
+    document.getElementById(
+        "blockIpInput"
+    );
+
+const blockDurationInput =
+    document.getElementById(
+        "blockDurationInput"
+    );
+
+const blockPreset =
+    document.getElementById(
+        "blockPreset"
+    );
+
+const blockStatus =
+    document.getElementById(
+        "blockStatus"
+    );
+
+const sessionStatus =
+    document.getElementById(
+        "sessionStatus"
+    );
+
+const resetSessionsButton =
+    document.getElementById(
+        "resetSessionsButton"
+    );
+
+const refreshIpsButton =
+    document.getElementById(
+        "refreshIpsButton"
+    );
+
+const refreshBlockedButton =
+    document.getElementById(
+        "refreshBlockedButton"
+    );
+
+const logoutButton =
+    document.getElementById(
+        "logoutButton"
+    );
+
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+const confirmModal =
+    document.getElementById(
+        "confirmModal"
+    );
+
+const modalText =
+    document.getElementById(
+        "modalText"
+    );
+
+const confirmModalButton =
+    document.getElementById(
+        "confirmModalButton"
+    );
+
+const cancelModalButton =
+    document.getElementById(
+        "cancelModalButton"
+    );
 
 
 /* =========================================================
    STATE
-   ========================================================= */
+========================================================= */
 
 let adminToken = "";
 
 let expiresAt = 0;
 
-let timer = null;
+let countdownTimer = null;
 
-let loadingPassword = false;
+let passwordLoading = false;
+
+let pendingAction = null;
 
 
 /* =========================================================
    STATUS
-   ========================================================= */
+========================================================= */
 
-function showStatus(message, error = true) {
+function showStatus(
+    element,
+    message,
+    error = true
+) {
 
-    status.textContent = message;
+    element.textContent =
+        message;
 
-    status.style.color =
+    element.style.color =
         error
             ? "#ff3333"
             : "#aaaaaa";
@@ -476,91 +1662,98 @@ function showStatus(message, error = true) {
 
 
 /* =========================================================
-   GET CURRENT PASSWORD
-   ========================================================= */
+   API REQUEST
+========================================================= */
 
-async function loadPassword() {
+async function api(
+    endpoint,
+    options = {}
+) {
 
-    if (!adminToken) {
-        return;
-    }
+    const headers = {
+        ...(options.headers || {})
+    };
 
-    if (loadingPassword) {
-        return;
-    }
 
-    loadingPassword = true;
+    headers[
+        "Authorization"
+    ] =
+        `Bearer ${adminToken}`;
+
+
+    const response =
+        await fetch(
+            `${WORKER_URL}${endpoint}`,
+            {
+                ...options,
+                headers,
+                cache:
+                    "no-store"
+            }
+        );
+
+
+    let data = null;
+
 
     try {
 
-        const response =
-            await fetch(
-                `${WORKER_URL}/password`,
+        data =
+            await response.json();
+
+    } catch {
+
+        data = {};
+    }
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            data.error ||
+            data.message ||
+            `Server returned HTTP ${response.status}`
+        );
+    }
+
+
+    return data;
+}
+
+
+/* =========================================================
+   LOAD PASSWORD
+========================================================= */
+
+async function loadPassword() {
+
+    if (
+        !adminToken ||
+        passwordLoading
+    ) {
+        return;
+    }
+
+
+    passwordLoading = true;
+
+
+    try {
+
+        const data =
+            await api(
+                "/password",
                 {
-                    method: "POST",
+                    method:
+                        "POST",
 
                     headers: {
                         "Content-Type":
-                            "application/json",
-
-                        "Authorization":
-                            `Bearer ${adminToken}`
-                    },
-
-                    cache: "no-store"
+                            "application/json"
+                    }
                 }
             );
 
-
-        /* ---------------------------------------------
-           READ RESPONSE
-           --------------------------------------------- */
-
-        let data;
-
-        try {
-
-            data =
-                await response.json();
-
-        } catch {
-
-            throw new Error(
-                "Invalid response from password server."
-            );
-        }
-
-
-        /* ---------------------------------------------
-           ERROR
-           --------------------------------------------- */
-
-        if (!response.ok) {
-
-            if (response.status === 401) {
-
-                adminToken = "";
-
-                result.classList.remove(
-                    "visible"
-                );
-
-                throw new Error(
-                    "Administrator session expired."
-                );
-            }
-
-            throw new Error(
-                data.error ||
-                data.message ||
-                "Password server error."
-            );
-        }
-
-
-        /* ---------------------------------------------
-           SUCCESS CHECK
-           --------------------------------------------- */
 
         if (
             !data.success ||
@@ -569,35 +1762,24 @@ async function loadPassword() {
 
             throw new Error(
                 data.error ||
-                "Could not retrieve the current password."
+                "Could not retrieve password."
             );
         }
 
-
-        /* ---------------------------------------------
-           DISPLAY PASSWORD
-           --------------------------------------------- */
 
         currentPassword.textContent =
             data.password;
 
 
-        /*
-         * Worker should return the Unix timestamp
-         * when this password expires.
-         */
-
         expiresAt =
-            Number(data.expiresAt) || 0;
-
-
-        result.classList.add(
-            "visible"
-        );
+            Number(
+                data.expiresAt
+            ) || 0;
 
 
         showStatus(
-            "Password retrieved successfully.",
+            passwordStatus,
+            "Password loaded.",
             false
         );
 
@@ -608,26 +1790,26 @@ async function loadPassword() {
     } catch (error) {
 
         console.error(
-            "SGS password error:",
             error
         );
 
         showStatus(
-            error.message ||
-            "Could not contact the password server.",
+            passwordStatus,
+            error.message,
             true
         );
 
     } finally {
 
-        loadingPassword = false;
+        passwordLoading =
+            false;
     }
 }
 
 
 /* =========================================================
    COUNTDOWN
-   ========================================================= */
+========================================================= */
 
 function updateCountdown() {
 
@@ -657,16 +1839,9 @@ function updateCountdown() {
         remaining;
 
 
-    /* ---------------------------------------------
-       PASSWORD EXPIRED
-       --------------------------------------------- */
-
-    if (remaining <= 0) {
-
-        /*
-         * Immediately request the new
-         * password from the Worker.
-         */
+    if (
+        remaining <= 0
+    ) {
 
         loadPassword();
     }
@@ -674,18 +1849,20 @@ function updateCountdown() {
 
 
 /* =========================================================
-   TIMER
-   ========================================================= */
+   START TIMER
+========================================================= */
 
 function startTimer() {
 
-    if (timer) {
+    if (countdownTimer) {
 
-        clearInterval(timer);
+        clearInterval(
+            countdownTimer
+        );
     }
 
 
-    timer =
+    countdownTimer =
         setInterval(
             updateCountdown,
             1000
@@ -697,8 +1874,8 @@ function startTimer() {
 
 
 /* =========================================================
-   ADMINISTRATOR VERIFICATION
-   ========================================================= */
+   ADMIN LOGIN
+========================================================= */
 
 async function verifyAdmin() {
 
@@ -709,8 +1886,8 @@ async function verifyAdmin() {
     if (!password) {
 
         showStatus(
-            "Enter the administrator password.",
-            true
+            status,
+            "Enter the administrator password."
         );
 
         return;
@@ -725,48 +1902,39 @@ async function verifyAdmin() {
 
 
     showStatus(
+        status,
         "Verifying administrator password...",
         false
     );
 
 
-    result.classList.remove(
-        "visible"
-    );
-
-
     try {
-
-        /* ---------------------------------------------
-           STEP 1
-           Verify administrator password
-           --------------------------------------------- */
 
         const response =
             await fetch(
                 `${WORKER_URL}/admin/verify`,
                 {
-                    method: "POST",
+                    method:
+                        "POST",
 
                     headers: {
                         "Content-Type":
                             "application/json"
                     },
 
-                    body: JSON.stringify({
-                        password: password
-                    }),
+                    body:
+                        JSON.stringify({
+                            password
+                        }),
 
-                    cache: "no-store"
+                    cache:
+                        "no-store"
                 }
             );
 
 
-        /* ---------------------------------------------
-           READ RESPONSE
-           --------------------------------------------- */
-
         let data;
+
 
         try {
 
@@ -776,24 +1944,15 @@ async function verifyAdmin() {
         } catch {
 
             throw new Error(
-                "Invalid response from administrator server."
+                "Invalid response from Worker."
             );
         }
 
 
-        console.log(
-            "Admin verification:",
-            data
-        );
-
-
-        /* ---------------------------------------------
-           ADMIN PASSWORD WRONG
-           --------------------------------------------- */
-
-        if (!response.ok || !data.success) {
-
-            adminToken = "";
+        if (
+            !response.ok ||
+            !data.success
+        ) {
 
             throw new Error(
                 data.error ||
@@ -803,16 +1962,10 @@ async function verifyAdmin() {
         }
 
 
-        /* ---------------------------------------------
-           GET TOKEN
-           --------------------------------------------- */
-
         if (!data.token) {
 
-            adminToken = "";
-
             throw new Error(
-                "Administrator verification succeeded, but the Worker did not return a token."
+                "Worker did not return an administrator token."
             );
         }
 
@@ -821,41 +1974,40 @@ async function verifyAdmin() {
             data.token;
 
 
-        /* ---------------------------------------------
-           STEP 2
-           Get current SGS password
-           --------------------------------------------- */
+        loginCard.classList.add(
+            "hidden"
+        );
+
+        dashboard.classList.remove(
+            "hidden"
+        );
+
 
         showStatus(
-            "Administrator verified. Loading password...",
+            status,
+            "",
             false
         );
 
 
         await loadPassword();
 
+        startTimer();
 
-        /* ---------------------------------------------
-           START COUNTDOWN
-           --------------------------------------------- */
-
-        if (adminToken) {
-
-            startTimer();
-        }
+        await refreshAll();
 
 
     } catch (error) {
 
         console.error(
-            "SGS admin verification error:",
+            "Admin login:",
             error
         );
 
         showStatus(
+            status,
             error.message ||
-            "Could not contact the password server.",
-            true
+            "Unable to contact Worker."
         );
 
     } finally {
@@ -870,8 +2022,856 @@ async function verifyAdmin() {
 
 
 /* =========================================================
+   REFRESH EVERYTHING
+========================================================= */
+
+async function refreshAll() {
+
+    await Promise.all([
+        loadLoggedIps(),
+        loadBlockedIps()
+    ]);
+}
+
+
+/* =========================================================
+   LOAD LOGGED IPS
+========================================================= */
+
+async function loadLoggedIps() {
+
+    if (!adminToken) {
+        return;
+    }
+
+
+    ipList.innerHTML =
+        `<div class="empty">
+            Loading IP addresses...
+        </div>`;
+
+
+    try {
+
+        const data =
+            await api(
+                "/admin/ips",
+                {
+                    method:
+                        "GET"
+                }
+            );
+
+
+        const ips =
+            Array.isArray(
+                data.ips
+            )
+                ? data.ips
+                : [];
+
+
+        if (!ips.length) {
+
+            ipList.innerHTML =
+                `<div class="empty">
+                    No logged IP addresses.
+                </div>`;
+
+            return;
+        }
+
+
+        ipList.innerHTML =
+            "";
+
+
+        ips.forEach(
+            item => {
+
+                const ip =
+                    typeof item ===
+                    "string"
+                        ? item
+                        : item.ip;
+
+
+                if (!ip) {
+                    return;
+                }
+
+
+                const row =
+                    document.createElement(
+                        "div"
+                    );
+
+                row.className =
+                    "ip-row";
+
+
+                const info =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                const address =
+                    document.createElement(
+                        "div"
+                    );
+
+                address.className =
+                    "ip-address";
+
+                address.textContent =
+                    ip;
+
+
+                const meta =
+                    document.createElement(
+                        "div"
+                    );
+
+                meta.className =
+                    "ip-meta";
+
+
+                if (
+                    item &&
+                    typeof item ===
+                    "object"
+                ) {
+
+                    if (
+                        item.lastSeen
+                    ) {
+
+                        meta.textContent =
+                            `Last seen: ${formatDate(item.lastSeen)}`;
+
+                    } else if (
+                        item.createdAt
+                    ) {
+
+                        meta.textContent =
+                            `Logged: ${formatDate(item.createdAt)}`;
+
+                    } else {
+
+                        meta.textContent =
+                            "Logged IP";
+                    }
+
+                } else {
+
+                    meta.textContent =
+                        "Logged IP";
+                }
+
+
+                info.appendChild(
+                    address
+                );
+
+                info.appendChild(
+                    meta
+                );
+
+
+                const actions =
+                    document.createElement(
+                        "div"
+                    );
+
+                actions.className =
+                    "ip-actions";
+
+
+                const button =
+                    document.createElement(
+                        "button"
+                    );
+
+                button.className =
+                    "block-button";
+
+                button.textContent =
+                    "Block";
+
+
+                button.addEventListener(
+                    "click",
+                    () => {
+
+                        blockIpInput.value =
+                            ip;
+
+                        blockIpInput.focus();
+
+                        window.scrollTo({
+                            top:
+                                blockIpInput
+                                    .getBoundingClientRect()
+                                    .top +
+                                    window.scrollY -
+                                    100,
+
+                            behavior:
+                                "smooth"
+                        });
+
+                    }
+                );
+
+
+                actions.appendChild(
+                    button
+                );
+
+
+                row.appendChild(
+                    info
+                );
+
+                row.appendChild(
+                    actions
+                );
+
+
+                ipList.appendChild(
+                    row
+                );
+
+            }
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "IP list:",
+            error
+        );
+
+        ipList.innerHTML =
+            `<div class="empty">
+                ${escapeHtml(
+                    error.message
+                )}
+            </div>`;
+    }
+}
+
+
+/* =========================================================
+   LOAD BLOCKED IPS
+========================================================= */
+
+async function loadBlockedIps() {
+
+    if (!adminToken) {
+        return;
+    }
+
+
+    blockedList.innerHTML =
+        `<div class="empty">
+            Loading blocked IP addresses...
+        </div>`;
+
+
+    try {
+
+        const data =
+            await api(
+                "/admin/blocked",
+                {
+                    method:
+                        "GET"
+                }
+            );
+
+
+        const blocked =
+            Array.isArray(
+                data.blocked
+            )
+                ? data.blocked
+                : [];
+
+
+        if (!blocked.length) {
+
+            blockedList.innerHTML =
+                `<div class="empty">
+                    No blocked IP addresses.
+                </div>`;
+
+            return;
+        }
+
+
+        blockedList.innerHTML =
+            "";
+
+
+        blocked.forEach(
+            item => {
+
+                const ip =
+                    typeof item ===
+                    "string"
+                        ? item
+                        : item.ip;
+
+
+                if (!ip) {
+                    return;
+                }
+
+
+                const row =
+                    document.createElement(
+                        "div"
+                    );
+
+                row.className =
+                    "blocked-row";
+
+
+                const info =
+                    document.createElement(
+                        "div"
+                    );
+
+                info.className =
+                    "block-info";
+
+
+                const address =
+                    document.createElement(
+                        "div"
+                    );
+
+                address.className =
+                    "ip-address";
+
+                address.textContent =
+                    ip;
+
+
+                const meta =
+                    document.createElement(
+                        "div"
+                    );
+
+                meta.className =
+                    "block-status";
+
+
+                if (
+                    item &&
+                    typeof item ===
+                    "object"
+                ) {
+
+                    if (
+                        item.permanent
+                    ) {
+
+                        meta.textContent =
+                            "PERMANENT BLOCK";
+
+                    } else if (
+                        item.expiresAt
+                    ) {
+
+                        meta.textContent =
+                            `Blocked until ${formatDate(item.expiresAt)}`;
+
+                    } else if (
+                        item.duration
+                    ) {
+
+                        meta.textContent =
+                            `Duration: ${item.duration}`;
+
+                    } else {
+
+                        meta.textContent =
+                            "BLOCKED";
+                    }
+
+                } else {
+
+                    meta.textContent =
+                        "BLOCKED";
+                }
+
+
+                info.appendChild(
+                    address
+                );
+
+                info.appendChild(
+                    meta
+                );
+
+
+                const button =
+                    document.createElement(
+                        "button"
+                    );
+
+                button.className =
+                    "unblock-button";
+
+                button.textContent =
+                    "Revoke";
+
+
+                button.addEventListener(
+                    "click",
+                    () => {
+
+                        openConfirm(
+                            `Revoke the block on ${ip}?`,
+                            () =>
+                                unblockIp(ip)
+                        );
+
+                    }
+                );
+
+
+                row.appendChild(
+                    info
+                );
+
+                row.appendChild(
+                    button
+                );
+
+
+                blockedList.appendChild(
+                    row
+                );
+
+            }
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Blocked IP list:",
+            error
+        );
+
+        blockedList.innerHTML =
+            `<div class="empty">
+                ${escapeHtml(
+                    error.message
+                )}
+            </div>`;
+    }
+}
+
+
+/* =========================================================
+   BLOCK IP
+========================================================= */
+
+async function blockIp() {
+
+    const ip =
+        blockIpInput.value.trim();
+
+
+    let duration =
+        blockDurationInput.value.trim();
+
+
+    if (
+        !ip
+    ) {
+
+        showStatus(
+            blockStatus,
+            "Enter an IP address."
+        );
+
+        return;
+    }
+
+
+    if (
+        !duration
+    ) {
+
+        showStatus(
+            blockStatus,
+            "Enter a duration such as 30m or 2h."
+        );
+
+        return;
+    }
+
+
+    showStatus(
+        blockStatus,
+        "Blocking IP...",
+        false
+    );
+
+
+    try {
+
+        const data =
+            await api(
+                "/admin/block",
+                {
+                    method:
+                        "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+                            ip,
+                            duration
+                        })
+                }
+            );
+
+
+        showStatus(
+            blockStatus,
+            data.message ||
+            `IP ${ip} blocked successfully.`,
+            false
+        );
+
+
+        blockIpInput.value =
+            "";
+
+        blockDurationInput.value =
+            "";
+
+        blockPreset.value =
+            "";
+
+
+        await Promise.all([
+            loadLoggedIps(),
+            loadBlockedIps()
+        ]);
+
+
+    } catch (error) {
+
+        console.error(
+            "Block IP:",
+            error
+        );
+
+        showStatus(
+            blockStatus,
+            error.message ||
+            "Could not block IP."
+        );
+    }
+}
+
+
+/* =========================================================
+   UNBLOCK IP
+========================================================= */
+
+async function unblockIp(ip) {
+
+    showStatus(
+        blockStatus,
+        `Revoking block for ${ip}...`,
+        false
+    );
+
+
+    try {
+
+        const data =
+            await api(
+                "/admin/unblock",
+                {
+                    method:
+                        "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+                            ip
+                        })
+                }
+            );
+
+
+        showStatus(
+            blockStatus,
+            data.message ||
+            `Block revoked for ${ip}.`,
+            false
+        );
+
+
+        await loadBlockedIps();
+
+
+    } catch (error) {
+
+        console.error(
+            "Unblock IP:",
+            error
+        );
+
+        showStatus(
+            blockStatus,
+            error.message ||
+            "Could not revoke block."
+        );
+    }
+}
+
+
+/* =========================================================
+   RESET ALL SESSIONS
+========================================================= */
+
+async function resetSessions() {
+
+    showStatus(
+        sessionStatus,
+        "Signing everyone out...",
+        false
+    );
+
+
+    resetSessionsButton.disabled =
+        true;
+
+
+    try {
+
+        const data =
+            await api(
+                "/admin/reset-sessions",
+                {
+                    method:
+                        "POST"
+                }
+            );
+
+
+        showStatus(
+            sessionStatus,
+            data.message ||
+            "All sessions have been reset.",
+            false
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Reset sessions:",
+            error
+        );
+
+        showStatus(
+            sessionStatus,
+            error.message ||
+            "Could not reset sessions."
+        );
+
+    } finally {
+
+        resetSessionsButton.disabled =
+            false;
+    }
+}
+
+
+/* =========================================================
+   CONFIRM MODAL
+========================================================= */
+
+function openConfirm(
+    message,
+    action
+) {
+
+    modalText.textContent =
+        message;
+
+    pendingAction =
+        action;
+
+    confirmModal.classList.add(
+        "visible"
+    );
+}
+
+
+function closeConfirm() {
+
+    confirmModal.classList.remove(
+        "visible"
+    );
+
+    pendingAction =
+        null;
+}
+
+
+/* =========================================================
+   DATE FORMAT
+========================================================= */
+
+function formatDate(value) {
+
+    if (!value) {
+        return "Unknown";
+    }
+
+
+    let date;
+
+
+    if (
+        typeof value ===
+        "number"
+    ) {
+
+        /*
+         * Support either seconds
+         * or milliseconds.
+         */
+
+        date =
+            new Date(
+                value < 100000000000
+                    ? value * 1000
+                    : value
+            );
+
+    } else {
+
+        date =
+            new Date(value);
+    }
+
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return String(value);
+    }
+
+
+    return date.toLocaleString();
+}
+
+
+/* =========================================================
+   HTML ESCAPE
+========================================================= */
+
+function escapeHtml(value) {
+
+    return String(value)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+}
+
+
+/* =========================================================
+   LOGOUT / LOCK PANEL
+========================================================= */
+
+function lockPanel() {
+
+    adminToken =
+        "";
+
+    expiresAt =
+        0;
+
+
+    if (countdownTimer) {
+
+        clearInterval(
+            countdownTimer
+        );
+
+        countdownTimer =
+            null;
+    }
+
+
+    dashboard.classList.add(
+        "hidden"
+    );
+
+    loginCard.classList.remove(
+        "hidden"
+    );
+
+
+    adminPassword.value =
+        "";
+
+
+    currentPassword.textContent =
+        "------";
+
+
+    countdown.textContent =
+        "--";
+}
+
+
+/* =========================================================
    EVENTS
-   ========================================================= */
+========================================================= */
 
 unlockButton.addEventListener(
     "click",
@@ -881,9 +2881,12 @@ unlockButton.addEventListener(
 
 adminPassword.addEventListener(
     "keydown",
-    function (event) {
+    event => {
 
-        if (event.key === "Enter") {
+        if (
+            event.key ===
+            "Enter"
+        ) {
 
             event.preventDefault();
 
@@ -893,20 +2896,121 @@ adminPassword.addEventListener(
 );
 
 
-/* =========================================================
-   CLEANUP
-   ========================================================= */
+refreshIpsButton.addEventListener(
+    "click",
+    loadLoggedIps
+);
 
-window.addEventListener(
-    "beforeunload",
-    function () {
 
-        if (timer) {
+refreshBlockedButton.addEventListener(
+    "click",
+    loadBlockedIps
+);
 
-            clearInterval(timer);
+
+blockIpButton =
+    document.getElementById(
+        "blockIpButton"
+    );
+
+
+blockIpButton.addEventListener(
+    "click",
+    blockIp
+);
+
+
+blockPreset.addEventListener(
+    "change",
+    () => {
+
+        if (
+            blockPreset.value
+        ) {
+
+            blockDurationInput.value =
+                blockPreset.value;
         }
     }
 );
+
+
+resetSessionsButton.addEventListener(
+    "click",
+    () => {
+
+        openConfirm(
+            "This will invalidate every active SGS session. Everyone will have to enter the current password again. Continue?",
+            resetSessions
+        );
+
+    }
+);
+
+
+logoutButton.addEventListener(
+    "click",
+    lockPanel
+);
+
+
+cancelModalButton.addEventListener(
+    "click",
+    closeConfirm
+);
+
+
+confirmModalButton.addEventListener(
+    "click",
+    async () => {
+
+        const action =
+            pendingAction;
+
+        closeConfirm();
+
+
+        if (action) {
+
+            await action();
+        }
+
+    }
+);
+
+
+confirmModal.addEventListener(
+    "click",
+    event => {
+
+        if (
+            event.target ===
+            confirmModal
+        ) {
+
+            closeConfirm();
+        }
+    }
+);
+
+
+/* =========================================================
+   CLEANUP
+========================================================= */
+
+window.addEventListener(
+    "beforeunload",
+    () => {
+
+        if (countdownTimer) {
+
+            clearInterval(
+                countdownTimer
+            );
+        }
+    }
+);
+
 </script>
 
 </body>
