@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Password Control - SGS</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+    background: #080808;
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* =========================================================
+   TOP BAR
+   ========================================================= */
+
+.topbar {
+    width: 100%;
+    height: 50px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: linear-gradient(
+        90deg,
+        #ff0000,
+        #d00000
+    );
+
+    border-bottom: 3px solid #500000;
+
+    box-shadow:
+        0 0 12px rgba(255, 0, 0, 0.45);
+
+    font-size: 22px;
+    font-weight: 700;
+}
+
+/* =========================================================
+   PAGE
+   ========================================================= */
+
+.page {
+    min-height: calc(100vh - 50px);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 40px 20px;
+}
+
+/* =========================================================
+   CONTROL CARD
+   ========================================================= */
+
+.card {
+    width: 100%;
+    max-width: 560px;
+
+    padding: 34px 36px;
+
+    background: linear-gradient(
+        145deg,
+        #171717,
+        #101010
+    );
+
+    border: 2px solid #ff1010;
+    border-radius: 18px;
+
+    box-shadow:
+        0 0 15px rgba(255, 0, 0, 0.65),
+        0 0 35px rgba(255, 0, 0, 0.30);
+
+    text-align: center;
+}
+
+/* =========================================================
+   BADGE
+   ========================================================= */
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    padding: 8px 14px;
+
+    border: 1px solid #700000;
+    border-radius: 999px;
+
+    background: #0b0b0b;
+
+    color: #ff3333;
+
+    font-size: 12px;
+    font-weight: 800;
+
+    letter-spacing: 2px;
+
+    margin-bottom: 25px;
+}
+
+.badge-dot {
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
+
+    background: #ff2020;
+
+    box-shadow:
+        0 0 8px #ff0000;
+}
+
+/* =========================================================
+   TITLE
+   ========================================================= */
+
+h1 {
+    margin: 0 0 12px;
+
+    color: #ff1717;
+
+    font-size: 46px;
+    line-height: 1.1;
+
+    text-shadow:
+        0 0 10px rgba(255, 0, 0, 0.65),
+        0 0 25px rgba(255, 0, 0, 0.35);
+}
+
+/* =========================================================
+   DESCRIPTION
+   ========================================================= */
+
+.description {
+    max-width: 420px;
+
+    margin: 0 auto 26px;
+
+    color: #bcbcbc;
+
+    font-size: 15px;
+    line-height: 1.7;
+}
+
+/* =========================================================
+   INPUT
+   ========================================================= */
+
+input {
+    width: 100%;
+
+    height: 52px;
+
+    padding: 0 18px;
+
+    border: 1px solid #550000;
+    border-radius: 11px;
+
+    outline: none;
+
+    background: #080808;
+    color: white;
+
+    text-align: center;
+
+    font-size: 16px;
+
+    transition:
+        border-color 0.2s,
+        box-shadow 0.2s;
+}
+
+input:focus {
+    border-color: #ff1616;
+
+    box-shadow:
+        0 0 12px rgba(255, 0, 0, 0.35);
+}
+
+/* =========================================================
+   BUTTON
+   ========================================================= */
+
+button {
+    width: 100%;
+
+    height: 52px;
+
+    margin-top: 13px;
+
+    border: 2px solid #ff1515;
+    border-radius: 11px;
+
+    background: #111111;
+    color: white;
+
+    font-size: 16px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s,
+        box-shadow 0.2s,
+        transform 0.1s;
+}
+
+button:hover {
+    background: #1b1b1b;
+
+    box-shadow:
+        0 0 14px rgba(255, 0, 0, 0.65);
+}
+
+button:active {
+    transform: scale(0.99);
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* =========================================================
+   STATUS
+   ========================================================= */
+
+.status {
+    min-height: 24px;
+
+    margin-top: 18px;
+
+    color: #ff3a3a;
+
+    font-size: 14px;
+}
+
+/* =========================================================
+   PASSWORD RESULT
+   ========================================================= */
+
+.result {
+    display: none;
+
+    margin-top: 26px;
+
+    padding: 24px;
+
+    border: 1px solid #650000;
+    border-radius: 13px;
+
+    background: #0a0a0a;
+}
+
+.result.visible {
+    display: block;
+}
+
+.result-label {
+    color: #999;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    letter-spacing: 2px;
+
+    margin-bottom: 10px;
+}
+
+.current-password {
+    color: #ff1a1a;
+
+    font-size: 42px;
+    font-weight: 900;
+
+    letter-spacing: 7px;
+
+    text-shadow:
+        0 0 10px rgba(255, 0, 0, 0.7),
+        0 0 25px rgba(255, 0, 0, 0.4);
+
+    word-break: break-all;
+}
+
+.timer {
+    margin-top: 15px;
+
+    color: #cfcfcf;
+
+    font-size: 15px;
+}
+
+.timer strong {
+    color: #ff2727;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 600px) {
+    .page {
+        padding: 25px 14px;
+    }
+
+    .card {
+        padding: 28px 20px;
+    }
+
+    h1 {
+        font-size: 36px;
+    }
+
+    .current-password {
+        font-size: 34px;
+        letter-spacing: 5px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- =======================================================
+     TOP BAR
+     ======================================================= -->
+
+<div class="topbar">
+    Secret Game Site
+</div>
+
+<!-- =======================================================
+     PAGE
+     ======================================================= -->
+
+<div class="page">
+
+    <div class="card">
+
+        <div class="badge">
+            <span class="badge-dot"></span>
+            SGS • CONTROL
+        </div>
+
+        <h1>Password Control</h1>
+
+        <p class="description">
+            Enter the administrator password to view the
+            current SGS access password.
+        </p>
+
+        <input
+            id="adminPassword"
+            type="password"
+            placeholder="Administrator password"
+            autocomplete="off"
+        >
+
+        <button id="unlockButton">
+            Unlock Password
+        </button>
+
+        <div id="status" class="status"></div>
+
+        <div id="result" class="result">
+
+            <div class="result-label">
+                CURRENT SGS PASSWORD
+            </div>
+
+            <div
+                id="currentPassword"
+                class="current-password"
+            >
+                ------
+            </div>
+
+            <div class="timer">
+                Changes in
+                <strong id="countdown">--</strong>
+                seconds
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+/* =========================================================
+   CONFIG
+   ========================================================= */
+
+const WORKER_URL =
+    "https://sgs-pswrd.retropixel404.workers.dev";
+
+/* =========================================================
+   ELEMENTS
+   ========================================================= */
+
+const adminPassword =
+    document.getElementById("adminPassword");
+
+const unlockButton =
+    document.getElementById("unlockButton");
+
+const status =
+    document.getElementById("status");
+
+const result =
+    document.getElementById("result");
+
+const currentPassword =
+    document.getElementById("currentPassword");
+
+const countdown =
+    document.getElementById("countdown");
+
+/* =========================================================
+   STATE
+   ========================================================= */
+
+let adminPasswordValue = "";
+
+let timer = null;
+
+let expiresAt = 0;
+
+/* =========================================================
+   SHOW STATUS
+   ========================================================= */
+
+function showStatus(message, error = true) {
+    status.textContent = message;
+
+    status.style.color =
+        error
+            ? "#ff3333"
+            : "#aaaaaa";
+}
+
+/* =========================================================
+   FORMAT COUNTDOWN
+   ========================================================= */
+
+function updateCountdown() {
+    if (!expiresAt) {
+        countdown.textContent = "--";
+        return;
+    }
+
+    const now =
+        Math.floor(Date.now() / 1000);
+
+    const remaining =
+        Math.max(
+            0,
+            expiresAt - now
+        );
+
+    countdown.textContent =
+        remaining;
+
+    /*
+     * When the password changes, automatically
+     * request the new one from the Worker.
+     */
+    if (remaining <= 0) {
+        loadPassword();
+    }
+}
+
+/* =========================================================
+   START TIMER
+   ========================================================= */
+
+function startTimer() {
+    if (timer) {
+        clearInterval(timer);
+    }
+
+    updateCountdown();
+
+    timer = setInterval(
+        updateCountdown,
+        1000
+    );
+}
+
+/* =========================================================
+   LOAD CURRENT PASSWORD
+   ========================================================= */
+
+async function loadPassword() {
+    if (!adminPasswordValue) {
+        return;
+    }
+
+    try {
+        const response =
+            await fetch(
+                `${WORKER_URL}/password`,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        password:
+                            adminPasswordValue
+                    }),
+
+                    cache: "no-store"
+                }
+            );
+
+        let data;
+
+        try {
+            data =
+                await response.json();
+        } catch {
+            throw new Error(
+                "Invalid server response."
+            );
+        }
+
+        if (!response.ok) {
+            if (
+                response.status === 401
+            ) {
+                throw new Error(
+                    "Incorrect administrator password."
+                );
+            }
+
+            throw new Error(
+                data.error ||
+                "Password server error."
+            );
+        }
+
+        if (
+            !data.success ||
+            !data.password
+        ) {
+            throw new Error(
+                data.error ||
+                "Could not retrieve password."
+            );
+        }
+
+        /* ---------------------------------------------
+           DISPLAY PASSWORD
+           --------------------------------------------- */
+
+        currentPassword.textContent =
+            data.password;
+
+        expiresAt =
+            Number(data.expiresAt) || 0;
+
+        result.classList.add(
+            "visible"
+        );
+
+        showStatus(
+            "Password retrieved successfully.",
+            false
+        );
+
+        startTimer();
+
+    } catch (error) {
+        console.error(
+            "Password server error:",
+            error
+        );
+
+        showStatus(
+            error.message ||
+            "Could not contact the password server.",
+            true
+        );
+    }
+}
+
+/* =========================================================
+   UNLOCK
+   ========================================================= */
+
+async function unlock() {
+    const value =
+        adminPassword.value.trim();
+
+    if (!value) {
+        showStatus(
+            "Enter the administrator password."
+        );
+
+        return;
+    }
+
+    adminPasswordValue = value;
+
+    unlockButton.disabled = true;
+
+    unlockButton.textContent =
+        "Checking...";
+
+    showStatus(
+        "Contacting password server...",
+        false
+    );
+
+    result.classList.remove(
+        "visible"
+    );
+
+    await loadPassword();
+
+    unlockButton.disabled = false;
+
+    unlockButton.textContent =
+        "Unlock Password";
+}
+
+/* =========================================================
+   EVENTS
+   ========================================================= */
+
+unlockButton.addEventListener(
+    "click",
+    unlock
+);
+
+adminPassword.addEventListener(
+    "keydown",
+    (event) => {
+        if (event.key === "Enter") {
+            unlock();
+        }
+    }
+);
+</script>
+
+</body>
+</html>
