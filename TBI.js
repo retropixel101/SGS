@@ -1,34 +1,22 @@
 /* =========================================================
    SGS TOP BAR INJECTOR
-   Loads TB.html and makes every tab fully interactive.
+   Loads TB.html
+   Handles navigation
+   Handles active tab
+   Handles clock
    ========================================================= */
 
 (() => {
   "use strict";
 
+
   /* =========================================================
      SETTINGS
      ========================================================= */
 
-  const TOPBAR_CONTAINER_ID = "sgs-topbar";
-
-  /*
-   * Your shared top bar file.
-   * Keep TB.html in the same folder as this JS file.
-   */
   const TOPBAR_FILE = "TB.html";
-
-  /*
-   * Automatically figures out where this JS file is located.
-   */
-  const SCRIPT_URL =
-    document.currentScript?.src ||
-    new URL("TBI.js", document.baseURI).href;
-
-  const SITE_ROOT = new URL("./", SCRIPT_URL);
-  const TOPBAR_URL = new URL(TOPBAR_FILE, SCRIPT_URL).href;
-
-  const TIME_ID = "sgs-datetime";
+  const CONTAINER_ID = "sgs-topbar";
+  const CLOCK_ID = "sgs-datetime";
 
 
   /* =========================================================
@@ -36,26 +24,24 @@
      ========================================================= */
 
   const routes = {
-    home: "homepage.html",
-    games: "games.html",
-    utilities: "unfin.html",
-    browser: "unfin.html",
-    music: "unfin.html",
-    forums: "unfin.html",
-    settings: "unfin.html"
+    "home": "index.html",
+    "games": "games.html",
+    "utilities": "unfin.html",
+    "browser": "unfin.html",
+    "music player": "unfin.html",
+    "forums": "unfin.html",
+    "settings": "unfin.html"
   };
 
 
   /* =========================================================
-     CREATE / FIND TOP BAR CONTAINER
+     GET TOPBAR CONTAINER
      ========================================================= */
 
   function getContainer() {
 
     let container =
-      document.getElementById(
-        TOPBAR_CONTAINER_ID
-      );
+      document.getElementById(CONTAINER_ID);
 
     if (!container) {
 
@@ -63,22 +49,12 @@
         document.createElement("div");
 
       container.id =
-        TOPBAR_CONTAINER_ID;
+        CONTAINER_ID;
 
-      if (document.body.firstChild) {
-
-        document.body.insertBefore(
-          container,
-          document.body.firstChild
-        );
-
-      } else {
-
-        document.body.appendChild(
-          container
-        );
-
-      }
+      document.body.insertBefore(
+        container,
+        document.body.firstChild
+      );
     }
 
     return container;
@@ -86,67 +62,30 @@
 
 
   /* =========================================================
-     DETERMINE CURRENT PAGE
+     GET CURRENT PAGE
      ========================================================= */
 
-  function getPageKey() {
+  function getCurrentPage() {
 
-    const path =
+    let filename =
       window.location.pathname
         .split("/")
         .pop()
         .toLowerCase();
 
 
-    /*
-     * HOME
-     */
-
     if (
-      !path ||
-      path === "index.html" ||
-      path === "homepage.html" ||
-      path === ""
+      filename === "" ||
+      filename === "index.html"
     ) {
       return "home";
     }
 
 
-    /*
-     * GAMES PAGE
-     */
-
     if (
-      path === "games.html"
+      filename === "games.html"
     ) {
       return "games";
-    }
-
-
-    /*
-     * INDIVIDUAL GAME PAGES
-     *
-     * Anything inside /HTML/ is considered
-     * part of the Games section.
-     */
-
-    if (
-      window.location.pathname
-        .toLowerCase()
-        .includes("/html/")
-    ) {
-      return "games";
-    }
-
-
-    /*
-     * UNFINISHED PAGES
-     */
-
-    if (
-      path === "unfin.html"
-    ) {
-      return null;
     }
 
 
@@ -155,39 +94,15 @@
 
 
   /* =========================================================
-     UPDATE ACTIVE TAB
+     FIND TAB NAME
      ========================================================= */
 
-  function updateActiveButton() {
+  function getTabName(tab) {
 
-    const container =
-      getContainer();
-
-    if (!container) return;
-
-
-    const currentPage =
-      getPageKey();
-
-
-    const tabs =
-      container.querySelectorAll(
-        ".tab[data-page]"
-      );
-
-
-    tabs.forEach(tab => {
-
-      const page =
-        tab.dataset.page;
-
-
-      tab.classList.toggle(
-        "active",
-        page === currentPage
-      );
-
-    });
+    return tab.textContent
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, " ");
 
   }
 
@@ -196,117 +111,155 @@
      NAVIGATE
      ========================================================= */
 
-  function navigate(page) {
+  function navigate(tabName) {
+
+    const name =
+      tabName
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, " ");
+
 
     const target =
-      routes[page];
+      routes[name];
 
 
     if (!target) {
+
       console.warn(
-        "SGS Topbar: No route defined for:",
-        page
+        "SGS Topbar: No route for:",
+        name
       );
 
       return;
     }
 
 
-    const targetURL =
+    console.log(
+      "SGS Topbar: Navigating to:",
+      target
+    );
+
+
+    /*
+     * Build the URL relative to the current
+     * SGS folder.
+     */
+
+    const destination =
       new URL(
         target,
-        SITE_ROOT
+        window.location.href
       ).href;
 
 
-    /*
-     * If we're already on the requested page,
-     * don't reload it.
-     */
-
-    const currentPath =
-      window.location.pathname
-        .split("/")
-        .pop()
-        .toLowerCase();
-
-
-    const targetPath =
-      target
-        .split("/")
-        .pop()
-        .toLowerCase();
-
-
-    if (
-      currentPath === targetPath
-    ) {
-      return;
-    }
-
-
-    /*
-     * HOME also supports index.html
-     * and homepage.html.
-     */
-
-    if (
-      page === "home" &&
-      (
-        currentPath === "" ||
-        currentPath === "index.html" ||
-        currentPath === "homepage.html"
-      )
-    ) {
-      return;
-    }
-
-
-    /*
-     * Actually switch pages.
-     */
-
-    window.location.assign(
-      targetURL
-    );
+    window.location.href =
+      destination;
 
   }
 
 
   /* =========================================================
-     SET UP TAB BUTTONS
+     SET ACTIVE TAB
      ========================================================= */
 
-  function setupButtons() {
+  function updateActiveTab() {
 
     const container =
       getContainer();
 
-    if (!container) return;
+
+    const currentPage =
+      getCurrentPage();
 
 
     const tabs =
       container.querySelectorAll(
-        ".tab[data-page]"
+        ".tab"
+      );
+
+
+    tabs.forEach(tab => {
+
+      tab.classList.remove(
+        "active"
+      );
+
+
+      const name =
+        getTabName(tab);
+
+
+      if (
+        currentPage === "home" &&
+        name === "home"
+      ) {
+
+        tab.classList.add(
+          "active"
+        );
+
+      }
+
+
+      if (
+        currentPage === "games" &&
+        name === "games"
+      ) {
+
+        tab.classList.add(
+          "active"
+        );
+
+      }
+
+    });
+
+  }
+
+
+  /* =========================================================
+     SET UP TAB CLICKS
+     ========================================================= */
+
+  function setupTabs() {
+
+    const container =
+      getContainer();
+
+
+    const tabs =
+      container.querySelectorAll(
+        ".tab"
       );
 
 
     tabs.forEach(tab => {
 
       /*
-       * Remove any old listener marker.
-       * This prevents duplicate handlers if
-       * the top bar is ever reloaded.
+       * Remove any onclick attribute that
+       * may already exist inside TB.html.
+       */
+
+      tab.removeAttribute(
+        "onclick"
+      );
+
+
+      /*
+       * Prevent duplicate listeners.
        */
 
       if (
-        tab.dataset.sgsBound === "true"
+        tab.dataset.sgsNavigationBound ===
+        "true"
       ) {
         return;
       }
 
 
-      tab.dataset.sgsBound = "true";
+      tab.dataset.sgsNavigationBound =
+        "true";
 
 
       tab.addEventListener(
@@ -314,27 +267,29 @@
         function(event) {
 
           event.preventDefault();
-          event.stopPropagation();
+          event.stopImmediatePropagation();
 
 
-          const page =
-            this.dataset.page;
+          const name =
+            getTabName(this);
 
 
-          if (!page) {
-            return;
-          }
+          console.log(
+            "SGS Topbar: Tab clicked:",
+            name
+          );
 
 
-          navigate(page);
+          navigate(name);
 
-        }
+        },
+        true
       );
 
     });
 
 
-    updateActiveButton();
+    updateActiveTab();
 
   }
 
@@ -343,15 +298,15 @@
      CLOCK
      ========================================================= */
 
-  function updateDateTime() {
+  function updateClock() {
 
-    const element =
+    const clock =
       document.getElementById(
-        TIME_ID
+        CLOCK_ID
       );
 
 
-    if (!element) {
+    if (!clock) {
       return;
     }
 
@@ -384,13 +339,19 @@
     const minutes =
       String(
         now.getMinutes()
-      ).padStart(2, "0");
+      ).padStart(
+        2,
+        "0"
+      );
 
 
     const seconds =
       String(
         now.getSeconds()
-      ).padStart(2, "0");
+      ).padStart(
+        2,
+        "0"
+      );
 
 
     const ampm =
@@ -403,7 +364,7 @@
       hours % 12 || 12;
 
 
-    element.textContent =
+    clock.textContent =
       `${month} ${day}, ${year} • ${hours}:${minutes}:${seconds} ${ampm}`;
 
   }
@@ -419,23 +380,25 @@
       getContainer();
 
 
-    if (!container) {
-
-      console.error(
-        "SGS Topbar: Could not create container."
-      );
-
-      return;
-    }
-
-
     try {
+
+      /*
+       * TB.html is in the same folder
+       * as TBI.js.
+       */
+
+      const topbarURL =
+        new URL(
+          TOPBAR_FILE,
+          document.currentScript?.src ||
+          window.location.href
+        );
+
 
       const response =
         await fetch(
-          TOPBAR_URL,
+          topbarURL.href,
           {
-            method: "GET",
             cache: "no-store"
           }
         );
@@ -444,80 +407,55 @@
       if (!response.ok) {
 
         throw new Error(
-          `Could not load TB.html. HTTP ${response.status}`
+          `TB.html returned HTTP ${response.status}`
         );
 
       }
 
 
-      /*
-       * Insert the separate TB.html file.
-       */
-
-      container.innerHTML =
+      const html =
         await response.text();
 
 
       /*
-       * Make the buttons work.
+       * Insert TB.html.
        */
 
-      setupButtons();
+      container.innerHTML =
+        html;
 
 
       /*
-       * Start the clock.
+       * Set up navigation.
        */
 
-      updateDateTime();
+      setupTabs();
+
+
+      /*
+       * Start clock.
+       */
+
+      updateClock();
 
 
       setInterval(
-        updateDateTime,
+        updateClock,
         1000
       );
 
 
       console.log(
-        "SGS Topbar: TB.html loaded successfully."
+        "SGS Topbar: TB.html loaded."
       );
 
 
     } catch (error) {
 
       console.error(
-        "SGS Topbar:",
+        "SGS Topbar failed:",
         error
       );
-
-
-      /*
-       * Fallback if TB.html cannot be loaded.
-       */
-
-      container.innerHTML = `
-
-        <div style="
-          width:100%;
-          min-height:58px;
-          display:flex;
-          align-items:center;
-          padding:9px 18px;
-          background:linear-gradient(
-            90deg,
-            #ff0000,
-            #660000
-          );
-          color:#fff;
-          font-family:'Segoe UI',Arial,sans-serif;
-          font-weight:700;
-        ">
-
-          Secret Game Site
-
-        </div>
-
-      `;
 
     }
 
