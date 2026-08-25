@@ -1,11 +1,18 @@
 /* =========================================================
    SGS TOP BAR INJECTOR
-   Loads the top bar from TB.html
+   Loads TB.html
+   Handles clock
+   Handles navigation
+   Handles active/selected tab
    ========================================================= */
 
 (async function () {
 
   try {
+
+    /* =====================================================
+       LOAD TOP BAR
+       ===================================================== */
 
     const response = await fetch("TB.html", {
       cache: "no-store"
@@ -19,10 +26,6 @@
 
     const html = await response.text();
 
-    /*
-     * Inject the top bar at the very beginning
-     * of the page.
-     */
     document.body.insertAdjacentHTML(
       "afterbegin",
       html
@@ -30,7 +33,7 @@
 
 
     /* =====================================================
-       START TOP BAR CLOCK
+       CLOCK
        ===================================================== */
 
     function updateDateTime() {
@@ -72,15 +75,151 @@
 
 
     /* =====================================================
-       TOP BAR READY
+       CURRENT PAGE
        ===================================================== */
 
-    console.log("SGS: TB.html loaded successfully.");
+    const currentPath =
+      window.location.pathname
+        .split("/")
+        .pop()
+        .toLowerCase();
+
+
+    /* =====================================================
+       TAB NAVIGATION
+       ===================================================== */
+
+    const tabs =
+      document.querySelectorAll(".navbar .tab");
+
+
+    tabs.forEach(tab => {
+
+      const name =
+        tab.textContent
+          .trim()
+          .toLowerCase();
+
+
+      /* ---------------------------------------------------
+         REMOVE OLD ACTIVE STATE
+         --------------------------------------------------- */
+
+      tab.classList.remove("active");
+
+
+      /* ---------------------------------------------------
+         DETERMINE DESTINATION
+         --------------------------------------------------- */
+
+      let destination = null;
+
+      switch (name) {
+
+        case "home":
+          destination = "index.html";
+          break;
+
+        case "games":
+          destination = "games.html";
+          break;
+
+        case "utilities":
+          destination = "unfin.html";
+          break;
+
+        case "browser":
+          destination = "unfin.html";
+          break;
+
+        case "music player":
+          destination = "unfin.html";
+          break;
+
+        case "forums":
+          destination = "unfin.html";
+          break;
+
+        case "settings":
+          destination = "unfin.html";
+          break;
+
+      }
+
+
+      /* ---------------------------------------------------
+         NAVIGATION
+         --------------------------------------------------- */
+
+      if (destination) {
+
+        tab.onclick = function () {
+
+          window.location.href =
+            destination;
+
+        };
+
+      }
+
+
+      /* ---------------------------------------------------
+         ACTIVE TAB
+         --------------------------------------------------- */
+
+      if (
+        destination &&
+        destination.toLowerCase() === currentPath
+      ) {
+
+        tab.classList.add("active");
+
+      }
+
+    });
+
+
+    /* =====================================================
+       SPECIAL CASE:
+       ROOT DIRECTORY = HOME
+       ===================================================== */
+
+    if (
+      currentPath === "" ||
+      currentPath === "/" ||
+      currentPath === "index.html"
+    ) {
+
+      tabs.forEach(tab => {
+
+        if (
+          tab.textContent
+            .trim()
+            .toLowerCase() === "home"
+        ) {
+
+          tab.classList.add("active");
+
+        }
+
+      });
+
+    }
+
+
+    /* =====================================================
+       SGS READY
+       ===================================================== */
+
+    console.log(
+      "SGS: TB.html loaded and top bar initialized."
+    );
+
 
   } catch (error) {
 
     console.error(
-      "SGS: Failed to load TB.html.",
+      "SGS: Failed to load or initialize TB.html.",
       error
     );
 
