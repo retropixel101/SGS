@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+
+<style>
+
+/* =========================================================
+   SGS SHARED TOPBAR
+   ========================================================= */
+
+#sgs-navbar {
+    width: 100%;
+    min-height: 58px;
+
+    display: flex;
+    align-items: center;
+
+    position: sticky;
+    top: 0;
+
+    z-index: 9999;
+
+    padding: 8px 16px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #ff0000 0%,
+            #e00000 48%,
+            #9a0000 78%,
+            #660000 100%
+        );
+
+    border-bottom: 3px solid #4d0000;
+
+    /*
+       The glow is kept underneath the bar instead of
+       fading away strangely at the right edge.
+    */
+    box-shadow:
+        0 5px 16px rgba(255, 0, 0, 0.55);
+
+    font-family:
+        "Segoe UI",
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    color: white;
+}
+
+
+/* =========================================================
+   LEFT SIDE
+   ========================================================= */
+
+.sgs-left {
+    display: flex;
+    align-items: center;
+
+    gap: 14px;
+
+    min-width: 0;
+}
+
+.sgs-logo {
+    font-size: 1.35em;
+    font-weight: 800;
+
+    white-space: nowrap;
+
+    text-shadow:
+        0 0 8px rgba(255, 255, 255, 0.20);
+}
+
+
+/* =========================================================
+   DATE / TIME
+   ========================================================= */
+
+.sgs-datetime {
+    color: #050505;
+
+    font-size: 0.82em;
+    font-weight: 600;
+
+    white-space: nowrap;
+
+    text-shadow: none;
+}
+
+
+/* =========================================================
+   CENTER NAVIGATION
+   ========================================================= */
+
+.sgs-center {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    transform:
+        translate(-50%, -50%);
+}
+
+
+.sgs-tabs {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 6px;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   NAV BUTTON
+   ========================================================= */
+
+.sgs-tab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 34px;
+
+    padding:
+        0 12px;
+
+    border:
+        1px solid rgba(255, 255, 255, 0.05);
+
+    border-radius: 6px;
+
+    background:
+        #111111;
+
+    color:
+        #ffffff;
+
+    font-size:
+        0.78em;
+
+    font-weight:
+        600;
+
+    text-decoration:
+        none;
+
+    cursor:
+        pointer;
+
+    user-select:
+        none;
+
+    transition:
+        transform 0.18s ease,
+        background 0.18s ease,
+        box-shadow 0.18s ease,
+        border-color 0.18s ease;
+}
+
+
+.sgs-tab:hover {
+    transform:
+        translateY(-1px)
+        scale(1.03);
+
+    background:
+        #222222;
+
+    border-color:
+        rgba(255, 0, 0, 0.65);
+
+    box-shadow:
+        0 0 10px
+        rgba(255, 0, 0, 0.65);
+}
+
+
+/* =========================================================
+   ACTIVE PAGE
+   ========================================================= */
+
+.sgs-tab.sgs-active {
+    background:
+        linear-gradient(
+            180deg,
+            #520000,
+            #250000
+        );
+
+    border-color:
+        #ff2020;
+
+    box-shadow:
+        0 0 10px
+        rgba(255, 0, 0, 0.85),
+        inset 0 0 8px
+        rgba(255, 0, 0, 0.20);
+
+    transform:
+        scale(1.03);
+}
+
+
+/* =========================================================
+   DISABLED / UNFINISHED BUTTONS
+   ========================================================= */
+
+.sgs-tab.sgs-disabled {
+    cursor:
+        pointer;
+}
+
+.sgs-tab.sgs-disabled:hover {
+    background:
+        #222222;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1200px) {
+
+    #sgs-navbar {
+        padding:
+            8px 12px;
+    }
+
+    .sgs-left {
+        gap:
+            9px;
+    }
+
+    .sgs-logo {
+        font-size:
+            1.15em;
+    }
+
+    .sgs-datetime {
+        font-size:
+            0.72em;
+    }
+
+    .sgs-tabs {
+        gap:
+            5px;
+    }
+
+    .sgs-tab {
+        padding:
+            0 9px;
+
+        font-size:
+            0.72em;
+    }
+}
+
+
+@media (max-width: 900px) {
+
+    #sgs-navbar {
+        min-height:
+            54px;
+
+        padding:
+            7px 10px;
+    }
+
+    .sgs-left {
+        gap:
+            7px;
+    }
+
+    .sgs-logo {
+        font-size:
+            1em;
+    }
+
+    .sgs-datetime {
+        font-size:
+            0.67em;
+    }
+
+    .sgs-tabs {
+        gap:
+            4px;
+    }
+
+    .sgs-tab {
+        height:
+            31px;
+
+        padding:
+            0 7px;
+
+        font-size:
+            0.67em;
+    }
+}
+
+
+@media (max-width: 700px) {
+
+    #sgs-navbar {
+        position:
+            relative;
+
+        min-height:
+            auto;
+
+        padding:
+            9px 10px;
+    }
+
+    .sgs-left {
+        flex-direction:
+            column;
+
+        align-items:
+            flex-start;
+
+        gap:
+            2px;
+    }
+
+    .sgs-center {
+        position:
+            static;
+
+        transform:
+            none;
+
+        margin-left:
+            auto;
+    }
+
+    .sgs-tabs {
+        flex-wrap:
+            wrap;
+
+        justify-content:
+            flex-end;
+    }
+
+    .sgs-tab {
+        height:
+            29px;
+
+        padding:
+            0 6px;
+
+        font-size:
+            0.62em;
+    }
+}
+
+
+@media (max-width: 500px) {
+
+    #sgs-navbar {
+        align-items:
+            center;
+
+        padding:
+            8px;
+    }
+
+    .sgs-logo {
+        font-size:
+            0.9em;
+    }
+
+    .sgs-datetime {
+        font-size:
+            0.58em;
+    }
+
+    .sgs-tabs {
+        gap:
+            3px;
+    }
+
+    .sgs-tab {
+        height:
+            27px;
+
+        padding:
+            0 5px;
+
+        font-size:
+            0.57em;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="sgs-navbar">
+
+    <!-- LEFT -->
+
+    <div class="sgs-left">
+
+        <div class="sgs-logo">
+            Secret Game Site
+        </div>
+
+        <div
+            class="sgs-datetime"
+            id="sgs-datetime"
+        >
+            Loading...
+        </div>
+
+    </div>
+
+
+    <!-- CENTER -->
+
+    <div class="sgs-center">
+
+        <nav class="sgs-tabs">
+
+            <a
+                class="sgs-tab"
+                data-page="index.html"
+                href="index.html"
+            >
+                Home
+            </a>
+
+            <a
+                class="sgs-tab"
+                data-page="games.html"
+                href="games.html"
+            >
+                Games
+            </a>
+
+            <a
+                class="sgs-tab sgs-disabled"
+                data-page="unfin.html"
+                href="#"
+                data-blocked="true"
+            >
+                Utilities
+            </a>
+
+            <a
+                class="sgs-tab sgs-disabled"
+                data-page="unfin.html"
+                href="#"
+                data-blocked="true"
+            >
+                Browser
+            </a>
+
+            <a
+                class="sgs-tab sgs-disabled"
+                data-page="unfin.html"
+                href="#"
+                data-blocked="true"
+            >
+                Music Player
+            </a>
+
+            <a
+                class="sgs-tab sgs-disabled"
+                data-page="unfin.html"
+                href="#"
+                data-blocked="true"
+            >
+                Forums
+            </a>
+
+            <a
+                class="sgs-tab sgs-disabled"
+                data-page="unfin.html"
+                href="#"
+                data-blocked="true"
+            >
+                Settings
+            </a>
+
+        </nav>
+
+    </div>
+
+</div>
+
+</body>
+</html>
