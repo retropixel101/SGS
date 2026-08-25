@@ -2,403 +2,284 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>SGS Topbar</title>
 
 <style>
 
-/* =========================================================
-   SGS SHARED TOPBAR
-   ========================================================= */
-
-#sgs-navbar {
-    width: 100%;
-    min-height: 58px;
-
-    display: flex;
-    align-items: center;
-
-    position: sticky;
-    top: 0;
-
-    z-index: 9999;
-
-    padding: 8px 16px;
-
-    background:
-        linear-gradient(
-            90deg,
-            #ff0000 0%,
-            #e00000 48%,
-            #9a0000 78%,
-            #660000 100%
-        );
-
-    border-bottom: 3px solid #4d0000;
-
-    /*
-       The glow is kept underneath the bar instead of
-       fading away strangely at the right edge.
-    */
-    box-shadow:
-        0 5px 16px rgba(255, 0, 0, 0.55);
-
-    font-family:
-        "Segoe UI",
-        Arial,
-        Helvetica,
-        sans-serif;
-
-    color: white;
+* {
+  box-sizing: border-box;
 }
 
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
+}
+
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #0a0a0a;
+  color: #fff;
+  overflow-x: hidden;
+}
+
+/* =========================================================
+   NAVBAR
+   ========================================================= */
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  width: 100%;
+  min-height: 58px;
+
+  background: linear-gradient(
+    90deg,
+    #ff0000,
+    #660000
+  );
+
+  box-shadow:
+    0 0 20px #ff0000;
+
+  padding: 9px 18px;
+
+  position: relative;
+  z-index: 10;
+
+  gap: 20px;
+}
 
 /* =========================================================
    LEFT SIDE
    ========================================================= */
 
-.sgs-left {
-    display: flex;
-    align-items: center;
+.left {
+  display: flex;
+  align-items: center;
 
-    gap: 14px;
+  flex: 0 1 auto;
+  min-width: 0;
 
-    min-width: 0;
+  gap: 16px;
+
+  white-space: nowrap;
 }
 
-.sgs-logo {
-    font-size: 1.35em;
-    font-weight: 800;
+.logo {
+  font-size: 1.5em;
+  font-weight: bold;
 
-    white-space: nowrap;
-
-    text-shadow:
-        0 0 8px rgba(255, 255, 255, 0.20);
+  white-space: nowrap;
 }
 
+.datetime {
+  font-size: 0.9em;
+
+  color: #ffd6d6;
+
+  text-shadow:
+    0 0 10px #ff0000;
+
+  white-space: nowrap;
+}
 
 /* =========================================================
-   DATE / TIME
+   CENTER / NAVIGATION
    ========================================================= */
 
-.sgs-datetime {
-    color: #050505;
+.center {
+  position: absolute;
 
-    font-size: 0.82em;
-    font-weight: 600;
+  left: 50%;
+  top: 50%;
 
-    white-space: nowrap;
+  transform: translate(-50%, -50%);
 
-    text-shadow: none;
+  z-index: 3;
 }
 
+.tabs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  flex-wrap: nowrap;
+}
+
+.tab {
+  flex: 0 0 auto;
+
+  background: #111;
+
+  padding: 8px 13px;
+
+  border-radius: 6px;
+
+  color: #fff;
+
+  font-size: 0.86em;
+
+  white-space: nowrap;
+
+  cursor: pointer;
+
+  transition: 0.25s ease;
+
+  text-decoration: none;
+}
+
+.tab:hover {
+  transform: translateY(-1px);
+
+  background: #222;
+
+  box-shadow:
+    0 0 10px #ff0000;
+}
+
+.tab.active {
+  background: #330000;
+
+  box-shadow:
+    0 0 12px #ff0000;
+}
 
 /* =========================================================
-   CENTER NAVIGATION
+   NAVBAR SCALING FIX
    ========================================================= */
 
-.sgs-center {
-    position: absolute;
+/*
+   Switch to the stacked layout early enough that the
+   timestamp never gets squeezed into the navigation.
+*/
 
-    left: 50%;
-    top: 50%;
+@media (max-width: 1500px) {
 
-    transform:
-        translate(-50%, -50%);
-}
-
-
-.sgs-tabs {
-    display: flex;
+  .navbar {
+    flex-direction: column;
 
     align-items: center;
     justify-content: center;
+
+    gap: 8px;
+
+    padding: 9px 12px 10px;
+
+    min-height: auto;
+  }
+
+  .left {
+    width: 100%;
+
+    justify-content: center;
+
+    flex-wrap: wrap;
+
+    gap: 8px 14px;
+  }
+
+  .center {
+    position: static;
+
+    width: 100%;
+
+    transform: none;
+  }
+
+  .tabs {
+    width: 100%;
+
+    justify-content: center;
+
+    flex-wrap: wrap;
 
     gap: 6px;
+  }
+
+  .tab {
+    flex: 0 0 auto;
+
+    padding: 7px 11px;
+
+    font-size: 0.82em;
 
     white-space: nowrap;
+  }
 }
-
 
 /* =========================================================
-   NAV BUTTON
+   SMALLER SCREENS
    ========================================================= */
 
-.sgs-tab {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+@media (max-width: 800px) {
 
-    height: 34px;
+  .navbar {
+    padding: 8px 10px 9px;
 
-    padding:
-        0 12px;
+    gap: 7px;
+  }
 
-    border:
-        1px solid rgba(255, 255, 255, 0.05);
+  .left {
+    flex-direction: column;
 
-    border-radius: 6px;
+    gap: 3px;
+  }
 
-    background:
-        #111111;
+  .logo {
+    font-size: 1.2em;
+  }
 
-    color:
-        #ffffff;
+  .datetime {
+    font-size: 0.72em;
+  }
 
-    font-size:
-        0.78em;
+  .tabs {
+    gap: 4px;
+  }
 
-    font-weight:
-        600;
+  .tab {
+    padding: 6px 8px;
 
-    text-decoration:
-        none;
-
-    cursor:
-        pointer;
-
-    user-select:
-        none;
-
-    transition:
-        transform 0.18s ease,
-        background 0.18s ease,
-        box-shadow 0.18s ease,
-        border-color 0.18s ease;
+    font-size: 0.7em;
+  }
 }
-
-
-.sgs-tab:hover {
-    transform:
-        translateY(-1px)
-        scale(1.03);
-
-    background:
-        #222222;
-
-    border-color:
-        rgba(255, 0, 0, 0.65);
-
-    box-shadow:
-        0 0 10px
-        rgba(255, 0, 0, 0.65);
-}
-
 
 /* =========================================================
-   ACTIVE PAGE
+   VERY SMALL SCREENS
    ========================================================= */
 
-.sgs-tab.sgs-active {
-    background:
-        linear-gradient(
-            180deg,
-            #520000,
-            #250000
-        );
+@media (max-width: 450px) {
 
-    border-color:
-        #ff2020;
+  .navbar {
+    padding: 7px 8px 8px;
+  }
 
-    box-shadow:
-        0 0 10px
-        rgba(255, 0, 0, 0.85),
-        inset 0 0 8px
-        rgba(255, 0, 0, 0.20);
+  .logo {
+    font-size: 1.1em;
+  }
 
-    transform:
-        scale(1.03);
-}
+  .datetime {
+    font-size: 0.68em;
+  }
 
+  .tabs {
+    gap: 3px;
+  }
 
-/* =========================================================
-   DISABLED / UNFINISHED BUTTONS
-   ========================================================= */
+  .tab {
+    padding: 6px 7px;
 
-.sgs-tab.sgs-disabled {
-    cursor:
-        pointer;
-}
-
-.sgs-tab.sgs-disabled:hover {
-    background:
-        #222222;
-}
-
-
-/* =========================================================
-   RESPONSIVE
-   ========================================================= */
-
-@media (max-width: 1200px) {
-
-    #sgs-navbar {
-        padding:
-            8px 12px;
-    }
-
-    .sgs-left {
-        gap:
-            9px;
-    }
-
-    .sgs-logo {
-        font-size:
-            1.15em;
-    }
-
-    .sgs-datetime {
-        font-size:
-            0.72em;
-    }
-
-    .sgs-tabs {
-        gap:
-            5px;
-    }
-
-    .sgs-tab {
-        padding:
-            0 9px;
-
-        font-size:
-            0.72em;
-    }
-}
-
-
-@media (max-width: 900px) {
-
-    #sgs-navbar {
-        min-height:
-            54px;
-
-        padding:
-            7px 10px;
-    }
-
-    .sgs-left {
-        gap:
-            7px;
-    }
-
-    .sgs-logo {
-        font-size:
-            1em;
-    }
-
-    .sgs-datetime {
-        font-size:
-            0.67em;
-    }
-
-    .sgs-tabs {
-        gap:
-            4px;
-    }
-
-    .sgs-tab {
-        height:
-            31px;
-
-        padding:
-            0 7px;
-
-        font-size:
-            0.67em;
-    }
-}
-
-
-@media (max-width: 700px) {
-
-    #sgs-navbar {
-        position:
-            relative;
-
-        min-height:
-            auto;
-
-        padding:
-            9px 10px;
-    }
-
-    .sgs-left {
-        flex-direction:
-            column;
-
-        align-items:
-            flex-start;
-
-        gap:
-            2px;
-    }
-
-    .sgs-center {
-        position:
-            static;
-
-        transform:
-            none;
-
-        margin-left:
-            auto;
-    }
-
-    .sgs-tabs {
-        flex-wrap:
-            wrap;
-
-        justify-content:
-            flex-end;
-    }
-
-    .sgs-tab {
-        height:
-            29px;
-
-        padding:
-            0 6px;
-
-        font-size:
-            0.62em;
-    }
-}
-
-
-@media (max-width: 500px) {
-
-    #sgs-navbar {
-        align-items:
-            center;
-
-        padding:
-            8px;
-    }
-
-    .sgs-logo {
-        font-size:
-            0.9em;
-    }
-
-    .sgs-datetime {
-        font-size:
-            0.58em;
-    }
-
-    .sgs-tabs {
-        gap:
-            3px;
-    }
-
-    .sgs-tab {
-        height:
-            27px;
-
-        padding:
-            0 5px;
-
-        font-size:
-            0.57em;
-    }
+    font-size: 0.67em;
+  }
 }
 
 </style>
@@ -406,98 +287,119 @@
 
 <body>
 
-<div id="sgs-navbar">
+<!-- =======================================================
+     SGS TOPBAR
+     ======================================================= -->
 
-    <!-- LEFT -->
+<div class="navbar">
 
-    <div class="sgs-left">
+  <div class="left">
 
-        <div class="sgs-logo">
-            Secret Game Site
-        </div>
+    <div class="logo">
+      Secret Game Site
+    </div>
 
-        <div
-            class="sgs-datetime"
-            id="sgs-datetime"
-        >
-            Loading...
-        </div>
+    <div class="datetime" id="datetime">
+      Loading...
+    </div>
+
+  </div>
+
+
+  <div class="center">
+
+    <div class="tabs">
+
+      <div class="tab active">
+        Home
+      </div>
+
+      <div class="tab">
+        Games
+      </div>
+
+      <div class="tab">
+        Utilities
+      </div>
+
+      <div class="tab">
+        Browser
+      </div>
+
+      <div class="tab">
+        Music Player
+      </div>
+
+      <div class="tab">
+        Forums
+      </div>
+
+      <div class="tab">
+        Settings
+      </div>
 
     </div>
 
-
-    <!-- CENTER -->
-
-    <div class="sgs-center">
-
-        <nav class="sgs-tabs">
-
-            <a
-                class="sgs-tab"
-                data-page="index.html"
-                href="index.html"
-            >
-                Home
-            </a>
-
-            <a
-                class="sgs-tab"
-                data-page="games.html"
-                href="games.html"
-            >
-                Games
-            </a>
-
-            <a
-                class="sgs-tab sgs-disabled"
-                data-page="unfin.html"
-                href="#"
-                data-blocked="true"
-            >
-                Utilities
-            </a>
-
-            <a
-                class="sgs-tab sgs-disabled"
-                data-page="unfin.html"
-                href="#"
-                data-blocked="true"
-            >
-                Browser
-            </a>
-
-            <a
-                class="sgs-tab sgs-disabled"
-                data-page="unfin.html"
-                href="#"
-                data-blocked="true"
-            >
-                Music Player
-            </a>
-
-            <a
-                class="sgs-tab sgs-disabled"
-                data-page="unfin.html"
-                href="#"
-                data-blocked="true"
-            >
-                Forums
-            </a>
-
-            <a
-                class="sgs-tab sgs-disabled"
-                data-page="unfin.html"
-                href="#"
-                data-blocked="true"
-            >
-                Settings
-            </a>
-
-        </nav>
-
-    </div>
+  </div>
 
 </div>
+
+
+<script>
+
+/* =========================================================
+   LIVE DATE / TIME
+   ========================================================= */
+
+function updateDateTime() {
+
+  const now = new Date();
+
+  const month = now.toLocaleString('en-US', {
+    month: 'long'
+  });
+
+  const day = now.getDate();
+
+  const year = now.getFullYear();
+
+  let hours = now.getHours();
+
+  const minutes = String(
+    now.getMinutes()
+  ).padStart(2, '0');
+
+  const seconds = String(
+    now.getSeconds()
+  ).padStart(2, '0');
+
+  const ampm =
+    hours >= 12
+      ? "PM"
+      : "AM";
+
+  hours =
+    hours % 12 || 12;
+
+  document.getElementById(
+    'datetime'
+  ).textContent =
+    `${month} ${day}, ${year} • ${hours}:${minutes}:${seconds} ${ampm}`;
+}
+
+
+/* =========================================================
+   START CLOCK
+   ========================================================= */
+
+setInterval(
+  updateDateTime,
+  1000
+);
+
+updateDateTime();
+
+</script>
 
 </body>
 </html>
