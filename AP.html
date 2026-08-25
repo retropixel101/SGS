@@ -10,6 +10,10 @@
 
 <style>
 
+/* =========================================================
+   GLOBAL
+   ========================================================= */
+
 * {
     box-sizing: border-box;
 }
@@ -63,7 +67,7 @@ body {
         0 0 20px #ff0000;
 
     padding:
-        12px 20px;
+        12px 26px;
 
     font-size:
         1.5em;
@@ -91,10 +95,10 @@ body {
         center;
 
     align-items:
-        center;
+        flex-start;
 
     padding:
-        50px 20px 60px;
+        65px 30px 90px;
 
     position:
         relative;
@@ -107,10 +111,10 @@ body {
 
 .card {
     width:
-        min(680px, 90vw);
+        min(1080px, 94vw);
 
     padding:
-        42px 38px 38px;
+        48px 48px 52px;
 
     background:
         linear-gradient(
@@ -123,7 +127,7 @@ body {
         2px solid #ff1111;
 
     border-radius:
-        16px;
+        18px;
 
     box-shadow:
         0 0 25px rgba(255, 0, 0, 0.55),
@@ -140,7 +144,7 @@ body {
 
 .login-section {
     max-width:
-        560px;
+        680px;
 
     margin:
         0 auto;
@@ -168,7 +172,7 @@ body {
         8px;
 
     margin-bottom:
-        16px;
+        18px;
 
     padding:
         7px 13px;
@@ -246,10 +250,10 @@ h1 {
 
 .description {
     margin:
-        0 auto 26px;
+        0 auto 30px;
 
     max-width:
-        560px;
+        620px;
 
     color:
         #c7c7c7;
@@ -404,7 +408,7 @@ button:disabled {
         none;
 
     margin-top:
-        30px;
+        42px;
 }
 
 .admin-content.visible {
@@ -428,10 +432,16 @@ button:disabled {
         center;
 
     gap:
-        20px;
+        25px;
 
     margin-bottom:
-        25px;
+        32px;
+
+    padding-bottom:
+        24px;
+
+    border-bottom:
+        1px solid #292929;
 }
 
 .admin-header h2 {
@@ -442,7 +452,10 @@ button:disabled {
         #ff1717;
 
     font-size:
-        28px;
+        30px;
+
+    text-shadow:
+        0 0 12px rgba(255, 0, 0, 0.25);
 }
 
 .header-buttons {
@@ -455,7 +468,7 @@ button:disabled {
 
 .header-buttons button {
     padding:
-        0 18px;
+        0 20px;
 }
 
 
@@ -465,22 +478,25 @@ button:disabled {
 
 .password-box {
     padding:
-        24px;
+        30px;
 
     border:
         1px solid #650000;
 
     border-radius:
-        13px;
+        14px;
 
     background:
         #0a0a0a;
 
     margin-bottom:
-        25px;
+        30px;
 
     text-align:
         center;
+
+    box-shadow:
+        inset 0 0 30px rgba(255, 0, 0, 0.025);
 }
 
 .result-label {
@@ -497,7 +513,7 @@ button:disabled {
         2px;
 
     margin-bottom:
-        10px;
+        12px;
 }
 
 .current-password {
@@ -505,7 +521,7 @@ button:disabled {
         #ff1a1a;
 
     font-size:
-        42px;
+        46px;
 
     font-weight:
         900;
@@ -523,7 +539,7 @@ button:disabled {
 
 .timer {
     margin-top:
-        15px;
+        16px;
 
     color:
         #cfcfcf;
@@ -544,10 +560,10 @@ button:disabled {
 
 .panel-section {
     margin-top:
-        25px;
+        30px;
 
     padding:
-        22px;
+        28px;
 
     border:
         1px solid #2d2d2d;
@@ -557,17 +573,20 @@ button:disabled {
 
     background:
         #0c0c0c;
+
+    box-shadow:
+        0 0 20px rgba(0, 0, 0, 0.18);
 }
 
 .panel-section h3 {
     margin:
-        0 0 18px;
+        0 0 20px;
 
     color:
         #ff2222;
 
     font-size:
-        20px;
+        21px;
 }
 
 
@@ -580,10 +599,12 @@ button:disabled {
         grid;
 
     grid-template-columns:
-        1fr 180px 150px;
+        minmax(0, 1fr)
+        200px
+        160px;
 
     gap:
-        10px;
+        12px;
 }
 
 
@@ -599,7 +620,7 @@ button:disabled {
         column;
 
     gap:
-        10px;
+        12px;
 }
 
 .ip-entry {
@@ -617,19 +638,19 @@ button:disabled {
         grid;
 
     grid-template-columns:
-        minmax(120px, 1fr)
-        100px
-        155px
+        minmax(180px, 1fr)
+        130px
+        190px
         auto;
 
     gap:
-        10px;
+        14px;
 
     align-items:
         center;
 
     padding:
-        12px;
+        15px;
 
     border:
         1px solid #252525;
@@ -688,6 +709,9 @@ button:disabled {
 
     flex-wrap:
         wrap;
+
+    justify-content:
+        flex-end;
 }
 
 .ip-actions button {
@@ -695,7 +719,7 @@ button:disabled {
         36px;
 
     padding:
-        0 10px;
+        0 11px;
 
     font-size:
         12px;
@@ -721,60 +745,444 @@ button:disabled {
 
 
 /* =========================================================
-   IP INFORMATION BOX
+   OLD INLINE INFO BOX
    ========================================================= */
 
 .ip-info-box {
     display:
         none;
+}
 
-    margin-top:
-        8px;
+
+/* =========================================================
+   BLOCKED IP
+   ========================================================= */
+
+.blocked-row {
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    align-items:
+        center;
+
+    gap:
+        20px;
 
     padding:
         16px;
 
     border:
-        1px solid #3b1515;
+        1px solid #3a0000;
 
     border-radius:
         10px;
 
     background:
-        linear-gradient(
-            145deg,
-            #151515,
-            #0b0b0b
-        );
-
-    box-shadow:
-        0 0 15px rgba(255, 0, 0, 0.12);
-
-    animation:
-        infoIn 0.2s ease both;
+        #160808;
 }
 
-.ip-info-box.visible {
+.blocked-info {
     display:
-        block;
+        flex;
+
+    flex-direction:
+        column;
+
+    gap:
+        5px;
 }
 
-.ip-info-title {
-    margin-bottom:
-        13px;
+.blocked-ip {
+    font-family:
+        monospace;
 
     color:
-        #ff3333;
+        #ff4444;
+}
+
+.blocked-time {
+    color:
+        #999;
+
+    font-size:
+        12px;
+}
+
+.empty {
+    padding:
+        24px;
+
+    text-align:
+        center;
+
+    color:
+        #777;
 
     font-size:
         14px;
+}
+
+
+/* =========================================================
+   DANGER
+   ========================================================= */
+
+.danger {
+    border-color:
+        #5c0000;
+
+    background:
+        linear-gradient(
+            145deg,
+            #110707,
+            #0c0c0c
+        );
+}
+
+.danger button {
+    border-color:
+        #ff0000;
+
+    background:
+        #160000;
+}
+
+.danger button:hover {
+    background:
+        #260000;
+
+    box-shadow:
+        0 0 20px rgba(255, 0, 0, 0.45);
+}
+
+
+/* =========================================================
+   POPUP OVERLAY
+   ========================================================= */
+
+.popup-overlay {
+    position:
+        fixed;
+
+    inset:
+        0;
+
+    display:
+        none;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    padding:
+        16px;
+
+    background:
+        rgba(0, 0, 0, 0.72);
+
+    backdrop-filter:
+        blur(5px);
+
+    -webkit-backdrop-filter:
+        blur(5px);
+
+    z-index:
+        99999;
+}
+
+.popup-overlay.visible {
+    display:
+        flex;
+}
+
+
+/* =========================================================
+   POPUP BOX
+   ========================================================= */
+
+.popup-box {
+    width:
+        min(500px, calc(100vw - 32px));
+
+    max-height:
+        min(650px, calc(100vh - 32px));
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    background:
+        #0f0f0f;
+
+    border:
+        1px solid #ff2222;
+
+    border-radius:
+        14px;
+
+    overflow:
+        hidden;
+
+    box-shadow:
+        0 0 22px rgba(255, 0, 0, 0.55),
+        0 0 60px rgba(255, 0, 0, 0.16);
+
+    animation:
+        popupIn 0.2s ease-out;
+}
+
+
+/* =========================================================
+   POPUP HEADER
+   ========================================================= */
+
+.popup-header {
+    position:
+        relative;
+
+    min-height:
+        68px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    padding:
+        16px 54px 16px 22px;
+
+    border-bottom:
+        1px solid #2b2b2b;
+
+    background:
+        linear-gradient(
+            180deg,
+            #171717,
+            #101010
+        );
+}
+
+.popup-title {
+    margin:
+        0;
+
+    font-size:
+        1.35em;
+
+    font-weight:
+        750;
+
+    color:
+        #fff;
+
+    text-shadow:
+        0 0 10px rgba(255, 0, 0, 0.35);
+}
+
+
+/* =========================================================
+   CLOSE BUTTON
+   ========================================================= */
+
+.popup-close {
+    position:
+        absolute;
+
+    right:
+        17px;
+
+    top:
+        50%;
+
+    transform:
+        translateY(-50%);
+
+    width:
+        34px;
+
+    height:
+        34px;
+
+    padding:
+        0;
+
+    border:
+        1px solid #555;
+
+    border-radius:
+        8px;
+
+    background:
+        #111;
+
+    color:
+        #aaa;
+
+    font-size:
+        20px;
+
+    line-height:
+        1;
+}
+
+.popup-close:hover {
+    border-color:
+        #ff3333;
+
+    color:
+        #fff;
+
+    background:
+        #1b1b1b;
+}
+
+
+/* =========================================================
+   POPUP BODY
+   ========================================================= */
+
+.popup-body {
+    padding:
+        20px 22px 22px;
+
+    overflow-y:
+        auto;
+}
+
+.popup-label {
+    display:
+        block;
+
+    margin-bottom:
+        8px;
+
+    color:
+        #ff4b4b;
+
+    font-size:
+        0.72em;
 
     font-weight:
         800;
 
     letter-spacing:
-        1px;
+        2px;
+
+    text-transform:
+        uppercase;
 }
+
+.popup-text {
+    margin:
+        0;
+
+    color:
+        #ddd;
+
+    line-height:
+        1.55;
+
+    font-size:
+        0.96em;
+}
+
+
+/* =========================================================
+   POPUP FOOTER
+   ========================================================= */
+
+.popup-footer {
+    display:
+        flex;
+
+    justify-content:
+        flex-end;
+
+    gap:
+        10px;
+
+    margin-top:
+        20px;
+
+    padding-top:
+        16px;
+
+    border-top:
+        1px solid #292929;
+}
+
+.popup-footer button {
+    min-width:
+        110px;
+
+    height:
+        44px;
+}
+
+
+/* =========================================================
+   POPUP CANCEL
+   ========================================================= */
+
+.popup-cancel {
+    border-color:
+        #555;
+
+    color:
+        #ccc;
+}
+
+.popup-cancel:hover {
+    border-color:
+        #777;
+}
+
+
+/* =========================================================
+   POPUP DANGER
+   ========================================================= */
+
+.popup-danger {
+    border-color:
+        #ff2222;
+
+    background:
+        #160000;
+}
+
+.popup-danger:hover {
+    background:
+        #250000;
+
+    box-shadow:
+        0 0 18px rgba(255, 0, 0, 0.55);
+}
+
+
+/* =========================================================
+   IP INFO POPUP
+   ========================================================= */
+
+#ip-info-popup-box {
+    width:
+        min(700px, calc(100vw - 32px));
+
+    max-height:
+        min(700px, calc(100vh - 32px));
+}
+
+
+/* =========================================================
+   IP INFO GRID
+   ========================================================= */
 
 .ip-info-grid {
     display:
@@ -784,12 +1192,12 @@ button:disabled {
         repeat(2, minmax(0, 1fr));
 
     gap:
-        8px;
+        10px;
 }
 
 .ip-info-item {
     padding:
-        10px;
+        11px;
 
     border:
         1px solid #242424;
@@ -849,7 +1257,7 @@ button:disabled {
         center;
 
     padding:
-        10px;
+        30px 10px;
 }
 
 .ip-info-error {
@@ -863,97 +1271,7 @@ button:disabled {
         center;
 
     padding:
-        10px;
-}
-
-
-/* =========================================================
-   BLOCKED IP
-   ========================================================= */
-
-.blocked-row {
-    display:
-        flex;
-
-    justify-content:
-        space-between;
-
-    align-items:
-        center;
-
-    gap:
-        15px;
-
-    padding:
-        14px;
-
-    border:
-        1px solid #3a0000;
-
-    border-radius:
-        10px;
-
-    background:
-        #160808;
-}
-
-.blocked-info {
-    display:
-        flex;
-
-    flex-direction:
-        column;
-
-    gap:
-        5px;
-}
-
-.blocked-ip {
-    font-family:
-        monospace;
-
-    color:
-        #ff4444;
-}
-
-.blocked-time {
-    color:
-        #999;
-
-    font-size:
-        12px;
-}
-
-.empty {
-    padding:
-        20px;
-
-    text-align:
-        center;
-
-    color:
-        #777;
-
-    font-size:
-        14px;
-}
-
-
-/* =========================================================
-   DANGER
-   ========================================================= */
-
-.danger {
-    border-color:
-        #5c0000;
-}
-
-.danger button {
-    border-color:
-        #ff0000;
-
-    background:
-        #160000;
+        25px 10px;
 }
 
 
@@ -982,6 +1300,27 @@ button:disabled {
     }
 }
 
+@keyframes popupIn {
+
+    from {
+        opacity:
+            0;
+
+        transform:
+            translateY(8px)
+            scale(0.97);
+    }
+
+    to {
+        opacity:
+            1;
+
+        transform:
+            translateY(0)
+            scale(1);
+    }
+}
+
 @keyframes blink {
 
     0%,
@@ -996,46 +1335,49 @@ button:disabled {
     }
 }
 
-@keyframes infoIn {
-
-    from {
-        opacity:
-            0;
-
-        transform:
-            translateY(-4px);
-    }
-
-    to {
-        opacity:
-            1;
-
-        transform:
-            translateY(0);
-    }
-}
-
 
 /* =========================================================
    RESPONSIVE
    ========================================================= */
 
+@media (max-width: 850px) {
+
+    .card {
+        width:
+            min(1080px, 96vw);
+
+        padding:
+            40px 30px 44px;
+    }
+
+    .ip-row {
+        grid-template-columns:
+            minmax(150px, 1fr)
+            110px
+            150px
+            auto;
+    }
+
+    .action-row {
+        grid-template-columns:
+            1fr 170px 140px;
+    }
+}
+
+
 @media (max-width: 700px) {
 
     .page {
         padding:
-            35px 12px 45px;
+            35px 12px 55px;
     }
 
     .card {
         width:
-            min(
-                680px,
-                calc(100vw - 24px)
-            );
+            calc(100vw - 24px);
 
         padding:
-            32px 20px 28px;
+            32px 20px 35px;
 
         border-radius:
             13px;
@@ -1070,16 +1412,14 @@ button:disabled {
     .ip-actions {
         width:
             100%;
+
+        justify-content:
+            flex-start;
     }
 
     .ip-actions button {
         flex:
             1;
-    }
-
-    .ip-info-grid {
-        grid-template-columns:
-            1fr;
     }
 
     .blocked-row {
@@ -1090,11 +1430,22 @@ button:disabled {
             stretch;
     }
 
+    .blocked-row .ip-actions {
+        justify-content:
+            stretch;
+    }
+
     .blocked-row button {
         width:
             100% !important;
     }
+
+    .ip-info-grid {
+        grid-template-columns:
+            1fr;
+    }
 }
+
 
 @media (max-width: 560px) {
 
@@ -1116,16 +1467,10 @@ button:disabled {
 
     .card {
         width:
-            min(
-                680px,
-                calc(100vw - 24px)
-            );
+            calc(100vw - 24px);
 
         padding:
-            32px 20px 28px;
-
-        border-radius:
-            13px;
+            30px 18px 32px;
     }
 
     .description {
@@ -1144,6 +1489,21 @@ button:disabled {
     .header-buttons {
         grid-template-columns:
             1fr;
+    }
+
+    .panel-section {
+        padding:
+            22px 18px;
+    }
+
+    .popup-footer {
+        flex-direction:
+            column-reverse;
+    }
+
+    .popup-footer button {
+        width:
+            100%;
     }
 }
 
@@ -1179,24 +1539,18 @@ button:disabled {
 <div class="login-section">
 
     <div class="badge">
-
         <span class="badge-dot"></span>
-
         SGS • CONTROL
-
     </div>
-
 
     <h1>
         Admin Panel
     </h1>
 
-
     <p class="description">
         Enter the administrator password to access
         SGS controls.
     </p>
-
 
     <input
         id="adminPassword"
@@ -1205,11 +1559,9 @@ button:disabled {
         autocomplete="off"
     >
 
-
     <button id="unlockButton">
         Enter
     </button>
-
 
     <div
         id="status"
@@ -1235,19 +1587,13 @@ button:disabled {
         SGS Controls
     </h2>
 
-
     <div class="header-buttons">
 
-        <button
-            id="refreshButton"
-        >
+        <button id="refreshButton">
             Refresh
         </button>
 
-
-        <button
-            id="logoutAdminButton"
-        >
+        <button id="logoutAdminButton">
             Lock Panel
         </button>
 
@@ -1266,14 +1612,12 @@ button:disabled {
         CURRENT SGS PASSWORD
     </div>
 
-
     <div
         id="currentPassword"
         class="current-password"
     >
         ------
     </div>
-
 
     <div class="timer">
 
@@ -1291,7 +1635,7 @@ button:disabled {
 
 
 <!-- =========================================================
-     IP BLOCKER
+     BLOCK IP
      ========================================================= -->
 
 <div class="panel-section">
@@ -1299,7 +1643,6 @@ button:disabled {
     <h3>
         Block an IP
     </h3>
-
 
     <div class="action-row">
 
@@ -1310,7 +1653,6 @@ button:disabled {
             autocomplete="off"
         >
 
-
         <input
             id="blockDuration"
             type="text"
@@ -1318,15 +1660,11 @@ button:disabled {
             autocomplete="off"
         >
 
-
-        <button
-            id="blockButton"
-        >
+        <button id="blockButton">
             Block IP
         </button>
 
     </div>
-
 
     <div
         style="
@@ -1335,14 +1673,12 @@ button:disabled {
             font-size:12px;
         "
     >
-
         Examples:
         30s, 5m, 2h, 1d, 1w, or
 
         <strong style="color:#ff4444;">
             permanent
         </strong>
-
     </div>
 
 </div>
@@ -1357,7 +1693,6 @@ button:disabled {
     <h3>
         Logged IPs
     </h3>
-
 
     <div
         id="ipList"
@@ -1377,7 +1712,6 @@ button:disabled {
         Blocked IPs
     </h3>
 
-
     <div
         id="blockedList"
         class="ip-list"
@@ -1396,19 +1730,18 @@ button:disabled {
         Global Session Reset
     </h3>
 
-
     <p
         style="
             color:#999;
             font-size:14px;
             line-height:1.6;
+            margin:0 0 20px;
         "
     >
         This immediately invalidates every active
         SGS login session. Everyone will have to
         enter the current SGS password again.
     </p>
-
 
     <button
         id="resetSessionsButton"
@@ -1423,6 +1756,121 @@ button:disabled {
 </div>
 
 </div>
+
+</div>
+
+
+<!-- =========================================================
+     CONFIRMATION POPUP
+     ========================================================= -->
+
+<div
+    id="confirmOverlay"
+    class="popup-overlay"
+>
+
+    <div class="popup-box">
+
+        <div class="popup-header">
+
+            <h3
+                id="confirmTitle"
+                class="popup-title"
+            >
+                Confirm Action
+            </h3>
+
+            <button
+                id="confirmClose"
+                class="popup-close"
+                aria-label="Close"
+            >
+                ×
+            </button>
+
+        </div>
+
+        <div class="popup-body">
+
+            <span class="popup-label">
+                Confirmation Required
+            </span>
+
+            <p
+                id="confirmMessage"
+                class="popup-text"
+            ></p>
+
+            <div class="popup-footer">
+
+                <button
+                    id="confirmCancel"
+                    class="popup-cancel"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    id="confirmAccept"
+                    class="popup-danger"
+                >
+                    Continue
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     IP INFORMATION POPUP
+     ========================================================= -->
+
+<div
+    id="ipInfoOverlay"
+    class="popup-overlay"
+>
+
+    <div
+        id="ip-info-popup-box"
+        class="popup-box"
+    >
+
+        <div class="popup-header">
+
+            <h3
+                id="ipInfoTitle"
+                class="popup-title"
+            >
+                IP Information
+            </h3>
+
+            <button
+                id="ipInfoClose"
+                class="popup-close"
+                aria-label="Close"
+            >
+                ×
+            </button>
+
+        </div>
+
+        <div
+            id="ipInfoBody"
+            class="popup-body"
+        >
+
+            <div class="ip-info-loading">
+                Loading information...
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
 
@@ -1443,88 +1891,99 @@ const WORKER_URL =
    ========================================================= */
 
 const adminPassword =
-    document.getElementById(
-        "adminPassword"
-    );
+    document.getElementById("adminPassword");
 
 const unlockButton =
-    document.getElementById(
-        "unlockButton"
-    );
+    document.getElementById("unlockButton");
 
 const status =
-    document.getElementById(
-        "status"
-    );
+    document.getElementById("status");
 
 const adminContent =
-    document.getElementById(
-        "adminContent"
-    );
+    document.getElementById("adminContent");
 
 const currentPassword =
-    document.getElementById(
-        "currentPassword"
-    );
+    document.getElementById("currentPassword");
 
 const countdown =
-    document.getElementById(
-        "countdown"
-    );
+    document.getElementById("countdown");
 
 const blockIP =
-    document.getElementById(
-        "blockIP"
-    );
+    document.getElementById("blockIP");
 
 const blockDuration =
-    document.getElementById(
-        "blockDuration"
-    );
+    document.getElementById("blockDuration");
 
 const blockButton =
-    document.getElementById(
-        "blockButton"
-    );
+    document.getElementById("blockButton");
 
 const ipList =
-    document.getElementById(
-        "ipList"
-    );
+    document.getElementById("ipList");
 
 const blockedList =
-    document.getElementById(
-        "blockedList"
-    );
+    document.getElementById("blockedList");
 
 const refreshButton =
-    document.getElementById(
-        "refreshButton"
-    );
+    document.getElementById("refreshButton");
 
 const logoutAdminButton =
-    document.getElementById(
-        "logoutAdminButton"
-    );
+    document.getElementById("logoutAdminButton");
 
 const resetSessionsButton =
-    document.getElementById(
-        "resetSessionsButton"
-    );
+    document.getElementById("resetSessionsButton");
+
+
+/* =========================================================
+   CONFIRM POPUP ELEMENTS
+   ========================================================= */
+
+const confirmOverlay =
+    document.getElementById("confirmOverlay");
+
+const confirmTitle =
+    document.getElementById("confirmTitle");
+
+const confirmMessage =
+    document.getElementById("confirmMessage");
+
+const confirmClose =
+    document.getElementById("confirmClose");
+
+const confirmCancel =
+    document.getElementById("confirmCancel");
+
+const confirmAccept =
+    document.getElementById("confirmAccept");
+
+
+/* =========================================================
+   IP INFO POPUP ELEMENTS
+   ========================================================= */
+
+const ipInfoOverlay =
+    document.getElementById("ipInfoOverlay");
+
+const ipInfoTitle =
+    document.getElementById("ipInfoTitle");
+
+const ipInfoBody =
+    document.getElementById("ipInfoBody");
+
+const ipInfoClose =
+    document.getElementById("ipInfoClose");
 
 
 /* =========================================================
    STATE
    ========================================================= */
 
-let adminToken =
-    "";
+let adminToken = "";
 
-let expiresAt =
-    0;
+let expiresAt = 0;
 
-let timer =
-    null;
+let timer = null;
+
+let confirmResolve = null;
 
 
 /* =========================================================
@@ -1562,14 +2021,12 @@ async function adminRequest(
         );
     }
 
-
     const headers = {
         ...(options.headers || {}),
 
         "Authorization":
             `Bearer ${adminToken}`
     };
-
 
     if (
         options.body &&
@@ -1580,24 +2037,18 @@ async function adminRequest(
             "application/json";
     }
 
-
     const response =
         await fetch(
             `${WORKER_URL}${endpoint}`,
             {
                 ...options,
-
                 headers,
-
                 cache:
                     "no-store"
             }
         );
 
-
-    let data =
-        null;
-
+    let data = null;
 
     try {
 
@@ -1606,13 +2057,11 @@ async function adminRequest(
 
     } catch {}
 
-
     if (
         response.status === 401
     ) {
 
-        adminToken =
-            "";
+        adminToken = "";
 
         adminContent.classList.remove(
             "visible"
@@ -1623,7 +2072,6 @@ async function adminRequest(
         );
     }
 
-
     if (!response.ok) {
 
         throw new Error(
@@ -1632,7 +2080,6 @@ async function adminRequest(
             "Worker request failed."
         );
     }
-
 
     return data;
 }
@@ -1653,7 +2100,6 @@ async function loadPassword() {
             }
         );
 
-
     if (
         !data.success ||
         !data.password
@@ -1665,16 +2111,13 @@ async function loadPassword() {
         );
     }
 
-
     currentPassword.textContent =
         data.password;
-
 
     expiresAt =
         Number(
             data.expiresAt
         ) || 0;
-
 
     updateCountdown();
 }
@@ -1694,12 +2137,10 @@ function updateCountdown() {
         return;
     }
 
-
     const now =
         Math.floor(
             Date.now() / 1000
         );
-
 
     const remaining =
         Math.max(
@@ -1707,10 +2148,8 @@ function updateCountdown() {
             expiresAt - now
         );
 
-
     countdown.textContent =
         remaining;
-
 
     if (
         remaining <= 0 &&
@@ -1734,10 +2173,8 @@ async function loadIPs() {
     ipList.innerHTML =
         '<div class="empty">Loading IPs...</div>';
 
-
     blockedList.innerHTML =
         '<div class="empty">Loading blocked IPs...</div>';
-
 
     const data =
         await adminRequest(
@@ -1748,7 +2185,6 @@ async function loadIPs() {
             }
         );
 
-
     if (!data.success) {
 
         throw new Error(
@@ -1757,35 +2193,13 @@ async function loadIPs() {
         );
     }
 
-
     renderIPs(
         data.ips || []
     );
 
-
     renderBlockedIPs(
         data.blockedIPs || []
     );
-}
-
-
-/* =========================================================
-   FORMAT TIME
-   ========================================================= */
-
-function formatDate(
-    timestamp
-) {
-
-    if (!timestamp) {
-
-        return "Unknown";
-    }
-
-
-    return new Date(
-        Number(timestamp) * 1000
-    ).toLocaleString();
 }
 
 
@@ -1803,18 +2217,15 @@ function formatBlockExpiration(
         return "Permanent";
     }
 
-
     if (!expiresAt) {
 
         return "Unknown";
     }
 
-
     const now =
         Math.floor(
             Date.now() / 1000
         );
-
 
     const remaining =
         Math.max(
@@ -1822,18 +2233,15 @@ function formatBlockExpiration(
             Number(expiresAt) - now
         );
 
-
     if (remaining <= 0) {
 
         return "Expired";
     }
 
-
     if (remaining < 60) {
 
         return `${remaining}s remaining`;
     }
-
 
     if (remaining < 3600) {
 
@@ -1842,14 +2250,12 @@ function formatBlockExpiration(
         )}m remaining`;
     }
 
-
     if (remaining < 86400) {
 
         return `${Math.ceil(
             remaining / 3600
         )}h remaining`;
     }
-
 
     return `${Math.ceil(
         remaining / 86400
@@ -1858,20 +2264,121 @@ function formatBlockExpiration(
 
 
 /* =========================================================
-   IP INFORMATION
+   ESCAPE HTML
    ========================================================= */
 
-async function loadIPInfo(
-    ip,
-    box
+function escapeHTML(
+    value
 ) {
 
-    box.classList.add(
+    if (
+        value === null ||
+        value === undefined
+    ) {
+
+        return "Unknown";
+    }
+
+    return String(value)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+}
+
+
+/* =========================================================
+   CUSTOM CONFIRMATION POPUP
+   ========================================================= */
+
+function showConfirm(
+    title,
+    message,
+    acceptText = "Continue"
+) {
+
+    return new Promise(
+        resolve => {
+
+            confirmResolve =
+                resolve;
+
+            confirmTitle.textContent =
+                title;
+
+            confirmMessage.textContent =
+                message;
+
+            confirmAccept.textContent =
+                acceptText;
+
+            confirmOverlay.classList.add(
+                "visible"
+            );
+
+            document.body.style.overflow =
+                "hidden";
+        }
+    );
+}
+
+
+/* =========================================================
+   CLOSE CONFIRMATION
+   ========================================================= */
+
+function closeConfirm(
+    result = false
+) {
+
+    confirmOverlay.classList.remove(
         "visible"
     );
 
+    document.body.style.overflow =
+        "";
 
-    box.innerHTML =
+    if (confirmResolve) {
+
+        const resolve =
+            confirmResolve;
+
+        confirmResolve =
+            null;
+
+        resolve(result);
+    }
+}
+
+
+/* =========================================================
+   IP INFORMATION
+   ========================================================= */
+
+async function showIPInfo(
+    ip
+) {
+
+    ipInfoTitle.textContent =
+        `IP Information • ${ip}`;
+
+    ipInfoBody.innerHTML =
         `
         <div class="ip-info-loading">
             Looking up information for
@@ -1879,6 +2386,12 @@ async function loadIPInfo(
         </div>
         `;
 
+    ipInfoOverlay.classList.add(
+        "visible"
+    );
+
+    document.body.style.overflow =
+        "hidden";
 
     try {
 
@@ -1891,7 +2404,6 @@ async function loadIPInfo(
                 }
             );
 
-
         if (!response.ok) {
 
             throw new Error(
@@ -1899,10 +2411,8 @@ async function loadIPInfo(
             );
         }
 
-
         const data =
             await response.json();
-
 
         if (
             data.success === false
@@ -1914,20 +2424,14 @@ async function loadIPInfo(
             );
         }
 
-
         const connection =
             data.connection || {};
 
         const timezone =
             data.timezone || {};
 
-
-        box.innerHTML =
+        ipInfoBody.innerHTML =
             `
-            <div class="ip-info-title">
-                IP INFORMATION • ${escapeHTML(ip)}
-            </div>
-
             <div class="ip-info-grid">
 
                 ${infoItem(
@@ -2006,64 +2510,78 @@ async function loadIPInfo(
                 )}
 
             </div>
+
+            <div class="popup-footer">
+                <button
+                    id="ipInfoDone"
+                    class="popup-cancel"
+                    style="width:120px;"
+                >
+                    Close
+                </button>
+            </div>
             `;
+
+        document
+            .getElementById("ipInfoDone")
+            .addEventListener(
+                "click",
+                closeIPInfo
+            );
 
     } catch (error) {
 
-        box.innerHTML =
+        ipInfoBody.innerHTML =
             `
             <div class="ip-info-error">
+
                 Could not retrieve information for
                 <strong>${escapeHTML(ip)}</strong>.
+
                 <br><br>
+
                 ${escapeHTML(
                     error.message ||
                     "Unknown error."
                 )}
+
+            </div>
+
+            <div class="popup-footer">
+
+                <button
+                    id="ipInfoErrorClose"
+                    class="popup-cancel"
+                    style="width:120px;"
+                >
+                    Close
+                </button>
+
             </div>
             `;
+
+        document
+            .getElementById("ipInfoErrorClose")
+            .addEventListener(
+                "click",
+                closeIPInfo
+            );
     }
 }
 
 
 /* =========================================================
-   ESCAPE HTML
+   CLOSE IP INFO
    ========================================================= */
 
-function escapeHTML(
-    value
-) {
+function closeIPInfo() {
 
-    if (
-        value === null ||
-        value === undefined
-    ) {
+    ipInfoOverlay.classList.remove(
+        "visible"
+    );
 
-        return "Unknown";
-    }
-
-
-    return String(value)
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /'/g,
-            "&#039;"
-        );
+    document.body.style.overflow =
+        "";
 }
 
 
@@ -2099,44 +2617,6 @@ function infoItem(
 
 
 /* =========================================================
-   TOGGLE IP INFO
-   ========================================================= */
-
-function toggleIPInfo(
-    ip,
-    box,
-    button
-) {
-
-    if (
-        box.classList.contains(
-            "visible"
-        )
-    ) {
-
-        box.classList.remove(
-            "visible"
-        );
-
-        button.textContent =
-            "Info";
-
-        return;
-    }
-
-
-    button.textContent =
-        "Close Info";
-
-
-    loadIPInfo(
-        ip,
-        box
-    );
-}
-
-
-/* =========================================================
    RENDER IPs
    ========================================================= */
 
@@ -2146,7 +2626,6 @@ function renderIPs(
 
     ipList.innerHTML =
         "";
-
 
     if (!ips.length) {
 
@@ -2159,7 +2638,6 @@ function renderIPs(
 
         return;
     }
-
 
     for (
         const item of ips
@@ -2244,7 +2722,7 @@ function renderIPs(
             "ip-actions";
 
 
-        /* INFO BUTTON */
+        /* INFO */
 
         const info =
             document.createElement(
@@ -2257,25 +2735,10 @@ function renderIPs(
         info.textContent =
             "Info";
 
-
-        /* INFO BOX */
-
-        const infoBox =
-            document.createElement(
-                "div"
-            );
-
-        infoBox.className =
-            "ip-info-box";
-
-
         info.onclick =
-            () => toggleIPInfo(
-                item.ip,
-                infoBox,
-                info
+            () => showIPInfo(
+                item.ip
             );
-
 
         actions.appendChild(
             info
@@ -2290,9 +2753,6 @@ function renderIPs(
                 document.createElement(
                     "button"
                 );
-
-            unblock.className =
-                "unblock-btn";
 
             unblock.textContent =
                 "Unblock";
@@ -2312,9 +2772,6 @@ function renderIPs(
                 document.createElement(
                     "button"
                 );
-
-            block.className =
-                "block-btn";
 
             block.textContent =
                 "Block";
@@ -2350,15 +2807,9 @@ function renderIPs(
             actions
         );
 
-
         entry.appendChild(
             row
         );
-
-        entry.appendChild(
-            infoBox
-        );
-
 
         ipList.appendChild(
             entry
@@ -2378,7 +2829,6 @@ function renderBlockedIPs(
     blockedList.innerHTML =
         "";
 
-
     if (!ips.length) {
 
         blockedList.innerHTML =
@@ -2390,7 +2840,6 @@ function renderBlockedIPs(
 
         return;
     }
-
 
     for (
         const item of ips
@@ -2472,35 +2921,19 @@ function renderBlockedIPs(
         infoButton.textContent =
             "Info";
 
+        infoButton.onclick =
+            () => showIPInfo(
+                item.ip
+            );
+
 
         const unblock =
             document.createElement(
                 "button"
             );
 
-        unblock.className =
-            "unblock-btn";
-
         unblock.textContent =
             "Revoke Block";
-
-
-        const infoBox =
-            document.createElement(
-                "div"
-            );
-
-        infoBox.className =
-            "ip-info-box";
-
-
-        infoButton.onclick =
-            () => toggleIPInfo(
-                item.ip,
-                infoBox,
-                infoButton
-            );
-
 
         unblock.onclick =
             () => unblockIP(
@@ -2528,11 +2961,6 @@ function renderBlockedIPs(
 
         blockedList.appendChild(
             row
-        );
-
-
-        blockedList.appendChild(
-            infoBox
         );
     }
 }
@@ -2648,11 +3076,15 @@ async function unblockIP(
     ip
 ) {
 
-    if (
-        !confirm(
-            `Revoke the block on ${ip}?`
-        )
-    ) {
+    const confirmed =
+        await showConfirm(
+            "Revoke IP Block",
+            `Are you sure you want to revoke the block on ${ip}?`,
+            "Revoke Block"
+        );
+
+
+    if (!confirmed) {
 
         return;
     }
@@ -2709,8 +3141,10 @@ async function unblockIP(
 async function resetSessions() {
 
     const confirmed =
-        confirm(
-            "This will sign EVERYONE out of SGS. Continue?"
+        await showConfirm(
+            "Sign Everyone Out",
+            "This will sign EVERYONE out of SGS. Every active SGS login session will be invalidated and users will need to enter the current SGS password again.",
+            "Sign Everyone Out"
         );
 
 
@@ -2753,12 +3187,21 @@ async function resetSessions() {
             false
         );
 
+
     } catch (error) {
 
+        console.error(
+            "Session reset:",
+            error
+        );
+
+
         showStatus(
-            error.message,
+            error.message ||
+            "Could not reset SGS sessions.",
             true
         );
+
 
     } finally {
 
@@ -2918,6 +3361,7 @@ async function verifyAdmin() {
 
         await refreshPanel();
 
+
     } catch (error) {
 
         console.error(
@@ -2931,6 +3375,7 @@ async function verifyAdmin() {
             "Could not contact the Worker.",
             true
         );
+
 
     } finally {
 
@@ -3004,6 +3449,121 @@ function startTimer() {
 
     updateCountdown();
 }
+
+
+/* =========================================================
+   CONFIRM EVENTS
+   ========================================================= */
+
+confirmAccept.addEventListener(
+    "click",
+    () => {
+
+        closeConfirm(true);
+    }
+);
+
+
+confirmCancel.addEventListener(
+    "click",
+    () => {
+
+        closeConfirm(false);
+    }
+);
+
+
+confirmClose.addEventListener(
+    "click",
+    () => {
+
+        closeConfirm(false);
+    }
+);
+
+
+/* =========================================================
+   CLOSE POPUPS WITH ESC
+   ========================================================= */
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key !== "Escape"
+        ) {
+
+            return;
+        }
+
+
+        if (
+            confirmOverlay.classList.contains(
+                "visible"
+            )
+        ) {
+
+            closeConfirm(false);
+
+            return;
+        }
+
+
+        if (
+            ipInfoOverlay.classList.contains(
+                "visible"
+            )
+        ) {
+
+            closeIPInfo();
+        }
+    }
+);
+
+
+/* =========================================================
+   CLICK OUTSIDE POPUP
+   ========================================================= */
+
+confirmOverlay.addEventListener(
+    "click",
+    event => {
+
+        if (
+            event.target ===
+            confirmOverlay
+        ) {
+
+            closeConfirm(false);
+        }
+    }
+);
+
+
+ipInfoOverlay.addEventListener(
+    "click",
+    event => {
+
+        if (
+            event.target ===
+            ipInfoOverlay
+        ) {
+
+            closeIPInfo();
+        }
+    }
+);
+
+
+/* =========================================================
+   IP INFO CLOSE
+   ========================================================= */
+
+ipInfoClose.addEventListener(
+    "click",
+    closeIPInfo
+);
 
 
 /* =========================================================
@@ -3093,4 +3653,3 @@ window.addEventListener(
 
 </body>
 </html>
-```
