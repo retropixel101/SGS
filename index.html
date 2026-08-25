@@ -1,2025 +1,1952 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<script>
-(async function () {
 
-    /* =====================================================
-       SGS PASSWORD PROTECTION
-       ===================================================== */
-
-    const VERIFY_SERVER =
-        "https://sgs-pswrd.retropixel404.workers.dev";
-
-    const PASSWORD_PAGE =
-        "https://retropixel101.github.io/SGS/PSP.html";
-
-
-    /* =====================================================
-       DON'T PROTECT THE PASSWORD PAGE ITSELF
-       ===================================================== */
-
-    const currentPath =
-        window.location.pathname.replace(/\/+$/, "");
-
-    const passwordPath =
-        new URL(PASSWORD_PAGE).pathname.replace(/\/+$/, "");
-
-    if (currentPath === passwordPath) {
-        return;
-    }
-
-
-    /* =====================================================
-       CHECK SESSION WITH WORKER
-       ===================================================== */
-
-    try {
-
-        const response = await fetch(
-            `${VERIFY_SERVER}/current`,
-            {
-                method: "GET",
-
-                /*
-                 * IMPORTANT:
-                 * The Worker stores authentication in
-                 * the HttpOnly sgs_session cookie.
-                 *
-                 * This allows the browser to send the
-                 * cookie even though JavaScript cannot
-                 * read it.
-                 */
-                credentials: "include",
-
-                cache: "no-store"
-            }
-        );
-
-
-        /* =================================================
-           SERVER ERROR
-           ================================================= */
-
-        if (!response.ok) {
-
-            console.error(
-                "SGS: Password server returned HTTP",
-                response.status
-            );
-
-            window.location.replace(
-                PASSWORD_PAGE
-            );
-
-            return;
-        }
-
-
-        /* =================================================
-           READ RESPONSE
-           ================================================= */
-
-        let data;
-
-        try {
-
-            data = await response.json();
-
-        } catch {
-
-            console.error(
-                "SGS: Invalid response from password server."
-            );
-
-            window.location.replace(
-                PASSWORD_PAGE
-            );
-
-            return;
-        }
-
-
-        /* =================================================
-           SESSION INVALID
-           ================================================= */
-
-        if (!data.authenticated) {
-
-            console.log(
-                "SGS: No valid session."
-            );
-
-            window.location.replace(
-                PASSWORD_PAGE
-            );
-
-            return;
-        }
-
-
-        /* =================================================
-           ACCESS GRANTED
-           ================================================= */
-
-        console.log(
-            "SGS: Access verified."
-        );
-
-
-    } catch (error) {
-
-        console.error(
-            "SGS: Could not contact password server.",
-            error
-        );
-
-        window.location.replace(
-            PASSWORD_PAGE
-        );
-
-    }
-
-})();
-</script>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SGS - Home</title>
 
-<link rel="icon" type="image/png" href="Img/SGS.png">
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>
+    SGS - Secret Game Site
+</title>
+
+<link
+    rel="icon"
+    type="image/png"
+    href="Img/SGS.png"
+>
+
 
 <style>
+
+/* =========================================================
+   GLOBAL
+   ========================================================= */
+
 * {
-  box-sizing: border-box;
+    box-sizing: border-box;
 }
 
-html, body {
-  margin: 0;
-  padding: 0;
-  min-height: 100%;
+
+html,
+body {
+
+    margin: 0;
+
+    padding: 0;
+
+    min-height: 100%;
+
 }
+
+
+html {
+
+    background:
+        #080808;
+
+}
+
 
 body {
-  font-family: 'Segoe UI', Arial, sans-serif;
-  background: #0a0a0a;
-  color: #fff;
-  overflow-x: hidden;
+
+    font-family:
+        "Segoe UI",
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    background:
+        #080808;
+
+    color:
+        #ffffff;
+
+    overflow-x:
+        hidden;
+
 }
 
-/* GLOBAL BUTTON EFFECTS */
-button, a {
-  font-family: inherit;
+
+button,
+a {
+
+    font-family:
+        inherit;
+
 }
 
-/* NAVBAR */
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: linear-gradient(90deg, #ff0000, #660000);
-  box-shadow: 0 0 20px #ff0000;
-  padding: 12px 20px;
-  position: sticky;
-  top: 0;
-  z-index: 10;
+
+/* =========================================================
+   TOPBAR PLACEHOLDER
+   ========================================================= */
+
+#sgs-topbar {
+
+    width:
+        100%;
+
 }
 
-.left {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
 
-.logo {
-  font-size: 1.5em;
-  font-weight: bold;
-}
+/* =========================================================
+   MAIN
+   ========================================================= */
 
-.datetime {
-  font-size: 0.95em;
-  color: #ffd6d6;
-  text-shadow: 0 0 10px #ff0000;
-}
-
-.center {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.tabs {
-  display: flex;
-  gap: 10px;
-}
-
-.tab {
-  background: #111;
-  padding: 8px 16px;
-  border-radius: 6px;
-  transition: 0.3s ease;
-  cursor: pointer;
-}
-
-.tab:hover {
-  transform: scale(1.05);
-  background: #222;
-  box-shadow: 0 0 10px #ff0000;
-}
-
-.active {
-  background: #330000;
-  box-shadow: 0 0 12px #ff0000;
-  transform: scale(1.03);
-}
-
-/* HERO / HOMEPAGE POP */
 .main {
-  position: relative;
-  overflow: hidden;
-  padding-top: 28px;
-  overflow: visible;
+
+    text-align:
+        center;
+
+    margin-top:
+        85px;
+
+    padding:
+        0 20px;
+
 }
 
-.hero-glow {
-  position: absolute;
-  width: min(620px, 90vw);
-  height: 300px;
-  left: 50%;
-  top: 20px;
-  transform: translateX(-50%);
-  background: radial-gradient(
-    ellipse,
-    rgba(255, 0, 0, 0.18),
-    transparent 68%
-  );
-  filter: blur(12px);
-  pointer-events: none;
-  animation: heroPulse 4s ease-in-out infinite;
-  z-index: 0;
-}
-
-.hero-badge {
-  position: relative;
-  z-index: 1;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 7px 13px;
-  border: 1px solid #660000;
-  border-radius: 999px;
-  background: rgba(20, 0, 0, 0.75);
-  color: #ff7777;
-  font-size: 0.76em;
-  font-weight: 800;
-  letter-spacing: 1.8px;
-  box-shadow: 0 0 16px rgba(255, 0, 0, 0.28);
-  animation: badgeFloat 3s ease-in-out infinite;
-}
-
-.status-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #ff2222;
-  box-shadow: 0 0 10px #ff0000;
-  animation: statusBlink 1.5s ease-in-out infinite;
-}
 
 .main h1 {
-  position: relative;
-  z-index: 1;
-  margin: 18px 0 0;
-  font-size: clamp(2.6em, 6vw, 4.2em);
-  letter-spacing: -1px;
-  text-shadow:
-    0 0 18px #ff0000,
-    0 0 45px rgba(255, 0, 0, 0.35);
-  animation: titleIn 0.8s ease both;
+
+    margin:
+        0;
+
+    font-size:
+        3em;
+
+    color:
+        #ff0000;
+
+    text-shadow:
+        0 0 20px #ff0000;
+
 }
 
-.main h1 span {
-  color: #fff;
-  text-shadow:
-    0 0 14px #fff,
-    0 0 28px rgba(255, 0, 0, 0.9);
-}
 
 .summary {
-  position: relative;
-  z-index: 1;
-  font-size: 1.12em;
-  max-width: 760px;
-  margin-top: 18px;
-  color: #cfcfcf;
-  line-height: 1.75em;
-  animation: titleIn 0.8s 0.12s ease both;
+
+    max-width:
+        700px;
+
+    margin:
+        20px auto 0;
+
+    color:
+        #cccccc;
+
+    font-size:
+        1.25em;
+
+    line-height:
+        1.6em;
+
 }
 
-.summary strong {
-  color: #fff;
-}
 
-.hero-pills {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 9px;
-  margin-top: 22px;
-  animation: titleIn 0.8s 0.2s ease both;
-}
-
-.hero-pills span {
-  padding: 7px 12px;
-  border: 1px solid #3d1111;
-  border-radius: 999px;
-  background: rgba(17, 17, 17, 0.9);
-  color: #aaa;
-  font-size: 0.82em;
-  box-shadow: inset 0 0 12px rgba(255, 0, 0, 0.06);
-  transition: 0.25s ease;
-}
-
-.hero-pills span:hover {
-  color: #fff;
-  border-color: #ff0000;
-  box-shadow: 0 0 13px rgba(255, 0, 0, 0.35);
-  transform: translateY(-2px);
-}
+/* =========================================================
+   BIG BUTTONS
+   ========================================================= */
 
 .big-buttons {
-  position: relative;
-  z-index: 1;
-  margin-top: 38px;
-  padding-bottom: 8px;
-  animation: titleIn 0.8s 0.28s ease both;
+
+    margin-top:
+        50px;
+
+    display:
+        flex;
+
+    justify-content:
+        center;
+
+    flex-wrap:
+        wrap;
+
+    gap:
+        25px;
+
 }
+
 
 .big-btn {
-  position: relative;
-  overflow: hidden;
+
+    min-width:
+        240px;
+
+    background:
+        #111111;
+
+    border:
+        2px solid #ff0000;
+
+    padding:
+        20px 40px;
+
+    border-radius:
+        12px;
+
+    font-size:
+        1.4em;
+
+    color:
+        #ffffff;
+
+    cursor:
+        pointer;
+
+    transition:
+        0.3s ease;
+
+    box-shadow:
+        0 0 15px #ff0000;
+
+    text-decoration:
+        none;
+
 }
 
-.big-btn::after {
-  content: "";
-  position: absolute;
-  top: -60%;
-  left: -80%;
-  width: 45%;
-  height: 220%;
-  background: rgba(255, 255, 255, 0.08);
-  transform: rotate(22deg);
-  transition: left 0.55s ease;
-}
-
-.big-btn:hover::after {
-  left: 135%;
-}
-
-.big-btn.featured {
-  background: linear-gradient(180deg, #2b0000, #111);
-  box-shadow:
-    0 0 18px #ff0000,
-    inset 0 0 18px rgba(255, 0, 0, 0.12);
-}
-
-@keyframes heroPulse {
-  0%, 100% {
-    opacity: 0.65;
-    transform: translateX(-50%) scale(0.96);
-  }
-
-  50% {
-    opacity: 1;
-    transform: translateX(-50%) scale(1.04);
-  }
-}
-
-@keyframes badgeFloat {
-  0%, 100% {
-    transform: translateY(0);
-  }
-
-  50% {
-    transform: translateY(-3px);
-  }
-}
-
-@keyframes statusBlink {
-  0%, 100% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0.35;
-  }
-}
-
-@keyframes titleIn {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* MAIN CONTENT */
-.main {
-  text-align: center;
-  margin-top: 100px;
-  padding: 0 20px;
-}
-
-.main h1 {
-  font-size: 3em;
-  color: #ff0000;
-  text-shadow: 0 0 20px #ff0000;
-}
-
-.summary {
-  font-size: 1.25em;
-  color: #ccc;
-  margin: 20px auto 0;
-  max-width: 700px;
-  line-height: 1.6em;
-}
-
-/* BIG BUTTONS */
-.big-buttons {
-  margin-top: 50px;
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 25px;
-}
-
-.big-btn {
-  background: #111;
-  border: 2px solid #ff0000;
-  padding: 20px 40px;
-  border-radius: 12px;
-  font-size: 1.4em;
-  color: #fff;
-  cursor: pointer;
-  transition: 0.3s ease;
-  box-shadow: 0 0 15px #ff0000;
-  text-decoration: none;
-}
 
 .big-btn:hover {
-  background: #330000;
-  box-shadow: 0 0 25px #ff3333;
-  transform: scale(1.05);
+
+    background:
+        #330000;
+
+    box-shadow:
+        0 0 25px #ff3333;
+
+    transform:
+        scale(1.05);
+
 }
 
-/* OPEN OPTIONS SECTION */
+
+/* =========================================================
+   OPEN OPTIONS
+   ========================================================= */
+
 .bottom-buttons {
-  margin: 80px auto;
-  max-width: 1120px;
-  padding: 0 20px;
-  text-align: center;
+
+    margin:
+        80px auto;
+
+    max-width:
+        1120px;
+
+    padding:
+        0 20px;
+
+    text-align:
+        center;
+
 }
+
 
 .bottom-buttons h2 {
-  font-size: 2em;
-  color: #ff3333;
-  text-shadow: 0 0 15px #ff0000;
-  margin-bottom: 30px;
+
+    margin:
+        0 0 30px;
+
+    font-size:
+        2em;
+
+    color:
+        #ff3333;
+
+    text-shadow:
+        0 0 15px #ff0000;
+
 }
+
 
 .bottom-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
+
+    display:
+        grid;
+
+    grid-template-columns:
+        repeat(
+            3,
+            minmax(
+                0,
+                1fr
+            )
+        );
+
+    gap:
+        14px;
+
 }
+
 
 .bottom-btn {
-  width: 100%;
-  min-height: 58px;
-  background: #111;
-  border: 2px solid #ff0000;
-  padding: 14px 18px;
-  border-radius: 10px;
-  font-size: 1em;
-  color: #fff;
-  cursor: pointer;
-  transition: 0.3s ease;
-  box-shadow: 0 0 12px #ff0000;
+
+    width:
+        100%;
+
+    min-height:
+        58px;
+
+    background:
+        #111111;
+
+    border:
+        2px solid #ff0000;
+
+    padding:
+        14px 18px;
+
+    border-radius:
+        10px;
+
+    font-size:
+        1em;
+
+    color:
+        #ffffff;
+
+    cursor:
+        pointer;
+
+    transition:
+        0.3s ease;
+
+    box-shadow:
+        0 0 12px #ff0000;
+
 }
+
 
 .bottom-btn:hover {
-  background: #330000;
-  box-shadow: 0 0 22px #ff3333;
-  transform: translateY(-2px);
+
+    background:
+        #330000;
+
+    box-shadow:
+        0 0 22px #ff3333;
+
+    transform:
+        translateY(-2px);
+
 }
 
-/* GAMES */
-.games-heading {
-  text-align: center;
-  margin-bottom: 30px;
-}
 
-.games-kicker {
-  color: #ff4444;
-  font-size: 0.72em;
-  font-weight: 800;
-  letter-spacing: 3px;
-  margin-bottom: 6px;
-}
-
-.games-heading .games-title {
-  margin-bottom: 5px;
-}
-
-.games-subtitle {
-  color: #777;
-  font-size: 0.92em;
-}
+/* =========================================================
+   GAMES
+   ========================================================= */
 
 .games-section {
-  margin: 80px auto;
-  max-width: 1120px;
-  padding: 0 20px;
+
+    margin:
+        80px auto;
+
+    max-width:
+        1120px;
+
+    padding:
+        0 20px;
+
 }
+
 
 .games-title {
-  font-size: 2em;
-  color: #ff3333;
-  text-shadow: 0 0 15px #ff0000;
-  margin-bottom: 30px;
-  text-align: center;
+
+    margin-bottom:
+        30px;
+
+    text-align:
+        center;
+
+    font-size:
+        2em;
+
+    color:
+        #ff3333;
+
+    text-shadow:
+        0 0 15px #ff0000;
+
 }
+
 
 .games-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  justify-items: center;
-  gap: 55px 40px;
+
+    display:
+        grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(
+                300px,
+                300px
+            )
+        );
+
+    justify-content:
+        center;
+
+    gap:
+        55px 40px;
+
 }
 
-/* GAME CARDS */
+
+/* =========================================================
+   GAME CARD
+   ========================================================= */
+
 .game-card {
-  width: min(300px, 100%);
-  background: #111;
-  border: 2px solid #330000;
-  border-radius: 14px;
-  padding: 12px 0 14px;
-  margin: 0 auto;
-  position: relative;
-  box-shadow: 0 0 15px #ff0000;
-  transition: 0.3s ease;
-  overflow: hidden;
+
+    width:
+        300px;
+
+    background:
+        #111111;
+
+    border:
+        2px solid #330000;
+
+    border-radius:
+        14px;
+
+    padding:
+        12px 0 14px;
+
+    margin:
+        0 auto;
+
+    position:
+        relative;
+
+    box-shadow:
+        0 0 15px #ff0000;
+
+    transition:
+        0.3s ease;
+
+    overflow:
+        hidden;
+
 }
+
 
 .game-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 0 28px #ff3333;
+
+    transform:
+        translateY(-6px);
+
+    box-shadow:
+        0 0 28px #ff3333;
+
 }
+
 
 .game-thumb {
-  width: 256px;
-  height: 256px;
-  display: block;
-  margin: 0 auto;
-  background-color: #151515;
-  background-size: cover;
-  background-position: center;
-  border-radius: 8px;
+
+    width:
+        256px;
+
+    height:
+        256px;
+
+    display:
+        block;
+
+    margin:
+        0 auto;
+
+    background-color:
+        #151515;
+
+    background-size:
+        cover;
+
+    background-position:
+        center;
+
+    border-radius:
+        8px;
+
 }
+
 
 .game-name {
-  min-height: 54px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 10px 18px 8px;
-  font-size: 1.25em;
-  color: #fff;
-  font-weight: 700;
-  text-shadow: 0 0 8px rgba(255, 0, 0, 0.45);
+
+    min-height:
+        54px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    text-align:
+        center;
+
+    padding:
+        10px 18px 8px;
+
+    font-size:
+        1.25em;
+
+    color:
+        #ffffff;
+
+    font-weight:
+        700;
+
+    text-shadow:
+        0 0 8px rgba(
+            255,
+            0,
+            0,
+            0.45
+        );
+
 }
 
+
 .game-bar {
-  width: calc(100% - 20px);
-  margin: 0 auto;
-  background: #0d0d0d;
-  border: 2px solid #330000;
-  border-radius: 10px;
-  padding: 7px 9px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  box-shadow: 0 0 12px #ff0000;
+
+    width:
+        calc(
+            100% - 20px
+        );
+
+    margin:
+        0 auto;
+
+    background:
+        #0d0d0d;
+
+    border:
+        2px solid #330000;
+
+    border-radius:
+        10px;
+
+    padding:
+        7px 9px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    gap:
+        10px;
+
+    box-shadow:
+        0 0 12px #ff0000;
+
 }
+
 
 .game-play,
 .game-info {
-  background: #111;
-  border: 2px solid #ff0000;
-  padding: 8px 16px;
-  min-width: 86px;
-  border-radius: 8px;
-  font-size: 0.95em;
-  color: #fff;
-  cursor: pointer;
-  transition: 0.3s ease;
+
+    background:
+        #111111;
+
+    border:
+        2px solid #ff0000;
+
+    padding:
+        8px 16px;
+
+    min-width:
+        86px;
+
+    border-radius:
+        8px;
+
+    font-size:
+        0.95em;
+
+    color:
+        #ffffff;
+
+    cursor:
+        pointer;
+
+    transition:
+        0.3s ease;
+
 }
+
 
 .game-play:hover,
 .game-info:hover {
-  background: #330000;
-  box-shadow: 0 0 15px #ff3333;
-  transform: translateY(-1px);
+
+    background:
+        #330000;
+
+    box-shadow:
+        0 0 15px #ff3333;
+
+    transform:
+        translateY(-1px);
+
 }
 
-/* EXPLORE MORE */
+
+/* =========================================================
+   EXPLORE
+   ========================================================= */
+
 .explore-more {
-  margin-top: 45px;
-  text-align: center;
+
+    margin-top:
+        45px;
+
+    text-align:
+        center;
+
 }
+
 
 .explore-btn {
-  display: inline-block;
-  background: #111;
-  border: 2px solid #ff0000;
-  padding: 18px 40px;
-  border-radius: 12px;
-  font-size: 1.4em;
-  color: #fff;
-  cursor: pointer;
-  transition: 0.3s ease;
-  box-shadow: 0 0 15px #ff0000;
-  text-decoration: none;
+
+    display:
+        inline-block;
+
+    background:
+        #111111;
+
+    border:
+        2px solid #ff0000;
+
+    padding:
+        18px 40px;
+
+    border-radius:
+        12px;
+
+    font-size:
+        1.4em;
+
+    color:
+        #ffffff;
+
+    cursor:
+        pointer;
+
+    transition:
+        0.3s ease;
+
+    box-shadow:
+        0 0 15px #ff0000;
+
+    text-decoration:
+        none;
+
 }
+
 
 .explore-btn:hover {
-  background: #330000;
-  box-shadow: 0 0 25px #ff3333;
-  transform: scale(1.05);
+
+    background:
+        #330000;
+
+    box-shadow:
+        0 0 25px #ff3333;
+
+    transform:
+        scale(1.05);
+
 }
 
-/* SHARED MODAL BACKDROP */
+
+/* =========================================================
+   MODALS
+   ========================================================= */
+
 .modal {
-  display: none;
-  position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.82);
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-  padding: 20px;
-  backdrop-filter: blur(3px);
+
+    display:
+        none;
+
+    position:
+        fixed;
+
+    inset:
+        0;
+
+    width:
+        100%;
+
+    height:
+        100%;
+
+    background:
+        rgba(
+            0,
+            0,
+            0,
+            0.82
+        );
+
+    justify-content:
+        center;
+
+    align-items:
+        center;
+
+    z-index:
+        9999;
+
+    padding:
+        20px;
+
+    backdrop-filter:
+        blur(3px);
+
 }
+
 
 .modal.open {
-  display: flex;
+
+    display:
+        flex;
+
 }
 
-/* LAUNCH OPTIONS MODAL */
+
+/* =========================================================
+   LAUNCH OPTIONS
+   ========================================================= */
+
 #popup-box {
-  width: min(900px, 95vw);
-  background: #111;
-  border: 2px solid #ff0000;
-  padding: 28px;
-  border-radius: 14px;
-  text-align: center;
-  box-shadow: 0 0 35px #ff0000;
+
+    width:
+        min(
+            900px,
+            95vw
+        );
+
+    background:
+        #111111;
+
+    border:
+        2px solid #ff0000;
+
+    padding:
+        28px;
+
+    border-radius:
+        14px;
+
+    text-align:
+        center;
+
+    box-shadow:
+        0 0 35px #ff0000;
+
 }
+
 
 .popup-header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  margin-bottom: 22px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    position:
+        relative;
+
+    margin-bottom:
+        22px;
+
 }
+
 
 .popup-header h3 {
-  margin: 0;
-  font-size: 1.45em;
-  color: #fff;
-  text-shadow: 0 0 10px #ff0000;
+
+    margin:
+        0;
+
+    font-size:
+        1.45em;
+
+    color:
+        #ffffff;
+
+    text-shadow:
+        0 0 10px #ff0000;
+
 }
+
 
 #popup-close {
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  cursor: pointer;
-  font-size: 1.8em;
-  line-height: 1;
-  color: #ff4444;
-  transition: 0.2s ease;
+
+    position:
+        absolute;
+
+    right:
+        0;
+
+    top:
+        50%;
+
+    transform:
+        translateY(-50%);
+
+    cursor:
+        pointer;
+
+    font-size:
+        1.8em;
+
+    line-height:
+        1;
+
+    color:
+        #ff4444;
+
 }
+
 
 #popup-close:hover {
-  color: #fff;
-  transform: translateY(-50%) scale(1.12);
-  text-shadow: 0 0 12px #ff0000;
+
+    color:
+        #ffffff;
+
+    text-shadow:
+        0 0 12px #ff0000;
+
 }
+
 
 .launch-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
+
+    display:
+        grid;
+
+    grid-template-columns:
+        repeat(
+            3,
+            1fr
+        );
+
+    gap:
+        12px;
+
 }
+
 
 .popup-btn {
-  width: 100%;
-  min-height: 58px;
-  background: #111;
-  border: 2px solid #ff0000;
-  padding: 12px 10px;
-  border-radius: 9px;
-  color: #fff;
-  cursor: pointer;
-  transition: 0.3s ease;
-  font-size: 0.98em;
-  font-weight: 600;
+
+    width:
+        100%;
+
+    min-height:
+        58px;
+
+    background:
+        #111111;
+
+    border:
+        2px solid #ff0000;
+
+    padding:
+        12px 10px;
+
+    border-radius:
+        9px;
+
+    color:
+        #ffffff;
+
+    cursor:
+        pointer;
+
+    transition:
+        0.3s ease;
+
+    font-size:
+        0.98em;
+
+    font-weight:
+        600;
+
 }
+
 
 .popup-btn:hover {
-  background: #330000;
-  box-shadow: 0 0 18px #ff3333;
-  transform: translateY(-2px);
+
+    background:
+        #330000;
+
+    box-shadow:
+        0 0 18px #ff3333;
+
+    transform:
+        translateY(-2px);
+
 }
 
-/* INFO MODAL */
+
+/* =========================================================
+   INFO MODAL
+   ========================================================= */
+
 #info-popup-box {
-  width: min(560px, 94vw);
-  background: #111;
-  border: 2px solid #ff0000;
-  padding: 0;
-  border-radius: 14px;
-  text-align: left;
-  box-shadow: 0 0 35px #ff0000;
-  overflow: hidden;
+
+    width:
+        min(
+            560px,
+            94vw
+        );
+
+    background:
+        #111111;
+
+    border:
+        2px solid #ff0000;
+
+    padding:
+        0;
+
+    border-radius:
+        14px;
+
+    text-align:
+        left;
+
+    box-shadow:
+        0 0 35px #ff0000;
+
+    overflow:
+        hidden;
+
 }
+
 
 .info-header {
-  position: relative;
-  padding: 22px 58px 18px 24px;
-  background: linear-gradient(180deg, #171717, #111);
-  border-bottom: 1px solid #330000;
+
+    position:
+        relative;
+
+    padding:
+        22px 58px 18px 24px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #171717,
+            #111111
+        );
+
+    border-bottom:
+        1px solid #330000;
+
 }
+
 
 #info-popup-close {
-  position: absolute;
-  right: 20px;
-  top: 50%;
-  transform: translateY(-50%);
-  cursor: pointer;
-  font-size: 1.8em;
-  line-height: 1;
-  color: #ff4444;
-  transition: 0.2s ease;
+
+    position:
+        absolute;
+
+    right:
+        20px;
+
+    top:
+        50%;
+
+    transform:
+        translateY(-50%);
+
+    cursor:
+        pointer;
+
+    font-size:
+        1.8em;
+
+    color:
+        #ff4444;
+
 }
 
-#info-popup-close:hover {
-  color: #fff;
-  transform: translateY(-50%) scale(1.12);
-  text-shadow: 0 0 12px #ff0000;
-}
 
 .info-title {
-  margin: 0;
-  color: #fff;
-  font-size: 1.45em;
-  font-weight: 700;
-  line-height: 1.25;
+
+    margin:
+        0;
+
+    color:
+        #ffffff;
+
+    font-size:
+        1.45em;
+
+    font-weight:
+        700;
+
 }
+
 
 .info-body {
-  padding: 20px 24px 24px;
+
+    padding:
+        20px 24px 24px;
+
 }
+
 
 .info-label {
-  display: inline-block;
-  margin-bottom: 10px;
-  color: #ff5555;
-  font-size: 0.78em;
-  font-weight: 700;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
+
+    display:
+        inline-block;
+
+    margin-bottom:
+        10px;
+
+    color:
+        #ff5555;
+
+    font-size:
+        0.78em;
+
+    font-weight:
+        700;
+
+    letter-spacing:
+        1.5px;
+
+    text-transform:
+        uppercase;
+
 }
+
 
 .info-text {
-  margin: 0;
-  font-size: 1em;
-  color: #ddd;
-  line-height: 1.65;
+
+    margin:
+        0;
+
+    font-size:
+        1em;
+
+    color:
+        #dddddd;
+
+    line-height:
+        1.65;
+
 }
+
 
 .info-footer {
-  margin-top: 20px;
-  padding-top: 14px;
-  border-top: 1px solid #292929;
-  color: #888;
-  font-size: 0.82em;
+
+    margin-top:
+        20px;
+
+    padding-top:
+        14px;
+
+    border-top:
+        1px solid #292929;
+
+    color:
+        #888888;
+
+    font-size:
+        0.82em;
+
 }
 
-/* UNIVERSAL RESPONSIVE FIT */
-img,
-video,
-iframe {
-  max-width: 100%;
+
+/* =========================================================
+   RESPONSIVE SAFETY
+=========================================================
+
+   These rules only prevent actual overflow inside
+   individual components.
+
+   The overall page scaling is handled by topbar.js.
+========================================================= */
+
+@media (max-width: 700px) {
+
+    .big-btn {
+
+        min-width:
+            220px;
+
+    }
+
+    .bottom-grid,
+    .launch-grid {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
 }
 
-body {
-  min-width: 0;
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 450px) {
+
+    .main {
+
+        margin-top:
+            60px;
+
+    }
+
+    .main h1 {
+
+        font-size:
+            2.2em;
+
+    }
+
+    .game-card {
+
+        width:
+            300px;
+
+        max-width:
+            calc(
+                100vw - 40px
+            );
+
+    }
+
+    .game-thumb {
+
+        width:
+            256px;
+
+        height:
+            256px;
+
+        max-width:
+            calc(
+                100% - 20px
+            );
+
+        aspect-ratio:
+            1 / 1;
+
+    }
+
 }
 
-.navbar {
-  min-height: 58px;
-}
-
-.main {
-  width: 100%;
-  max-width: 1400px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.big-buttons {
-  width: min(100%, 1050px);
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.big-btn {
-  flex: 0 1 auto;
-  max-width: 100%;
-}
-
-.bottom-buttons,
-.games-section,
-.games-grid {
-  width: 100%;
-}
-
-.game-card {
-  max-width: 100%;
-}
-
-.game-thumb {
-  max-width: calc(100% - 20px);
-}
-
-@media (max-width: 1100px) {
-  .navbar {
-    position: relative;
-    justify-content: center;
-    padding: 12px 16px;
-  }
-
-  .left {
-    width: 100%;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-
-  .center {
-    position: static;
-    width: 100%;
-    transform: none;
-  }
-
-  .tabs {
-    width: 100%;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-
-  .main {
-    margin-top: 55px;
-    padding-left: clamp(14px, 3vw, 28px);
-    padding-right: clamp(14px, 3vw, 28px);
-  }
-
-  .big-buttons {
-    gap: 14px;
-  }
-
-  .big-btn {
-    padding: 16px 24px;
-    font-size: 1.1em;
-  }
-
-  .bottom-buttons,
-  .games-section {
-    padding-left: clamp(14px, 3vw, 28px);
-    padding-right: clamp(14px, 3vw, 28px);
-  }
-}
-
-@media (max-width: 760px) {
-  .navbar {
-    padding: 10px 12px;
-  }
-
-  .logo {
-    font-size: 1.25em;
-  }
-
-  .datetime {
-    font-size: 0.78em;
-    text-align: center;
-  }
-
-  .tabs {
-    gap: 5px;
-  }
-
-  .tab {
-    padding: 7px 9px;
-    font-size: 0.78em;
-  }
-
-  .main {
-    margin-top: 38px;
-  }
-
-  .main h1 {
-    font-size: clamp(2em, 9vw, 3em);
-  }
-
-  .summary {
-    font-size: 0.98em;
-    line-height: 1.55em;
-  }
-
-  .hero-pills {
-    gap: 6px;
-  }
-
-  .hero-pills span {
-    padding: 6px 9px;
-    font-size: 0.75em;
-  }
-
-  .big-buttons {
-    margin-top: 28px;
-    gap: 10px;
-  }
-
-  .big-btn {
-    padding: 13px 16px;
-    font-size: 0.95em;
-    border-radius: 9px;
-  }
-
-  .bottom-buttons {
-    margin-top: 55px;
-    margin-bottom: 55px;
-  }
-
-  .bottom-buttons h2 {
-    font-size: 1.55em;
-  }
-
-  .bottom-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .games-title {
-    font-size: 1.65em;
-  }
-
-  .games-grid {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 32px;
-  }
-
-  .game-card {
-    width: min(300px, calc(100vw - 32px));
-  }
-}
-
-@media (max-width: 420px) {
-  .navbar {
-    padding: 8px;
-  }
-
-  .left {
-    gap: 5px;
-  }
-
-  .tabs {
-    gap: 4px;
-  }
-
-  .tab {
-    padding: 6px 7px;
-    font-size: 0.72em;
-  }
-
-  .main {
-    margin-top: 25px;
-    padding-left: 10px;
-    padding-right: 10px;
-  }
-
-  .summary {
-    font-size: 0.92em;
-  }
-
-  .big-buttons {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    width: 100%;
-  }
-
-  .big-btn {
-    width: 100%;
-    padding: 12px 8px;
-    font-size: 0.85em;
-  }
-
-  .games-section,
-  .bottom-buttons {
-    padding-left: 10px;
-    padding-right: 10px;
-  }
-
-  .game-card {
-    width: min(300px, calc(100vw - 24px));
-  }
-
-  .game-thumb {
-    width: min(256px, calc(100vw - 48px));
-    height: min(256px, calc(100vw - 48px));
-  }
-
-  #popup-box {
-    width: calc(100vw - 24px);
-    padding: 16px;
-  }
-
-  .popup-btn {
-    min-height: 50px;
-    font-size: 0.88em;
-  }
-
-  #info-popup-box {
-    width: calc(100vw - 24px);
-  }
-}
-
-@media (max-height: 700px) and (min-width: 761px) {
-  .main {
-    margin-top: 45px;
-  }
-
-  .main h1 {
-    margin-top: 10px;
-  }
-
-  .summary {
-    margin-top: 12px;
-  }
-
-  .hero-pills {
-    margin-top: 14px;
-  }
-
-  .big-buttons {
-    margin-top: 24px;
-  }
-
-  .bottom-buttons {
-    margin-top: 55px;
-    margin-bottom: 55px;
-  }
-}
-
-/* RESPONSIVE */
-@media (max-width: 1180px) {
-  .center {
-    position: static;
-    transform: none;
-  }
-
-  .navbar {
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-
-  .tabs {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-}
-
-@media (max-width: 850px) {
-  .bottom-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .launch-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .games-grid {
-    grid-template-columns: minmax(0, 300px);
-  }
-}
-
-@media (max-width: 560px) {
-  .main {
-    margin-top: 55px;
-    padding-top: 18px;
-  }
-
-  .main h1 {
-    font-size: 2.2em;
-    margin-top: 14px;
-  }
-
-  .game-card {
-    width: min(300px, calc(100vw - 40px));
-    max-width: calc(100vw - 40px);
-  }
-
-  .game-thumb {
-    width: 256px;
-    height: 256px;
-    max-width: calc(100% - 20px);
-    aspect-ratio: 1 / 1;
-  }
-
-  .games-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .left {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
-  }
-
-  .center {
-    width: 100%;
-  }
-
-  .tabs {
-    gap: 6px;
-  }
-
-  .tab {
-    padding: 7px 10px;
-    font-size: 0.88em;
-  }
-
-  #popup-box {
-    padding: 20px;
-  }
-}
-
-/* FINAL HOMEPAGE POSITION FIX */
-@media (min-width: 1201px) {
-  .main,
-  .bottom-buttons,
-  .games-section {
-    width: min(100% - 40px, 1040px) !important;
-    max-width: 1040px !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-  }
-
-  .main {
-    padding-left: 20px !important;
-    padding-right: 20px !important;
-  }
-
-  .bottom-buttons,
-  .games-section {
-    padding-left: 20px !important;
-    padding-right: 20px !important;
-  }
-
-  .big-buttons {
-    width: 100% !important;
-    max-width: 860px !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-  }
-}
-
-/* NAVBAR + HERO FINAL RESPONSIVE FIX */
-@media (max-width: 1200px) and (min-width: 901px) {
-  .navbar {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    gap: 14px !important;
-    padding: 9px 16px !important;
-    min-height: 54px !important;
-  }
-
-  .left {
-    flex: 0 1 auto !important;
-    min-width: 0 !important;
-    gap: 12px !important;
-    white-space: nowrap !important;
-  }
-
-  .logo {
-    font-size: 1.25em !important;
-  }
-
-  .datetime {
-    font-size: .78em !important;
-    white-space: nowrap !important;
-  }
-
-  .center {
-    position: static !important;
-    left: auto !important;
-    transform: none !important;
-    flex: 0 1 auto !important;
-    min-width: 0 !important;
-    width: auto !important;
-    margin-left: auto !important;
-  }
-
-  .tabs {
-    display: flex !important;
-    flex-wrap: nowrap !important;
-    justify-content: flex-end !important;
-    gap: 6px !important;
-  }
-
-  .tab {
-    flex: 0 0 auto !important;
-    padding: 8px 11px !important;
-    font-size: .78em !important;
-    white-space: nowrap !important;
-  }
-
-  .tab:nth-child(5) {
-    min-width: 82px !important;
-  }
-
-  .main {
-    margin-top: 24px !important;
-    padding-top: 18px !important;
-  }
-
-  .main h1 {
-    font-size: clamp(2.4rem, 5vw, 3.5rem) !important;
-  }
-}
-
-@media (max-width: 900px) {
-  .navbar {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: stretch !important;
-    justify-content: center !important;
-    gap: 8px !important;
-    padding: 9px 10px !important;
-  }
-
-  .left {
-    width: 100% !important;
-    justify-content: center !important;
-    gap: 8px 12px !important;
-  }
-
-  .center {
-    position: static !important;
-    width: 100% !important;
-    transform: none !important;
-  }
-
-  .tabs {
-    width: 100% !important;
-    justify-content: center !important;
-    flex-wrap: wrap !important;
-    gap: 5px !important;
-  }
-
-  .tab {
-    padding: 7px 10px !important;
-    font-size: .76em !important;
-    white-space: nowrap !important;
-  }
-
-  .main {
-    margin-top: 22px !important;
-    padding-top: 12px !important;
-  }
-}
-
-@media (max-width: 600px) {
-  .left {
-    flex-direction: column !important;
-    gap: 3px !important;
-  }
-
-  .logo {
-    font-size: 1.25em !important;
-  }
-
-  .datetime {
-    font-size: .72em !important;
-  }
-
-  .tabs {
-    gap: 4px !important;
-  }
-
-  .tab {
-    padding: 6px 8px !important;
-    font-size: .7em !important;
-  }
-
-  .main {
-    margin-top: 14px !important;
-    padding-top: 8px !important;
-  }
-
-  .hero-badge {
-    margin-top: 4px !important;
-  }
-}
-
-/* NAVBAR OVERLAP FIX */
-.navbar .tab,
-.navbar .tab:hover,
-.navbar .tab.active,
-.navbar .active {
-  box-sizing: border-box !important;
-}
-
-.navbar .tab:hover {
-  transform: translateY(-1px) !important;
-}
-
-.navbar .active {
-  transform: none !important;
-}
-
-@media (min-width: 1401px) {
-  .navbar {
-    min-height: 58px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    gap: 20px !important;
-    padding: 9px 18px !important;
-  }
-
-  .navbar .left {
-    flex: 0 1 auto !important;
-    min-width: 0 !important;
-    display: flex !important;
-    align-items: center !important;
-    gap: 16px !important;
-  }
-
-  .navbar .center {
-    position: static !important;
-    left: auto !important;
-    transform: none !important;
-    flex: 0 0 auto !important;
-    min-width: 0 !important;
-    margin-left: auto !important;
-  }
-
-  .navbar .tabs {
-    display: flex !important;
-    flex-wrap: nowrap !important;
-    gap: 7px !important;
-  }
-
-  .navbar .tab {
-    flex: 0 0 auto !important;
-    padding: 8px 13px !important;
-    white-space: nowrap !important;
-    font-size: .86em !important;
-  }
-}
-
-@media (max-width: 1400px) {
-  .navbar {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 8px !important;
-    min-height: auto !important;
-    padding: 9px 12px 10px !important;
-  }
-
-  .navbar .left {
-    width: 100% !important;
-    min-width: 0 !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 12px !important;
-  }
-
-  .navbar .logo {
-    font-size: clamp(1.15em, 1.7vw, 1.5em) !important;
-    white-space: nowrap !important;
-  }
-
-  .navbar .datetime {
-    font-size: clamp(.72em, 1vw, .9em) !important;
-    white-space: nowrap !important;
-  }
-
-  .navbar .center {
-    position: static !important;
-    width: 100% !important;
-    min-width: 0 !important;
-    transform: none !important;
-  }
-
-  .navbar .tabs {
-    width: 100% !important;
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    flex-wrap: wrap !important;
-    gap: 6px !important;
-  }
-
-  .navbar .tab {
-    flex: 0 0 auto !important;
-    padding: 7px 11px !important;
-    font-size: clamp(.72em, 1.15vw, .86em) !important;
-    line-height: 1.1 !important;
-    white-space: nowrap !important;
-  }
-
-  .navbar .tab:nth-child(5) {
-    min-width: 0 !important;
-  }
-
-  .main {
-    margin-top: 24px !important;
-  }
-}
-
-@media (max-width: 900px) {
-  .navbar {
-    gap: 7px !important;
-    padding: 8px 8px 9px !important;
-  }
-
-  .navbar .left {
-    gap: 7px 10px !important;
-    flex-wrap: wrap !important;
-  }
-
-  .navbar .tabs {
-    gap: 5px !important;
-  }
-
-  .navbar .tab {
-    padding: 6px 9px !important;
-    font-size: .73em !important;
-  }
-
-  .main {
-    margin-top: 16px !important;
-    padding-top: 10px !important;
-  }
-}
-
-@media (max-width: 600px) {
-  .navbar .left {
-    flex-direction: column !important;
-    gap: 2px !important;
-  }
-
-  .navbar .logo {
-    font-size: 1.2em !important;
-  }
-
-  .navbar .datetime {
-    font-size: .68em !important;
-  }
-
-  .navbar .tabs {
-    gap: 4px !important;
-  }
-
-  .navbar .tab {
-    padding: 6px 7px !important;
-    font-size: .68em !important;
-  }
-}
-
-/* FULL-SCREEN CENTERING */
-@media (min-width: 1401px) {
-  .navbar {
-    position: relative !important;
-    display: flex !important;
-    align-items: center !important;
-    min-height: 58px !important;
-  }
-
-  .navbar .left {
-    position: absolute !important;
-    left: 18px !important;
-    top: 50% !important;
-    transform: translateY(-50%) !important;
-    z-index: 2 !important;
-  }
-
-  .navbar .center {
-    position: absolute !important;
-    left: 50% !important;
-    top: 50% !important;
-    transform: translate(-50%, -50%) !important;
-    width: auto !important;
-    margin: 0 !important;
-    z-index: 3 !important;
-  }
-
-  .navbar .tabs {
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    flex-wrap: nowrap !important;
-    gap: 7px !important;
-  }
-
-  .navbar .tab {
-    flex: 0 0 auto !important;
-    white-space: nowrap !important;
-  }
-}
 </style>
+
 </head>
+
 
 <body>
 
-<!-- NAVBAR -->
-<div class="navbar">
 
-  <div class="left">
-    <div class="logo">Secret Game Site</div>
-    <div class="datetime" id="datetime">Loading...</div>
-  </div>
+<!-- =======================================================
+     SHARED TOPBAR
 
-  <div class="center">
-    <div class="tabs">
-      <div class="tab active">Home</div>
-      <div class="tab" onclick="window.location.href='games.html'">Games</div>
-      <div class="tab" onclick="blocked()">Utilities</div>
-      <div class="tab" onclick="blocked()">Browser</div>
-      <div class="tab" onclick="blocked()">Music Player</div>
-      <div class="tab" onclick="blocked()">Forums</div>
-      <div class="tab" onclick="blocked()">Settings</div>
-    </div>
-  </div>
+     There is NO old navbar here.
 
-</div>
+     topbar.js loads topbar.html into this container.
+======================================================= -->
 
-<!-- MAIN -->
+<div id="sgs-topbar"></div>
+
+
+<!-- =======================================================
+     MAIN
+======================================================= -->
+
 <div class="main">
 
-  <div class="hero-glow"></div>
+    <h1>
+        Welcome to SGS
+    </h1>
 
-  <div class="hero-badge">
-    <span class="status-dot"></span>
-    SGS • ONLINE
-  </div>
 
-  <h1>Welcome to <span>SGS</span></h1>
+    <div class="summary">
 
-  <div class="summary">
-    Your private little corner of the web for games, tools, and more.
-    <strong>SGS</strong> keeps everything fast, clean, and easy to access —
-    with a sleek interface built for getting straight to what you want.
-  </div>
+        SGS (Secret Game Site) is your stealthy,
+        fast, and stylish hub for unblocked games,
+        tools, utilities, and community features —
+        built to stay accessible anywhere, anytime.
 
-  <div class="hero-pills">
-    <span>⚡ Fast</span>
-    <span>🎮 Games</span>
-    <span>🛠 Tools</span>
-    <span>🔒 Secure</span>
-  </div>
+    </div>
 
-  <div class="big-buttons">
-    <a class="big-btn featured" href="games.html">🎮 Games</a>
-    <a class="big-btn" onclick="blocked()">🛠 Utilities</a>
-    <a class="big-btn" onclick="blocked()">🌐 Browser</a>
-    <a class="big-btn" onclick="blocked()">🎵 Music Player</a>
-    <a class="big-btn" onclick="blocked()">💬 Forums</a>
-    <a class="big-btn" onclick="blocked()">⚙ Settings</a>
-  </div>
+
+    <div class="big-buttons">
+
+        <a
+            class="big-btn"
+            href="games.html"
+        >
+            🎮 Games
+        </a>
+
+
+        <a
+            class="big-btn"
+            href="under_construction.html"
+        >
+            🛠 Utilities
+        </a>
+
+
+        <a
+            class="big-btn"
+            href="under_construction.html"
+        >
+            🌐 Browser
+        </a>
+
+
+        <a
+            class="big-btn"
+            href="under_construction.html"
+        >
+            🎵 Music Player
+        </a>
+
+
+        <a
+            class="big-btn"
+            href="under_construction.html"
+        >
+            💬 Forums
+        </a>
+
+
+        <a
+            class="big-btn"
+            href="under_construction.html"
+        >
+            ⚙ Settings
+        </a>
+
+    </div>
 
 </div>
 
-<!-- OPEN OPTIONS -->
+
+<!-- =======================================================
+     OPEN OPTIONS
+======================================================= -->
+
 <div class="bottom-buttons">
 
-  <h2>Open Options</h2>
+    <h2>
+        Open Options
+    </h2>
 
-  <div class="bottom-grid">
 
-    <button class="bottom-btn" onclick="openSiteTab()">
-      Open In Normal Tab
-    </button>
+    <div class="bottom-grid">
 
-    <button class="bottom-btn" onclick="openSiteABTab()">
-      Open In About:Blank Tab
-    </button>
+        <button
+            class="bottom-btn"
+            onclick="openNormalHomepage()"
+        >
+            Open in Normal Tab
+        </button>
 
-    <button class="bottom-btn" onclick="openSiteBlobTab()">
-      Open In Blob Tab
-    </button>
 
-    <button class="bottom-btn" onclick="openSiteWindow()">
-      Open In Normal Window
-    </button>
+        <button
+            class="bottom-btn"
+            onclick="openAboutBlankHomepage()"
+        >
+            Open in About:Blank Tab
+        </button>
 
-    <button class="bottom-btn" onclick="openSiteABWindow()">
-      Open In About:Blank Window
-    </button>
 
-    <button class="bottom-btn" onclick="openSiteBlobWindow()">
-      Open In Blob Window
-    </button>
+        <button
+            class="bottom-btn"
+            onclick="openBlobHomepage()"
+        >
+            Open in Blob Tab
+        </button>
 
-  </div>
+
+        <button
+            class="bottom-btn"
+            onclick="openNormalHomepageWindow()"
+        >
+            Open in Normal Window
+        </button>
+
+
+        <button
+            class="bottom-btn"
+            onclick="openAboutBlankHomepageWindow()"
+        >
+            Open in About:Blank Window
+        </button>
+
+
+        <button
+            class="bottom-btn"
+            onclick="openBlobHomepageWindow()"
+        >
+            Open in Blob Window
+        </button>
+
+    </div>
+
 </div>
 
-<!-- POPULAR GAMES -->
+
+<!-- =======================================================
+     POPULAR GAMES
+======================================================= -->
+
 <div class="games-section">
 
-  <div class="games-heading">
-    <div class="games-kicker">THE ARCADE</div>
-    <div class="games-title">Popular Games 🔥</div>
-    <div class="games-subtitle">
-      Jump straight into some of the favorites.
-    </div>
-  </div>
-
-  <div class="games-grid">
-
-    <!-- Retrobowl -->
-    <div class="game-card">
-      <div
-        class="game-thumb"
-        style="background-image: url('Img/retrobowl.png');">
-      </div>
-
-      <div class="game-name">Retrobowl</div>
-
-      <div class="game-bar">
-        <button
-          class="game-play"
-          onclick="openPlayPopup('HTML/RB.html')">
-          ▶ Play
-        </button>
-
-        <button
-          class="game-info"
-          onclick="openInfoPopup('Retrobowl','A retro-style football game.')">
-          ℹ Info
-        </button>
-      </div>
+    <div class="games-title">
+        🔥 Popular Games
     </div>
 
-    <!-- Minecraft -->
-    <div class="game-card">
-      <div
-        class="game-thumb"
-        style="background-image: url('Img/MC.png');">
-      </div>
 
-      <div class="game-name">Minecraft Ver</div>
+    <div class="games-grid">
 
-      <div class="game-bar">
-        <button
-          class="game-play"
-          onclick="openPlayPopup('HTML/MC<ver>.html')">
-          ▶ Play
-        </button>
 
-        <button
-          class="game-info"
-          onclick="openInfoPopup('Minecraft','Explore, build, and survive in a blocky sandbox world.')">
-          ℹ Info
-        </button>
-      </div>
+        <!-- RETROBOWL -->
+
+        <div class="game-card">
+
+            <div
+                class="game-thumb"
+                style="
+                    background-image:
+                    url('Images/retrobowl.png');
+                "
+            ></div>
+
+
+            <div class="game-name">
+                Retrobowl
+            </div>
+
+
+            <div class="game-bar">
+
+                <button
+                    class="game-play"
+                    onclick="
+                        openPlayPopup(
+                            'Games/Retrobowl.html'
+                        )
+                    "
+                >
+                    ▶ Play
+                </button>
+
+
+                <button
+                    class="game-info"
+                    onclick="
+                        openInfoPopup(
+                            'Retrobowl',
+                            'A retro-style football game.'
+                        )
+                    "
+                >
+                    ℹ Info
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- MINECRAFT -->
+
+        <div class="game-card">
+
+            <div
+                class="game-thumb"
+                style="
+                    background-image:
+                    url('Images/minecraft.png');
+                "
+            ></div>
+
+
+            <div class="game-name">
+                Minecraft
+            </div>
+
+
+            <div class="game-bar">
+
+                <button
+                    class="game-play"
+                    onclick="
+                        openPlayPopup(
+                            'Games/Minecraft.html'
+                        )
+                    "
+                >
+                    ▶ Play
+                </button>
+
+
+                <button
+                    class="game-info"
+                    onclick="
+                        openInfoPopup(
+                            'Minecraft',
+                            'Explore, build, and survive in a blocky sandbox world.'
+                        )
+                    "
+                >
+                    ℹ Info
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- COOKIE CLICKER -->
+
+        <div class="game-card">
+
+            <div
+                class="game-thumb"
+                style="
+                    background-image:
+                    url('Images/cookie.png');
+                "
+            ></div>
+
+
+            <div class="game-name">
+                Cookie Clicker
+            </div>
+
+
+            <div class="game-bar">
+
+                <button
+                    class="game-play"
+                    onclick="
+                        openPlayPopup(
+                            'Games/CookieClicker.html'
+                        )
+                    "
+                >
+                    ▶ Play
+                </button>
+
+
+                <button
+                    class="game-info"
+                    onclick="
+                        openInfoPopup(
+                            'Cookie Clicker',
+                            'Idle clicker game where you bake absurd amounts of cookies.'
+                        )
+                    "
+                >
+                    ℹ Info
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- 1V1 -->
+
+        <div class="game-card">
+
+            <div
+                class="game-thumb"
+                style="
+                    background-image:
+                    url('Images/1v1.png');
+                "
+            ></div>
+
+
+            <div class="game-name">
+                1v1.LOL
+            </div>
+
+
+            <div class="game-bar">
+
+                <button
+                    class="game-play"
+                    onclick="
+                        openPlayPopup(
+                            'Games/1v1.html'
+                        )
+                    "
+                >
+                    ▶ Play
+                </button>
+
+
+                <button
+                    class="game-info"
+                    onclick="
+                        openInfoPopup(
+                            '1v1.LOL',
+                            'Fast-paced build-and-shoot arena battles.'
+                        )
+                    "
+                >
+                    ℹ Info
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- DRIFT HUNTERS -->
+
+        <div class="game-card">
+
+            <div
+                class="game-thumb"
+                style="
+                    background-image:
+                    url('Images/drift.png');
+                "
+            ></div>
+
+
+            <div class="game-name">
+                Drift Hunters
+            </div>
+
+
+            <div class="game-bar">
+
+                <button
+                    class="game-play"
+                    onclick="
+                        openPlayPopup(
+                            'Games/DriftHunters.html'
+                        )
+                    "
+                >
+                    ▶ Play
+                </button>
+
+
+                <button
+                    class="game-info"
+                    onclick="
+                        openInfoPopup(
+                            'Drift Hunters',
+                            'Realistic drifting with customizable cars and tracks.'
+                        )
+                    "
+                >
+                    ℹ Info
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- SHELL SHOCKERS -->
+
+        <div class="game-card">
+
+            <div
+                class="game-thumb"
+                style="
+                    background-image:
+                    url('Images/shell.png');
+                "
+            ></div>
+
+
+            <div class="game-name">
+                Shell Shockers
+            </div>
+
+
+            <div class="game-bar">
+
+                <button
+                    class="game-play"
+                    onclick="
+                        openPlayPopup(
+                            'Games/ShellShockers.html'
+                        )
+                    "
+                >
+                    ▶ Play
+                </button>
+
+
+                <button
+                    class="game-info"
+                    onclick="
+                        openInfoPopup(
+                            'Shell Shockers',
+                            'Egg-themed FPS with online multiplayer battles.'
+                        )
+                    "
+                >
+                    ℹ Info
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- BITLIFE -->
+
+        <div class="game-card">
+
+            <div
+                class="game-thumb"
+                style="
+                    background-image:
+                    url('Images/bitlife.png');
+                "
+            ></div>
+
+
+            <div class="game-name">
+                BitLife
+            </div>
+
+
+            <div class="game-bar">
+
+                <button
+                    class="game-play"
+                    onclick="
+                        openPlayPopup(
+                            'Games/BitLife.html'
+                        )
+                    "
+                >
+                    ▶ Play
+                </button>
+
+
+                <button
+                    class="game-info"
+                    onclick="
+                        openInfoPopup(
+                            'BitLife',
+                            'Life simulator where every choice shapes your story.'
+                        )
+                    "
+                >
+                    ℹ Info
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- SLOPE -->
+
+        <div class="game-card">
+
+            <div
+                class="game-thumb"
+                style="
+                    background-image:
+                    url('Images/slope.png');
+                "
+            ></div>
+
+
+            <div class="game-name">
+                Slope
+            </div>
+
+
+            <div class="game-bar">
+
+                <button
+                    class="game-play"
+                    onclick="
+                        openPlayPopup(
+                            'Games/Slope.html'
+                        )
+                    "
+                >
+                    ▶ Play
+                </button>
+
+
+                <button
+                    class="game-info"
+                    onclick="
+                        openInfoPopup(
+                            'Slope',
+                            'Fast, endless downhill ball-rolling challenge.'
+                        )
+                    "
+                >
+                    ℹ Info
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- RUN 3 -->
+
+        <div class="game-card">
+
+            <div
+                class="game-thumb"
+                style="
+                    background-image:
+                    url('Images/run3.png');
+                "
+            ></div>
+
+
+            <div class="game-name">
+                Run 3
+            </div>
+
+
+            <div class="game-bar">
+
+                <button
+                    class="game-play"
+                    onclick="
+                        openPlayPopup(
+                            'Games/Run3.html'
+                        )
+                    "
+                >
+                    ▶ Play
+                </button>
+
+
+                <button
+                    class="game-info"
+                    onclick="
+                        openInfoPopup(
+                            'Run 3',
+                            'Run through space tunnels with gravity-bending paths.'
+                        )
+                    "
+                >
+                    ℹ Info
+                </button>
+
+            </div>
+
+        </div>
+
+
     </div>
 
-    <!-- Cookie Clicker -->
-    <div class="game-card">
-      <div
-        class="game-thumb"
-        style="background-image: url('Img/cookieclicker.png');">
-      </div>
 
-      <div class="game-name">Cookie Clicker</div>
+    <div class="explore-more">
 
-      <div class="game-bar">
-        <button
-          class="game-play"
-          onclick="openPlayPopup('HTML/CKCL.html')">
-          ▶ Play
-        </button>
+        <a
+            class="explore-btn"
+            href="games.html"
+        >
+            ✨ Explore More
+        </a>
 
-        <button
-          class="game-info"
-          onclick="openInfoPopup('Cookie Clicker','Idle clicker game where you bake absurd amounts of cookies.')">
-          ℹ Info
-        </button>
-      </div>
     </div>
-
-    <!-- 1v1 -->
-    <div class="game-card">
-      <div
-        class="game-thumb"
-        style="background-image: url('Img/1v1lol.png');">
-      </div>
-
-      <div class="game-name">1v1.LOL</div>
-
-      <div class="game-bar">
-        <button
-          class="game-play"
-          onclick="openPlayPopup('HTML/1V1LOL.html')">
-          ▶ Play
-        </button>
-
-        <button
-          class="game-info"
-          onclick="openInfoPopup('1v1.LOL','Fast-paced build-and-shoot arena battles.')">
-          ℹ Info
-        </button>
-      </div>
-    </div>
-
-    <!-- Drift Hunters -->
-    <div class="game-card">
-      <div
-        class="game-thumb"
-        style="background-image: url('Img/drifthunt.png');">
-      </div>
-
-      <div class="game-name">Drift Hunters</div>
-
-      <div class="game-bar">
-        <button
-          class="game-play"
-          onclick="openPlayPopup('HTML/DH.html')">
-          ▶ Play
-        </button>
-
-        <button
-          class="game-info"
-          onclick="openInfoPopup('Drift Hunters','Realistic drifting with customizable cars and tracks.')">
-          ℹ Info
-        </button>
-      </div>
-    </div>
-
-    <!-- BitLife -->
-    <div class="game-card">
-      <div
-        class="game-thumb"
-        style="background-image: url('Img/bitlife.png');">
-      </div>
-
-      <div class="game-name">BitLife</div>
-
-      <div class="game-bar">
-        <button
-          class="game-play"
-          onclick="openPlayPopup('HTML/BL.html')">
-          ▶ Play
-        </button>
-
-        <button
-          class="game-info"
-          onclick="openInfoPopup('BitLife','Life simulator where every choice shapes your story.')">
-          ℹ Info
-        </button>
-      </div>
-    </div>
-
-    <!-- Slope -->
-    <div class="game-card">
-      <div
-        class="game-thumb"
-        style="background-image: url('Img/slope.png');">
-      </div>
-
-      <div class="game-name">Slope</div>
-
-      <div class="game-bar">
-        <button
-          class="game-play"
-          onclick="openPlayPopup('HTML/SLO.html')">
-          ▶ Play
-        </button>
-
-        <button
-          class="game-info"
-          onclick="openInfoPopup('Slope','Fast, endless downhill ball-rolling challenge.')">
-          ℹ Info
-        </button>
-      </div>
-    </div>
-
-    <!-- Run 3 -->
-    <div class="game-card">
-      <div
-        class="game-thumb"
-        style="background-image: url('Img/run3.png');">
-      </div>
-
-      <div class="game-name">Run 3</div>
-
-      <div class="game-bar">
-        <button
-          class="game-play"
-          onclick="openPlayPopup('HTML/RUN3.html')">
-          ▶ Play
-        </button>
-
-        <button
-          class="game-info"
-          onclick="openInfoPopup('Run 3','Run through space tunnels with gravity-bending paths.')">
-          ℹ Info
-        </button>
-      </div>
-    </div>
-
-        <!-- Escape Road -->
-    <div class="game-card">
-      <div
-        class="game-thumb"
-        style="background-image: url('Img/escroad.png');">
-      </div>
-
-      <div class="game-name">Escape Road</div>
-
-      <div class="game-bar">
-        <button
-          class="game-play"
-          onclick="openPlayPopup('HTML/ESCR.html')">
-          ▶ Play
-        </button>
-
-        <button
-          class="game-info"
-          onclick="openInfoPopup('Escape Road','Escape Road is a fast-paced driving game where you dodge traffic, escape the police, and survive as long as possible while racing through the city.')">
-          ℹ Info
-        </button>
-      </div>
-    </div>
-
-  </div>
-
-  <div class="explore-more">
-    <a class="explore-btn" href="games.html">
-      ✨ Explore More
-    </a>
-  </div>
 
 </div>
 
-<!-- PLAY POPUP -->
-<div id="popup" class="modal" onclick="closePlayPopupOnBackdrop(event)">
 
-  <div id="popup-box" onclick="event.stopPropagation()">
+<!-- =======================================================
+     PLAY POPUP
+======================================================= -->
 
-    <div class="popup-header">
-      <h3>Launch Options</h3>
-      <div id="popup-close" onclick="closePlayPopup()">✕</div>
-    </div>
-
-    <div class="launch-grid">
-
-      <button class="popup-btn" onclick="openTab()">
-        Open In Normal Tab
-      </button>
-
-      <button class="popup-btn" onclick="openABTab()">
-        Open In About:Blank Tab
-      </button>
-
-      <button class="popup-btn" onclick="openWindow()">
-        Open In Normal Window
-      </button>
-
-      <button class="popup-btn" onclick="openABWindow()">
-        Open In About:Blank Window
-      </button>
-
-    </div>
-
-  </div>
-</div>
-
-<!-- INFO POPUP -->
 <div
-  id="info-popup"
-  class="modal"
-  onclick="closeInfoPopupOnBackdrop(event)">
+    id="popup"
+    class="modal"
+    onclick="closePlayPopupOnBackdrop(event)"
+>
 
-  <div
-    id="info-popup-box"
-    onclick="event.stopPropagation()">
+    <div
+        id="popup-box"
+        onclick="event.stopPropagation()"
+    >
 
-    <div class="info-header">
+        <div class="popup-header">
 
-      <div
-        id="info-popup-close"
-        onclick="closeInfoPopup()">
-        ✕
-      </div>
+            <h3>
+                Launch Options
+            </h3>
 
-      <div
-        class="info-title"
-        id="info-title">
-        Game Title
-      </div>
+            <div
+                id="popup-close"
+                onclick="closePlayPopup()"
+            >
+                ✕
+            </div>
+
+        </div>
+
+
+        <div class="launch-grid">
+
+            <button
+                class="popup-btn"
+                onclick="openTab()"
+            >
+                Open In Normal Tab
+            </button>
+
+
+            <button
+                class="popup-btn"
+                onclick="openABTab()"
+            >
+                Open In About:Blank Tab
+            </button>
+
+
+            <button
+                class="popup-btn"
+                onclick="openBlobTab()"
+            >
+                Open In Blob Tab
+            </button>
+
+
+            <button
+                class="popup-btn"
+                onclick="openWindow()"
+            >
+                Open In Normal Window
+            </button>
+
+
+            <button
+                class="popup-btn"
+                onclick="openABWindow()"
+            >
+                Open In About:Blank Window
+            </button>
+
+
+            <button
+                class="popup-btn"
+                onclick="openBlobWindow()"
+            >
+                Open In Blob Window
+            </button>
+
+        </div>
 
     </div>
 
-    <div class="info-body">
-
-      <div class="info-label">
-        Game Information
-      </div>
-
-      <p
-        class="info-text"
-        id="info-text">
-        Game description goes here.
-      </p>
-
-      <div class="info-footer">
-        Choose Play to launch this game using one of the available launch methods.
-      </div>
-
-    </div>
-
-  </div>
 </div>
+
+
+<!-- =======================================================
+     INFO POPUP
+======================================================= -->
+
+<div
+    id="info-popup"
+    class="modal"
+    onclick="closeInfoPopupOnBackdrop(event)"
+>
+
+    <div
+        id="info-popup-box"
+        onclick="event.stopPropagation()"
+    >
+
+        <div class="info-header">
+
+            <div
+                id="info-popup-close"
+                onclick="closeInfoPopup()"
+            >
+                ✕
+            </div>
+
+
+            <div
+                class="info-title"
+                id="info-title"
+            >
+                Game Title
+            </div>
+
+        </div>
+
+
+        <div class="info-body">
+
+            <div class="info-label">
+                Game Information
+            </div>
+
+
+            <p
+                class="info-text"
+                id="info-text"
+            >
+                Game description goes here.
+            </p>
+
+
+            <div class="info-footer">
+
+                Choose Play to launch this game
+                using one of the available launch
+                methods.
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
 
 <script>
 
 /* =========================================================
-   TIME
+   CURRENT GAME
    ========================================================= */
 
-function updateDateTime() {
-
-  const now = new Date();
-
-  const month = now.toLocaleString('en-US', {
-    month: 'long'
-  });
-
-  const day = now.getDate();
-  const year = now.getFullYear();
-
-  let hours = now.getHours();
-
-  const minutes = String(
-    now.getMinutes()
-  ).padStart(2, '0');
-
-  const seconds = String(
-    now.getSeconds()
-  ).padStart(2, '0');
-
-  const ampm = hours >= 12
-    ? "PM"
-    : "AM";
-
-  hours = hours % 12 || 12;
-
-  document.getElementById('datetime').textContent =
-    `${month} ${day}, ${year} • ${hours}:${minutes}:${seconds} ${ampm}`;
-}
-
-setInterval(updateDateTime, 1000);
-
-updateDateTime();
+let currentGameURL = "";
 
 
 /* =========================================================
@@ -2027,7 +1954,10 @@ updateDateTime();
    ========================================================= */
 
 function blocked() {
-  window.location.href = "unfin.html";
+
+    window.location.href =
+        "under_construction.html";
+
 }
 
 
@@ -2035,34 +1965,44 @@ function blocked() {
    PLAY POPUP
    ========================================================= */
 
-let currentGameURL = "";
+function openPlayPopup(
+    url
+) {
 
-function openPlayPopup(url) {
+    currentGameURL =
+        url;
 
-  currentGameURL = url;
+    document
+        .getElementById("popup")
+        .classList
+        .add("open");
 
-  document
-    .getElementById("popup")
-    .classList
-    .add("open");
 }
+
 
 function closePlayPopup() {
 
-  document
-    .getElementById("popup")
-    .classList
-    .remove("open");
+    document
+        .getElementById("popup")
+        .classList
+        .remove("open");
+
 }
 
-function closePlayPopupOnBackdrop(event) {
 
-  if (
-    event.target ===
-    document.getElementById("popup")
-  ) {
-    closePlayPopup();
-  }
+function closePlayPopupOnBackdrop(
+    event
+) {
+
+    if (
+        event.target ===
+        document.getElementById("popup")
+    ) {
+
+        closePlayPopup();
+
+    }
+
 }
 
 
@@ -2070,399 +2010,712 @@ function closePlayPopupOnBackdrop(event) {
    INFO POPUP
    ========================================================= */
 
-function openInfoPopup(title, text) {
+function openInfoPopup(
+    title,
+    text
+) {
 
-  document.getElementById("info-title").textContent =
-    title;
+    document.getElementById(
+        "info-title"
+    ).textContent =
+        title;
 
-  document.getElementById("info-text").textContent =
-    text;
 
-  document
-    .getElementById("info-popup")
-    .classList
-    .add("open");
+    document.getElementById(
+        "info-text"
+    ).textContent =
+        text;
+
+
+    document
+        .getElementById("info-popup")
+        .classList
+        .add("open");
+
 }
+
 
 function closeInfoPopup() {
 
-  document
-    .getElementById("info-popup")
-    .classList
-    .remove("open");
+    document
+        .getElementById("info-popup")
+        .classList
+        .remove("open");
+
 }
 
-function closeInfoPopupOnBackdrop(event) {
 
-  if (
-    event.target ===
-    document.getElementById("info-popup")
-  ) {
-    closeInfoPopup();
-  }
+function closeInfoPopupOnBackdrop(
+    event
+) {
+
+    if (
+        event.target ===
+        document.getElementById(
+            "info-popup"
+        )
+    ) {
+
+        closeInfoPopup();
+
+    }
+
 }
 
 
 /* =========================================================
-   CLOSE MODALS WITH ESC
+   ESCAPE
    ========================================================= */
 
 document.addEventListener(
-  "keydown",
-  function(event) {
+    "keydown",
+    function(event) {
 
-    if (event.key === "Escape") {
+        if (
+            event.key === "Escape"
+        ) {
 
-      closePlayPopup();
-      closeInfoPopup();
+            closePlayPopup();
+
+            closeInfoPopup();
+
+        }
 
     }
-
-  }
 );
 
 
 /* =========================================================
-   HOMEPAGE LAUNCH OPTIONS
-   BLOB OPTIONS REMAIN HERE
-   ========================================================= */
-
-function getSiteURL() {
-  return window.location.href;
-}
-
-function createSiteWrapper(url) {
-
-  return `
-    <!DOCTYPE html>
-
-    <html>
-
-    <head>
-
-      <meta charset="UTF-8">
-
-      <title>SGS</title>
-
-      <style>
-
-        html,
-        body {
-          margin: 0;
-          padding: 0;
-          width: 100%;
-          height: 100%;
-          overflow: hidden;
-          background: #000;
-        }
-
-        iframe {
-          position: fixed;
-          inset: 0;
-          width: 100vw;
-          height: 100vh;
-          border: none;
-          background: #000;
-          display: block;
-        }
-
-      </style>
-
-    </head>
-
-    <body>
-
-      <iframe src="${url}"></iframe>
-
-    </body>
-
-    </html>
-  `;
-}
-
-
-/* NORMAL TAB */
-
-function openSiteTab() {
-
-  window.open(
-    getSiteURL(),
-    "_blank"
-  );
-}
-
-
-/* ABOUT:BLANK TAB */
-
-function openSiteABTab() {
-
-  const win = window.open(
-    "about:blank",
-    "_blank"
-  );
-
-  if (!win) return;
-
-  win.document.open();
-
-  win.document.write(
-    createSiteWrapper(
-      getSiteURL()
-    )
-  );
-
-  win.document.close();
-}
-
-
-/* BLOB TAB — HOMEPAGE ONLY */
-
-function openSiteBlobTab() {
-
-  const blob = new Blob(
-    [
-      createSiteWrapper(
-        getSiteURL()
-      )
-    ],
-    {
-      type: "text/html"
-    }
-  );
-
-  const url =
-    URL.createObjectURL(blob);
-
-  window.open(
-    url,
-    "_blank"
-  );
-}
-
-
-/* NORMAL WINDOW */
-
-function openSiteWindow() {
-
-  window.open(
-    getSiteURL(),
-    "",
-    "width=1100,height=700,resizable=yes,scrollbars=yes"
-  );
-}
-
-
-/* ABOUT:BLANK WINDOW */
-
-function openSiteABWindow() {
-
-  const win = window.open(
-    "about:blank",
-    "",
-    "width=1100,height=700,resizable=yes,scrollbars=yes"
-  );
-
-  if (!win) return;
-
-  win.document.open();
-
-  win.document.write(
-    createSiteWrapper(
-      getSiteURL()
-    )
-  );
-
-  win.document.close();
-}
-
-
-/* BLOB WINDOW — HOMEPAGE ONLY */
-
-function openSiteBlobWindow() {
-
-  const blob = new Blob(
-    [
-      createSiteWrapper(
-        getSiteURL()
-      )
-    ],
-    {
-      type: "text/html"
-    }
-  );
-
-  const url =
-    URL.createObjectURL(blob);
-
-  window.open(
-    url,
-    "",
-    "width=1100,height=700,resizable=yes,scrollbars=yes"
-  );
-}
-
-
-/* =========================================================
    GAME LAUNCH OPTIONS
-   NO BLOB FUNCTIONS HERE
    ========================================================= */
 
 function openTab() {
 
-  window.open(
-    currentGameURL,
-    "_blank"
-  );
+    window.open(
+        currentGameURL,
+        "_blank"
+    );
 
-  closePlayPopup();
+    closePlayPopup();
+
 }
 
+
+/* =========================================================
+   ABOUT:BLANK TAB
+   ========================================================= */
 
 function openABTab() {
 
-  const win = window.open(
-    "about:blank",
-    "_blank"
-  );
+    const win =
+        window.open(
+            "about:blank",
+            "_blank"
+        );
 
-  if (!win) {
+
+    if (!win) {
+
+        closePlayPopup();
+
+        return;
+
+    }
+
+
+    writeGameWindow(
+        win
+    );
+
 
     closePlayPopup();
 
-    return;
-  }
-
-  win.document.write(`
-
-    <!DOCTYPE html>
-
-    <html>
-
-    <head>
-
-      <title>SGS</title>
-
-      <style>
-
-        html,
-        body {
-          margin: 0;
-          padding: 0;
-          width: 100%;
-          height: 100%;
-          overflow: hidden;
-          background: #000;
-        }
-
-        iframe {
-          position: fixed;
-          inset: 0;
-          width: 100vw;
-          height: 100vh;
-          border: none;
-          background: #000;
-          display: block;
-        }
-
-      </style>
-
-    </head>
-
-    <body>
-
-      <iframe src="${currentGameURL}"></iframe>
-
-    </body>
-
-    </html>
-
-  `);
-
-  win.document.close();
-
-  closePlayPopup();
 }
 
+
+/* =========================================================
+   BLOB TAB
+   ========================================================= */
+
+function openBlobTab() {
+
+    const html =
+        createGameWindowHTML();
+
+
+    const blob =
+        new Blob(
+            [html],
+            {
+                type:
+                    "text/html"
+            }
+        );
+
+
+    const url =
+        URL.createObjectURL(
+            blob
+        );
+
+
+    window.open(
+        url,
+        "_blank"
+    );
+
+
+    closePlayPopup();
+
+}
+
+
+/* =========================================================
+   NORMAL WINDOW
+   ========================================================= */
 
 function openWindow() {
 
-  window.open(
-    currentGameURL,
-    "",
-    "width=1100,height=700,resizable=yes,scrollbars=yes"
-  );
+    window.open(
+        currentGameURL,
+        "",
+        "width=1100,height=700,resizable=yes,scrollbars=yes"
+    );
 
-  closePlayPopup();
-}
-
-
-function openABWindow() {
-
-  const win = window.open(
-    "",
-    "",
-    "width=1100,height=700,resizable=yes,scrollbars=yes"
-  );
-
-  if (!win) {
 
     closePlayPopup();
 
-    return;
-  }
+}
 
-  win.document.write(`
 
-    <!DOCTYPE html>
+/* =========================================================
+   ABOUT:BLANK WINDOW
+   ========================================================= */
 
-    <html>
+function openABWindow() {
 
-    <head>
+    const win =
+        window.open(
+            "",
+            "",
+            "width=1100,height=700,resizable=yes,scrollbars=yes"
+        );
 
-      <title>SGS</title>
 
-      <style>
+    if (!win) {
 
-        html,
-        body {
-          margin: 0;
-          padding: 0;
-          width: 100%;
-          height: 100%;
-          overflow: hidden;
-          background: #000;
-        }
+        closePlayPopup();
 
-        iframe {
-          position: fixed;
-          inset: 0;
-          width: 100vw;
-          height: 100vh;
-          border: none;
-          background: #000;
-          display: block;
-        }
+        return;
 
-      </style>
+    }
 
-    </head>
 
-    <body>
+    writeGameWindow(
+        win
+    );
 
-      <iframe src="${currentGameURL}"></iframe>
 
-    </body>
+    closePlayPopup();
 
-    </html>
+}
 
-  `);
 
-  win.document.close();
+/* =========================================================
+   BLOB WINDOW
+   ========================================================= */
 
-  closePlayPopup();
+function openBlobWindow() {
+
+    const html =
+        createGameWindowHTML();
+
+
+    const blob =
+        new Blob(
+            [html],
+            {
+                type:
+                    "text/html"
+            }
+        );
+
+
+    const url =
+        URL.createObjectURL(
+            blob
+        );
+
+
+    window.open(
+        url,
+        "",
+        "width=1100,height=700,resizable=yes,scrollbars=yes"
+    );
+
+
+    closePlayPopup();
+
+}
+
+
+/* =========================================================
+   GAME WINDOW HTML
+   ========================================================= */
+
+function createGameWindowHTML() {
+
+    return `
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<title>
+    SGS
+</title>
+
+<style>
+
+html,
+body {
+
+    margin: 0;
+
+    padding: 0;
+
+    width: 100%;
+
+    height: 100%;
+
+    overflow: hidden;
+
+    background: #000;
+
+}
+
+iframe {
+
+    position: fixed;
+
+    inset: 0;
+
+    width: 100vw;
+
+    height: 100vh;
+
+    border: none;
+
+    background: #000;
+
+    display: block;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<iframe
+    src="${currentGameURL}"
+></iframe>
+
+</body>
+
+</html>
+
+`;
+
+}
+
+
+/* =========================================================
+   WRITE GAME WINDOW
+   ========================================================= */
+
+function writeGameWindow(
+    win
+) {
+
+    win.document.write(
+        createGameWindowHTML()
+    );
+
+    win.document.close();
+
+}
+
+
+/* =========================================================
+   HOMEPAGE OPEN OPTIONS
+========================================================= */
+
+function openNormalHomepage() {
+
+    window.open(
+        "index.html",
+        "_blank"
+    );
+
+}
+
+
+function openAboutBlankHomepage() {
+
+    const win =
+        window.open(
+            "about:blank",
+            "_blank"
+        );
+
+
+    if (!win) {
+        return;
+    }
+
+
+    win.document.write(`
+    
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<title>
+    SGS
+</title>
+
+<style>
+
+html,
+body {
+
+    margin: 0;
+    padding: 0;
+
+    width: 100%;
+    height: 100%;
+
+    overflow: hidden;
+
+    background: #000;
+
+}
+
+iframe {
+
+    position: fixed;
+
+    inset: 0;
+
+    width: 100vw;
+    height: 100vh;
+
+    border: none;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<iframe
+    src="index.html"
+></iframe>
+
+</body>
+
+</html>
+
+    `);
+
+
+    win.document.close();
+
+}
+
+
+function openBlobHomepage() {
+
+    const html = `
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<title>
+    SGS
+</title>
+
+<style>
+
+html,
+body {
+
+    margin: 0;
+    padding: 0;
+
+    width: 100%;
+    height: 100%;
+
+    overflow: hidden;
+
+    background: #000;
+
+}
+
+iframe {
+
+    position: fixed;
+
+    inset: 0;
+
+    width: 100vw;
+    height: 100vh;
+
+    border: none;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<iframe
+    src="index.html"
+></iframe>
+
+</body>
+
+</html>
+
+`;
+
+
+    const blob =
+        new Blob(
+            [html],
+            {
+                type:
+                    "text/html"
+            }
+        );
+
+
+    const url =
+        URL.createObjectURL(
+            blob
+        );
+
+
+    window.open(
+        url,
+        "_blank"
+    );
+
+}
+
+
+function openNormalHomepageWindow() {
+
+    window.open(
+        "index.html",
+        "",
+        "width=1100,height=700,resizable=yes,scrollbars=yes"
+    );
+
+}
+
+
+function openAboutBlankHomepageWindow() {
+
+    const win =
+        window.open(
+            "",
+            "",
+            "width=1100,height=700,resizable=yes,scrollbars=yes"
+        );
+
+
+    if (!win) {
+        return;
+    }
+
+
+    win.document.write(`
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<title>
+    SGS
+</title>
+
+<style>
+
+html,
+body {
+
+    margin: 0;
+    padding: 0;
+
+    width: 100%;
+    height: 100%;
+
+    overflow: hidden;
+
+    background: #000;
+
+}
+
+iframe {
+
+    position: fixed;
+
+    inset: 0;
+
+    width: 100vw;
+    height: 100vh;
+
+    border: none;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<iframe
+    src="index.html"
+></iframe>
+
+</body>
+
+</html>
+
+    `);
+
+
+    win.document.close();
+
+}
+
+
+function openBlobHomepageWindow() {
+
+    const html = `
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<title>
+    SGS
+</title>
+
+<style>
+
+html,
+body {
+
+    margin: 0;
+    padding: 0;
+
+    width: 100%;
+    height: 100%;
+
+    overflow: hidden;
+
+    background: #000;
+
+}
+
+iframe {
+
+    position: fixed;
+
+    inset: 0;
+
+    width: 100vw;
+    height: 100vh;
+
+    border: none;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<iframe
+    src="index.html"
+></iframe>
+
+</body>
+
+</html>
+
+`;
+
+
+    const blob =
+        new Blob(
+            [html],
+            {
+                type:
+                    "text/html"
+            }
+        );
+
+
+    const url =
+        URL.createObjectURL(
+            blob
+        );
+
+
+    window.open(
+        url,
+        "",
+        "width=1100,height=700,resizable=yes,scrollbars=yes"
+    );
+
 }
 
 </script>
 
+
+<!-- =======================================================
+     LOAD SHARED TOPBAR
+======================================================= -->
+
+<script
+    type="module"
+    src="topbar.js"
+></script>
+
+
 </body>
+
 </html>
+```
