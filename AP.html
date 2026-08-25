@@ -1276,6 +1276,72 @@ button:disabled {
 
 
 /* =========================================================
+   MAP BUTTON
+   ========================================================= */
+
+.ip-map-button {
+    width:
+        100%;
+
+    margin-top:
+        16px;
+
+    height:
+        46px;
+
+    border:
+        1px solid #ff2222;
+
+    border-radius:
+        9px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #190000,
+            #100000
+        );
+
+    color:
+        #fff;
+
+    font-size:
+        14px;
+
+    font-weight:
+        700;
+
+    cursor:
+        pointer;
+
+    box-shadow:
+        0 0 12px rgba(255, 0, 0, 0.12);
+
+    transition:
+        background 0.2s,
+        box-shadow 0.2s,
+        transform 0.1s;
+}
+
+.ip-map-button:hover {
+    background:
+        linear-gradient(
+            180deg,
+            #260000,
+            #160000
+        );
+
+    box-shadow:
+        0 0 18px rgba(255, 0, 0, 0.45);
+}
+
+.ip-map-button:active {
+    transform:
+        scale(0.99);
+}
+
+
+/* =========================================================
    ANIMATIONS
    ========================================================= */
 
@@ -2430,6 +2496,19 @@ async function showIPInfo(
         const timezone =
             data.timezone || {};
 
+        const hasCoordinates =
+            Number.isFinite(
+                Number(data.latitude)
+            ) &&
+            Number.isFinite(
+                Number(data.longitude)
+            );
+
+
+        /* =====================================================
+           IP INFORMATION CONTENT
+           ===================================================== */
+
         ipInfoBody.innerHTML =
             `
             <div class="ip-info-grid">
@@ -2511,7 +2590,37 @@ async function showIPInfo(
 
             </div>
 
+            ${
+                hasCoordinates
+                    ? `
+                    <button
+                        id="ipMapButton"
+                        class="ip-map-button"
+                    >
+                        Open Location on Map
+                    </button>
+                    `
+                    : `
+                    <div
+                        style="
+                            margin-top:16px;
+                            padding:12px;
+                            border:1px solid #252525;
+                            border-radius:9px;
+                            background:#0d0d0d;
+                            color:#777;
+                            font-size:12px;
+                            text-align:center;
+                        "
+                    >
+                        Location coordinates are unavailable
+                        for this IP.
+                    </div>
+                    `
+            }
+
             <div class="popup-footer">
+
                 <button
                     id="ipInfoDone"
                     class="popup-cancel"
@@ -2519,8 +2628,66 @@ async function showIPInfo(
                 >
                     Close
                 </button>
+
             </div>
             `;
+
+
+        /* =====================================================
+           MAP BUTTON
+           ===================================================== */
+
+        const ipMapButton =
+            document.getElementById(
+                "ipMapButton"
+            );
+
+        if (ipMapButton) {
+
+            ipMapButton.addEventListener(
+                "click",
+                () => {
+
+                    const latitude =
+                        Number(
+                            data.latitude
+                        );
+
+                    const longitude =
+                        Number(
+                            data.longitude
+                        );
+
+                    if (
+                        !Number.isFinite(
+                            latitude
+                        ) ||
+                        !Number.isFinite(
+                            longitude
+                        )
+                    ) {
+
+                        return;
+                    }
+
+                    const mapURL =
+                        `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                            `${latitude},${longitude}`
+                        )}`;
+
+                    window.open(
+                        mapURL,
+                        "_blank",
+                        "noopener,noreferrer"
+                    );
+                }
+            );
+        }
+
+
+        /* =====================================================
+           CLOSE BUTTON
+           ===================================================== */
 
         document
             .getElementById("ipInfoDone")
@@ -2722,7 +2889,9 @@ function renderIPs(
             "ip-actions";
 
 
-        /* INFO */
+        /* =====================================================
+           INFO
+           ===================================================== */
 
         const info =
             document.createElement(
@@ -2745,7 +2914,9 @@ function renderIPs(
         );
 
 
-        /* BLOCK / UNBLOCK */
+        /* =====================================================
+           BLOCK / UNBLOCK
+           ===================================================== */
 
         if (item.blocked) {
 
