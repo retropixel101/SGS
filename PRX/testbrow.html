@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>SGS Browser</title>
+
+<link rel="icon" type="image/png" href="../Img/SGS.png">
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #0b0f14;
+    color: #e8edf3;
+}
+
+/* =========================================================
+   BROWSER
+========================================================= */
+
+.browser {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: #0b0f14;
+}
+
+/* =========================================================
+   TABS
+========================================================= */
+
+.tabs {
+    height: 42px;
+    min-height: 42px;
+
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+
+    padding: 6px 8px 0;
+
+    background: #080b0f;
+    border-bottom: 1px solid #252c35;
+
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.tab {
+    height: 36px;
+    min-width: 180px;
+    max-width: 240px;
+
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    padding: 0 12px;
+
+    background: #11161d;
+    border: 1px solid #252c35;
+    border-bottom: none;
+
+    border-radius: 8px 8px 0 0;
+
+    color: #aeb7c2;
+    font-size: 13px;
+
+    cursor: pointer;
+
+    user-select: none;
+
+    transition:
+        background 0.12s ease,
+        color 0.12s ease;
+}
+
+.tab:hover {
+    background: #171d25;
+    color: #e8edf3;
+}
+
+.tab.active {
+    background: #171d25;
+    color: #ffffff;
+}
+
+.tab-icon {
+    width: 15px;
+    height: 15px;
+
+    flex-shrink: 0;
+
+    border-radius: 4px;
+
+    background: #2a323d;
+}
+
+.tab-title {
+    flex: 1;
+
+    overflow: hidden;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.tab-close {
+    width: 20px;
+    height: 20px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 5px;
+
+    color: #7e8996;
+
+    font-size: 16px;
+
+    cursor: pointer;
+}
+
+.tab-close:hover {
+    background: #2b333d;
+    color: #ffffff;
+}
+
+.new-tab {
+    width: 34px;
+    height: 34px;
+
+    flex-shrink: 0;
+
+    margin-bottom: 1px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+    border-radius: 7px;
+
+    background: transparent;
+    color: #aeb7c2;
+
+    font-size: 22px;
+
+    cursor: pointer;
+}
+
+.new-tab:hover {
+    background: #1a2028;
+    color: #ffffff;
+}
+
+/* =========================================================
+   TOOLBAR
+========================================================= */
+
+.toolbar {
+    height: 58px;
+    min-height: 58px;
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 8px 12px;
+
+    background: #11161d;
+    border-bottom: 1px solid #252c35;
+}
+
+.nav-buttons {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+
+    flex-shrink: 0;
+}
+
+.nav-button {
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+    border-radius: 7px;
+
+    background: transparent;
+    color: #aeb7c2;
+
+    font-size: 19px;
+
+    cursor: pointer;
+}
+
+.nav-button:hover {
+    background: #202731;
+    color: #ffffff;
+}
+
+.address-wrapper {
+    flex: 1;
+
+    height: 40px;
+
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+
+    background: #0b0f14;
+
+    border: 1px solid #2a323c;
+    border-radius: 21px;
+
+    padding: 0 14px;
+
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.address-wrapper:focus-within {
+    border-color: #596675;
+
+    box-shadow:
+        0 0 0 2px rgba(100, 120, 140, 0.08);
+}
+
+.address-icon {
+    margin-right: 9px;
+
+    color: #778391;
+
+    font-size: 15px;
+
+    flex-shrink: 0;
+}
+
+.address-bar {
+    width: 100%;
+    height: 100%;
+
+    min-width: 0;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+
+    color: #e8edf3;
+
+    font-size: 14px;
+}
+
+.address-bar::placeholder {
+    color: #697481;
+}
+
+.toolbar-right {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    flex-shrink: 0;
+}
+
+.toolbar-button {
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+    border-radius: 7px;
+
+    background: transparent;
+    color: #aeb7c2;
+
+    font-size: 17px;
+
+    cursor: pointer;
+}
+
+.toolbar-button:hover {
+    background: #202731;
+    color: #ffffff;
+}
+
+/* =========================================================
+   BOOKMARKS
+========================================================= */
+
+.bookmarks {
+    height: 36px;
+    min-height: 36px;
+
+    display: flex;
+    align-items: center;
+    gap: 5px;
+
+    padding: 0 12px;
+
+    background: #0e1319;
+
+    border-bottom: 1px solid #202731;
+
+    overflow-x: auto;
+
+    scrollbar-width: none;
+}
+
+.bookmarks::-webkit-scrollbar {
+    display: none;
+}
+
+.bookmark {
+    height: 28px;
+
+    display: flex;
+    align-items: center;
+    gap: 7px;
+
+    padding: 0 10px;
+
+    border: none;
+    border-radius: 6px;
+
+    background: transparent;
+    color: #9ca7b3;
+
+    font-size: 12px;
+
+    white-space: nowrap;
+
+    cursor: pointer;
+}
+
+.bookmark:hover {
+    background: #1b222b;
+    color: #ffffff;
+}
+
+.bookmark-icon {
+    width: 13px;
+    height: 13px;
+
+    flex-shrink: 0;
+
+    border-radius: 3px;
+
+    background: #343e49;
+}
+
+/* =========================================================
+   BROWSER VIEW
+========================================================= */
+
+.browser-view {
+    position: relative;
+
+    flex: 1;
+
+    min-height: 0;
+
+    overflow: hidden;
+
+    background: #0b0f14;
+}
+
+.page {
+    position: absolute;
+
+    inset: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 40px;
+
+    overflow: auto;
+}
+
+.home-content {
+    width: min(700px, 100%);
+
+    text-align: center;
+}
+
+.home-logo {
+    width: 70px;
+    height: 70px;
+
+    margin: 0 auto 22px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 18px;
+
+    background: #171d25;
+
+    border: 1px solid #2a323c;
+
+    font-size: 30px;
+    font-weight: bold;
+
+    color: #ffffff;
+}
+
+.home-title {
+    margin: 0 0 10px;
+
+    font-size: 32px;
+    font-weight: 600;
+
+    color: #f2f5f8;
+}
+
+.home-subtitle {
+    margin: 0 0 28px;
+
+    color: #7f8b98;
+
+    font-size: 14px;
+}
+
+.home-search {
+    width: 100%;
+    height: 48px;
+
+    padding: 0 18px;
+
+    border: 1px solid #2a323c;
+    border-radius: 24px;
+
+    outline: none;
+
+    background: #11161d;
+
+    color: #ffffff;
+
+    font-size: 14px;
+}
+
+.home-search:focus {
+    border-color: #596675;
+}
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.status {
+    position: absolute;
+
+    left: 14px;
+    bottom: 10px;
+
+    color: #596572;
+
+    font-size: 11px;
+
+    pointer-events: none;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 700px) {
+
+    .tab {
+        min-width: 130px;
+    }
+
+    .toolbar {
+        gap: 4px;
+        padding: 7px;
+    }
+
+    .nav-button,
+    .toolbar-button {
+        width: 34px;
+        height: 34px;
+    }
+
+    .address-wrapper {
+        height: 36px;
+    }
+
+    .bookmarks {
+        display: none;
+    }
+
+    .home-title {
+        font-size: 25px;
+    }
+}
+
+@media (max-width: 500px) {
+
+    .nav-buttons {
+        gap: 0;
+    }
+
+    .nav-button:nth-child(2) {
+        display: none;
+    }
+
+    .toolbar-right .toolbar-button:first-child {
+        display: none;
+    }
+
+    .tab {
+        min-width: 115px;
+    }
+
+    .tab-title {
+        font-size: 12px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="browser">
+
+    <!-- =====================================================
+         TABS
+    ====================================================== -->
+
+    <div class="tabs" id="tabs">
+
+        <div
+            class="tab active"
+            data-tab="1"
+            onclick="selectTab(1)"
+        >
+
+            <div class="tab-icon"></div>
+
+            <div class="tab-title">
+                New Tab
+            </div>
+
+            <div
+                class="tab-close"
+                onclick="closeTab(event, 1)"
+                title="Close tab"
+            >
+                ×
+            </div>
+
+        </div>
+
+        <button
+            class="new-tab"
+            onclick="createTab()"
+            title="New tab"
+        >
+            +
+        </button>
+
+    </div>
+
+
+    <!-- =====================================================
+         TOOLBAR
+    ====================================================== -->
+
+    <div class="toolbar">
+
+        <div class="nav-buttons">
+
+            <button
+                class="nav-button"
+                onclick="goBack()"
+                title="Back"
+            >
+                ‹
+            </button>
+
+            <button
+                class="nav-button"
+                onclick="goForward()"
+                title="Forward"
+            >
+                ›
+            </button>
+
+            <button
+                class="nav-button"
+                onclick="reloadPage()"
+                title="Reload"
+            >
+                ↻
+            </button>
+
+        </div>
+
+
+        <div class="address-wrapper">
+
+            <div class="address-icon">
+                ◉
+            </div>
+
+            <input
+                id="addressBar"
+                class="address-bar"
+                type="text"
+                placeholder="Search or enter address"
+                autocomplete="off"
+                spellcheck="false"
+                onkeydown="addressKey(event)"
+            >
+
+        </div>
+
+
+        <div class="toolbar-right">
+
+            <button
+                class="toolbar-button"
+                onclick="bookmarkCurrent()"
+                title="Bookmark"
+            >
+                ☆
+            </button>
+
+            <button
+                class="toolbar-button"
+                onclick="openMenu()"
+                title="Menu"
+            >
+                ⋮
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         BOOKMARK BAR
+    ====================================================== -->
+
+    <div
+        class="bookmarks"
+        id="bookmarks"
+    >
+
+        <button
+            class="bookmark"
+            onclick="openBookmark('https://www.google.com')"
+        >
+            <span class="bookmark-icon"></span>
+            Google
+        </button>
+
+        <button
+            class="bookmark"
+            onclick="openBookmark('https://www.youtube.com')"
+        >
+            <span class="bookmark-icon"></span>
+            YouTube
+        </button>
+
+        <button
+            class="bookmark"
+            onclick="openBookmark('https://github.com')"
+        >
+            <span class="bookmark-icon"></span>
+            GitHub
+        </button>
+
+    </div>
+
+
+    <!-- =====================================================
+         BROWSER VIEW
+    ====================================================== -->
+
+    <div class="browser-view">
+
+        <div class="page">
+
+            <div class="home-content">
+
+                <div class="home-logo">
+                    SGS
+                </div>
+
+                <h1 class="home-title">
+                    SGS Browser
+                </h1>
+
+                <p class="home-subtitle">
+                    Enter an address above to begin browsing.
+                </p>
+
+                <input
+                    id="homeSearch"
+                    class="home-search"
+                    type="text"
+                    placeholder="Search or enter address"
+                    autocomplete="off"
+                    spellcheck="false"
+                    onkeydown="homeSearch(event)"
+                >
+
+            </div>
+
+        </div>
+
+        <div class="status">
+            SGS PRX • Test Browser
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+/* =========================================================
+   SGS TEST BROWSER
+========================================================= */
+
+let tabCount = 1;
+let activeTabId = 1;
+
+
+/* =========================================================
+   ADDRESS BAR
+========================================================= */
+
+function addressKey(event) {
+
+    if (event.key !== "Enter") {
+        return;
+    }
+
+    const input = event.target.value.trim();
+
+    if (!input) {
+        return;
+    }
+
+    navigate(input);
+}
+
+
+function homeSearch(event) {
+
+    if (event.key !== "Enter") {
+        return;
+    }
+
+    const input = event.target.value.trim();
+
+    if (!input) {
+        return;
+    }
+
+    document.getElementById("addressBar").value = input;
+
+    navigate(input);
+}
+
+
+function navigate(value) {
+
+    /*
+     * Temporary test behavior.
+     *
+     * The actual Scramjet/proxy connection
+     * will be added later.
+     */
+
+    console.log(
+        "[SGS PRX] Requested:",
+        value
+    );
+
+    alert(
+        "Proxy connection isn't enabled yet.\n\n" +
+        "Requested:\n" +
+        value
+    );
+}
+
+
+/* =========================================================
+   TAB CREATION
+========================================================= */
+
+function createTab() {
+
+    tabCount++;
+
+    const id = tabCount;
+
+    const tabs =
+        document.getElementById("tabs");
+
+    const newButton =
+        document.querySelector(".new-tab");
+
+    const tab =
+        document.createElement("div");
+
+    tab.className = "tab";
+
+    tab.dataset.tab = id;
+
+    tab.innerHTML = `
+        <div class="tab-icon"></div>
+
+        <div class="tab-title">
+            New Tab
+        </div>
+
+        <div
+            class="tab-close"
+            onclick="closeTab(event, ${id})"
+            title="Close tab"
+        >
+            ×
+        </div>
+    `;
+
+    /*
+     * Clicking anywhere on the tab selects it.
+     */
+    tab.addEventListener("click", () => {
+        selectTab(id);
+    });
+
+    tabs.insertBefore(tab, newButton);
+
+    selectTab(id);
+}
+
+
+/* =========================================================
+   TAB SELECTION
+========================================================= */
+
+function selectTab(id) {
+
+    const tab =
+        document.querySelector(
+            `.tab[data-tab="${id}"]`
+        );
+
+    if (!tab) {
+        return;
+    }
+
+    activeTabId = id;
+
+    document
+        .querySelectorAll(".tab")
+        .forEach(tabElement => {
+
+            tabElement.classList.remove(
+                "active"
+            );
+
+        });
+
+    tab.classList.add("active");
+
+    /*
+     * For now every tab starts as a new tab.
+     * Later this is where we'll restore that
+     * tab's individual browsing session.
+     */
+
+    const title =
+        tab.querySelector(
+            ".tab-title"
+        ).textContent.trim();
+
+    if (title === "New Tab") {
+
+        document.getElementById(
+            "addressBar"
+        ).value = "";
+
+    }
+
+    console.log(
+        "[SGS PRX] Selected tab:",
+        id
+    );
+}
+
+
+/* =========================================================
+   TAB CLOSING
+========================================================= */
+
+function closeTab(event, id) {
+
+    /*
+     * Prevent the tab's normal click handler
+     * from selecting it when the X is clicked.
+     */
+    event.stopPropagation();
+
+    const tab =
+        document.querySelector(
+            `.tab[data-tab="${id}"]`
+        );
+
+    if (!tab) {
+        return;
+    }
+
+    const wasActive =
+        activeTabId === id;
+
+    tab.remove();
+
+    const remainingTabs =
+        document.querySelectorAll(".tab");
+
+    /*
+     * Never allow the browser to have zero tabs.
+     */
+    if (remainingTabs.length === 0) {
+
+        tabCount = Math.max(
+            tabCount,
+            1
+        );
+
+        const tabs =
+            document.getElementById("tabs");
+
+        const newButton =
+            document.querySelector(".new-tab");
+
+        const newTab =
+            document.createElement("div");
+
+        newTab.className =
+            "tab active";
+
+        newTab.dataset.tab = 1;
+
+        newTab.innerHTML = `
+            <div class="tab-icon"></div>
+
+            <div class="tab-title">
+                New Tab
+            </div>
+
+            <div
+                class="tab-close"
+                onclick="closeTab(event, 1)"
+                title="Close tab"
+            >
+                ×
+            </div>
+        `;
+
+        newTab.addEventListener(
+            "click",
+            () => selectTab(1)
+        );
+
+        tabs.insertBefore(
+            newTab,
+            newButton
+        );
+
+        activeTabId = 1;
+
+        document.getElementById(
+            "addressBar"
+        ).value = "";
+
+        return;
+    }
+
+    /*
+     * If we closed the active tab,
+     * select the tab immediately to its left
+     * when possible.
+     */
+    if (wasActive) {
+
+        let newActive =
+            remainingTabs[
+                remainingTabs.length - 1
+            ];
+
+        selectTab(
+            Number(
+                newActive.dataset.tab
+            )
+        );
+    }
+}
+
+
+/* =========================================================
+   NAVIGATION BUTTONS
+========================================================= */
+
+function goBack() {
+
+    console.log(
+        "[SGS PRX] Back - tab:",
+        activeTabId
+    );
+}
+
+
+function goForward() {
+
+    console.log(
+        "[SGS PRX] Forward - tab:",
+        activeTabId
+    );
+}
+
+
+function reloadPage() {
+
+    console.log(
+        "[SGS PRX] Reload - tab:",
+        activeTabId
+    );
+}
+
+
+/* =========================================================
+   BOOKMARKS
+========================================================= */
+
+function bookmarkCurrent() {
+
+    const address =
+        document
+            .getElementById("addressBar")
+            .value
+            .trim();
+
+    if (!address) {
+        return;
+    }
+
+    alert(
+        "Bookmark system will be connected later."
+    );
+}
+
+
+function openBookmark(url) {
+
+    document.getElementById(
+        "addressBar"
+    ).value = url;
+
+    navigate(url);
+}
+
+
+/* =========================================================
+   MENU
+========================================================= */
+
+function openMenu() {
+
+    alert(
+        "SGS Browser menu will be added later."
+    );
+}
+
+
+
+</script>
+
+</body>
+</html>
