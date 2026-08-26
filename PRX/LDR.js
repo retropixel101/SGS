@@ -1,116 +1,81 @@
-// =========================================================
-// SGS - Clean Scramjet Loader
-// =========================================================
+"use strict";
+
+/*
+ * SGS Proxy Loader
+ *
+ * This file contains only SGS bootstrap logic.
+ * No external CDN.
+ * No redirects.
+ * No tracking.
+ * No injected advertising.
+ */
 
 (() => {
-    "use strict";
+    const CONFIG = {
+        base: "/PRX",
 
-    const SGS_CONFIG = {
-        // Where your locally hosted Scramjet files live.
-        basePath: "/scramjet",
+        main: "/PRX/MN.js",
 
-        // Scramjet service worker.
-        serviceWorker: "/scramjet/sw.js",
-
-        // Scramjet controller files.
-        controllerApi: "/scramjet/controller/controller.api.js",
-        controllerInject: "/scramjet/controller/controller.inject.js",
-        controllerSw: "/scramjet/controller/controller.sw.js",
-
-        // Scramjet runtime.
-        scramjet: "/scramjet/scramjet.js",
-        wasm: "/scramjet/scramjet.wasm",
-        utils: "/scramjet/scramjet-utils.js",
-
-        // Transport client.
-        transportClient: "/scramjet/clients/libcurl-client.js",
-
-        // Your own transport endpoint.
-        wisp: "wss://proxy.YOUR-SGS-DOMAIN.com/wisp/"
+        serviceWorker: "/PRX/sw.js"
     };
 
-    window.SGS_PROXY_CONFIG = SGS_CONFIG;
+    window.SGS_PROXY = {
+        config: CONFIG,
+        ready: false
+    };
 
-    function loadScript(src) {
-        return new Promise((resolve, reject) => {
-            const script = document.createElement("script");
+    function loadMain() {
+        const script = document.createElement("script");
 
-            script.src = src;
-            script.async = false;
+        script.src = CONFIG.main;
+        script.async = false;
 
-            script.onload = resolve;
-
-            script.onerror = () => {
-                reject(
-                    new Error(`SGS Proxy: failed to load ${src}`)
-                );
-            };
-
-            document.head.appendChild(script);
-        });
-    }
-
-    async function registerServiceWorker() {
-        if (!("serviceWorker" in navigator)) {
-            throw new Error(
-                "SGS Proxy: Service Workers are not supported."
-            );
-        }
-
-        const registration =
-            await navigator.serviceWorker.register(
-                SGS_CONFIG.serviceWorker,
-                {
-                    scope: "/"
-                }
-            );
-
-        await navigator.serviceWorker.ready;
-
-        return registration;
-    }
-
-    async function initialize() {
-        try {
-            console.log("[SGS Proxy] Starting...");
-
-            // Register our own service worker.
-            const registration =
-                await registerServiceWorker();
-
-            console.log(
-                "[SGS Proxy] Service worker registered.",
-                registration
-            );
-
-            // Notify main.js that the worker is ready.
+        script.onload = () => {
             window.dispatchEvent(
-                new CustomEvent("sgs-proxy-ready", {
-                    detail: {
-                        config: SGS_CONFIG,
-                        registration
-                    }
-                })
+                new Event("sgs-proxy-loader-ready")
             );
+        };
 
-        } catch (error) {
-
+        script.onerror = () => {
             console.error(
-                "[SGS Proxy] Initialization failed:",
-                error
+                "[SGS Proxy] Failed to load MN.js"
             );
+        };
 
-            window.dispatchEvent(
-                new CustomEvent("sgs-proxy-error", {
-                    detail: error
-                })
-            );
-        }
+        document.head.appendChild(script);
     }
 
-    window.SGSProxy = {
-        config: SGS_CONFIG,
-        start: initialize
-    };
+    if (!("serviceWorker" in navigator)) {
+        console.error(
+            "[SGS Proxy] This browser does not support Service Workers."
+        );
 
+        return;
+    }
+
+    navigator.serviceWorker.register(
+        CONFIG.serviceWorker,
+        {
+            scope: "/PRX/"
+        }
+    )
+    .then(registration => {
+
+        console.log(
+            "[SGS Proxy] Service Worker registered:",
+            registration.scope
+        );
+
+        window.SGS_PROXY.registration =
+            registration;
+
+        loadMain();
+    })
+    .catch(error => {
+
+        console.error(
+            "[SGS Proxy] Service Worker registration failed:",
+            error
+        );
+    });
 })();
