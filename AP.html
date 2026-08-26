@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -33,11 +34,6 @@ body {
         sans-serif;
 
     background:
-        radial-gradient(
-            circle at 50% 45%,
-            rgba(255, 0, 0, 0.10),
-            transparent 34%
-        ),
         #080808;
 
     color: #fff;
@@ -968,6 +964,9 @@ button:disabled {
             #171717,
             #101010
         );
+
+    flex-shrink:
+        0;
 }
 
 .popup-title {
@@ -1002,14 +1001,20 @@ button:disabled {
     top:
         50%;
 
-    transform:
-        translateY(-50%);
-
     width:
         34px;
 
     height:
         34px;
+
+    min-width:
+        34px;
+
+    max-width:
+        34px;
+
+    margin:
+        0;
 
     padding:
         0;
@@ -1030,7 +1035,28 @@ button:disabled {
         20px;
 
     line-height:
-        1;
+        32px;
+
+    text-align:
+        center;
+
+    transform:
+        translateY(-50%);
+
+    transform-origin:
+        center;
+
+    flex:
+        none;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
 }
 
 .popup-close:hover {
@@ -1045,6 +1071,20 @@ button:disabled {
 }
 
 
+/*
+ * IMPORTANT:
+ *
+ * Do not use the global button:active transform
+ * on popup close buttons. It can visually make
+ * the X appear to move down after clicking.
+ */
+
+.popup-close:active {
+    transform:
+        translateY(-50%);
+}
+
+
 /* =========================================================
    POPUP BODY
    ========================================================= */
@@ -1055,6 +1095,9 @@ button:disabled {
 
     overflow-y:
         auto;
+
+    min-height:
+        0;
 }
 
 .popup-label {
@@ -1849,6 +1892,7 @@ button:disabled {
             <button
                 id="confirmClose"
                 class="popup-close"
+                type="button"
                 aria-label="Close"
             >
                 ×
@@ -1872,6 +1916,7 @@ button:disabled {
                 <button
                     id="confirmCancel"
                     class="popup-cancel"
+                    type="button"
                 >
                     Cancel
                 </button>
@@ -1879,6 +1924,7 @@ button:disabled {
                 <button
                     id="confirmAccept"
                     class="popup-danger"
+                    type="button"
                 >
                     Continue
                 </button>
@@ -1918,6 +1964,7 @@ button:disabled {
             <button
                 id="ipInfoClose"
                 class="popup-close"
+                type="button"
                 aria-label="Close"
             >
                 ×
@@ -1942,7 +1989,6 @@ button:disabled {
 
 
 <script>
-
 
 /* =========================================================
    WORKER
@@ -2000,7 +2046,7 @@ const resetSessionsButton =
 
 
 /* =========================================================
-   CONFIRM POPUP ELEMENTS
+   POPUP ELEMENTS
    ========================================================= */
 
 const confirmOverlay =
@@ -2020,11 +2066,6 @@ const confirmCancel =
 
 const confirmAccept =
     document.getElementById("confirmAccept");
-
-
-/* =========================================================
-   IP INFO POPUP ELEMENTS
-   ========================================================= */
 
 const ipInfoOverlay =
     document.getElementById("ipInfoOverlay");
@@ -2049,7 +2090,15 @@ let expiresAt = 0;
 
 let timer = null;
 
+let refreshInProgress = false;
+
+let blockInProgress = false;
+
+let sessionResetInProgress = false;
+
 let confirmResolve = null;
+
+let ipInfoRequestId = 0;
 
 
 /* =========================================================
@@ -2072,6 +2121,19 @@ function showStatus(
 
 
 /* =========================================================
+   AUTH STATE
+   ========================================================= */
+
+function isAdminAuthenticated() {
+
+    return (
+        typeof adminToken === "string" &&
+        adminToken.length > 0
+    );
+}
+
+
+/* =========================================================
    ADMIN REQUEST
    ========================================================= */
 
@@ -2080,12 +2142,15 @@ async function adminRequest(
     options = {}
 ) {
 
-    if (!adminToken) {
+    if (
+        !isAdminAuthenticated()
+    ) {
 
         throw new Error(
             "Administrator session expired."
         );
     }
+
 
     const headers = {
         ...(options.headers || {}),
@@ -2093,6 +2158,7 @@ async function adminRequest(
         "Authorization":
             `Bearer ${adminToken}`
     };
+
 
     if (
         options.body &&
@@ -2103,34 +2169,53 @@ async function adminRequest(
             "application/json";
     }
 
-    const response =
-        await fetch(
-            `${WORKER_URL}${endpoint}`,
-            {
-                ...options,
-                headers,
-                cache:
-                    "no-store"
-            }
+
+    let response;
+
+
+    try {
+
+        response =
+            await fetch(
+                `${WORKER_URL}${endpoint}`,
+                {
+                    ...options,
+
+                    headers,
+
+                    cache:
+                        "no-store"
+                }
+            );
+
+    } catch {
+
+        throw new Error(
+            "Could not connect to the SGS Worker."
         );
+    }
+
 
     let data = null;
+
 
     try {
 
         data =
             await response.json();
 
-    } catch {}
+    } catch {
+        data = null;
+    }
+
 
     if (
-        response.status === 401
+        response.status === 401 ||
+        response.status === 403
     ) {
 
-        adminToken = "";
-
-        adminContent.classList.remove(
-            "visible"
+        lockPanel(
+            "Administrator session expired."
         );
 
         throw new Error(
@@ -2138,14 +2223,16 @@ async function adminRequest(
         );
     }
 
+
     if (!response.ok) {
 
         throw new Error(
             data?.error ||
             data?.message ||
-            "Worker request failed."
+            `Worker request failed (${response.status}).`
         );
     }
+
 
     return data;
 }
@@ -2166,24 +2253,27 @@ async function loadPassword() {
             }
         );
 
+
     if (
+        !data ||
         !data.success ||
         !data.password
     ) {
 
         throw new Error(
-            data.error ||
-            "Could not retrieve password."
+            data?.error ||
+            "Could not retrieve the current SGS password."
         );
     }
 
+
     currentPassword.textContent =
-        data.password;
+        String(data.password);
+
 
     expiresAt =
-        Number(
-            data.expiresAt
-        ) || 0;
+        Number(data.expiresAt) || 0;
+
 
     updateCountdown();
 }
@@ -2203,10 +2293,12 @@ function updateCountdown() {
         return;
     }
 
+
     const now =
         Math.floor(
             Date.now() / 1000
         );
+
 
     const remaining =
         Math.max(
@@ -2214,18 +2306,29 @@ function updateCountdown() {
             expiresAt - now
         );
 
+
     countdown.textContent =
         remaining;
 
+
     if (
         remaining <= 0 &&
-        adminToken
+        isAdminAuthenticated()
     ) {
 
         loadPassword()
-            .catch(
-                console.error
-            );
+            .catch(error => {
+
+                if (
+                    isAdminAuthenticated()
+                ) {
+
+                    showStatus(
+                        error.message,
+                        true
+                    );
+                }
+            });
     }
 }
 
@@ -2236,11 +2339,20 @@ function updateCountdown() {
 
 async function loadIPs() {
 
+    if (
+        !isAdminAuthenticated()
+    ) {
+
+        return;
+    }
+
+
     ipList.innerHTML =
         '<div class="empty">Loading IPs...</div>';
 
     blockedList.innerHTML =
         '<div class="empty">Loading blocked IPs...</div>';
+
 
     const data =
         await adminRequest(
@@ -2251,81 +2363,344 @@ async function loadIPs() {
             }
         );
 
-    if (!data.success) {
+
+    if (
+        !data ||
+        !data.success
+    ) {
 
         throw new Error(
-            data.error ||
-            "Could not load IPs."
+            data?.error ||
+            "Could not load IP data."
         );
     }
 
+
     renderIPs(
-        data.ips || []
+        Array.isArray(data.ips)
+            ? data.ips
+            : []
     );
 
+
     renderBlockedIPs(
-        data.blockedIPs || []
+        Array.isArray(data.blockedIPs)
+            ? data.blockedIPs
+            : []
     );
 }
 
 
 /* =========================================================
-   FORMAT BLOCK EXPIRATION
+   REFRESH PANEL
    ========================================================= */
 
-function formatBlockExpiration(
-    expiresAt,
-    permanent
+async function refreshPanel() {
+
+    if (
+        !isAdminAuthenticated() ||
+        refreshInProgress
+    ) {
+
+        return;
+    }
+
+
+    refreshInProgress =
+        true;
+
+
+    refreshButton.disabled =
+        true;
+
+    refreshButton.textContent =
+        "Refreshing...";
+
+
+    try {
+
+        await Promise.all([
+            loadPassword(),
+            loadIPs()
+        ]);
+
+
+        showStatus(
+            "Admin panel refreshed.",
+            false
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Admin refresh:",
+            error
+        );
+
+
+        showStatus(
+            error.message ||
+            "Could not refresh the admin panel.",
+            true
+        );
+
+
+    } finally {
+
+        refreshInProgress =
+            false;
+
+        refreshButton.disabled =
+            false;
+
+        refreshButton.textContent =
+            "Refresh";
+    }
+}
+
+
+/* =========================================================
+   IP VALIDATION
+   ========================================================= */
+
+function isValidIPv4(
+    ip
 ) {
 
-    if (permanent) {
+    const parts =
+        ip.split(".");
 
-        return "Permanent";
+
+    if (
+        parts.length !== 4
+    ) {
+
+        return false;
     }
 
-    if (!expiresAt) {
 
-        return "Unknown";
+    return parts.every(
+        part => {
+
+            if (
+                !/^\d+$/.test(part)
+            ) {
+
+                return false;
+            }
+
+
+            if (
+                part.length > 1 &&
+                part.startsWith("0")
+            ) {
+
+                return false;
+            }
+
+
+            const number =
+                Number(part);
+
+
+            return (
+                Number.isInteger(number) &&
+                number >= 0 &&
+                number <= 255
+            );
+        }
+    );
+}
+
+
+function isValidIPv6(
+    ip
+) {
+
+    if (
+        !ip.includes(":") ||
+        ip.includes(":::")
+    ) {
+
+        return false;
     }
 
-    const now =
-        Math.floor(
-            Date.now() / 1000
+
+    const parts =
+        ip.split("::");
+
+
+    if (
+        parts.length > 2
+    ) {
+
+        return false;
+    }
+
+
+    const validatePart =
+        part => {
+
+            if (!part) {
+
+                return true;
+            }
+
+
+            return part
+                .split(":")
+                .every(
+                    group =>
+                        /^[0-9a-fA-F]{1,4}$/
+                            .test(group)
+                );
+        };
+
+
+    if (
+        !validatePart(parts[0]) ||
+        !validatePart(parts[1] || "")
+    ) {
+
+        return false;
+    }
+
+
+    if (
+        parts.length === 1
+    ) {
+
+        return (
+            parts[0]
+                .split(":")
+                .length === 8
+        );
+    }
+
+
+    return (
+        parts[0]
+            .split(":")
+            .filter(Boolean)
+            .length +
+        parts[1]
+            .split(":")
+            .filter(Boolean)
+            .length
+        < 8
+    );
+}
+
+
+function isValidIP(
+    ip
+) {
+
+    if (
+        typeof ip !== "string"
+    ) {
+
+        return false;
+    }
+
+
+    const value =
+        ip.trim();
+
+
+    if (
+        !value ||
+        value.length > 45
+    ) {
+
+        return false;
+    }
+
+
+    return (
+        isValidIPv4(value) ||
+        isValidIPv6(value)
+    );
+}
+
+
+/* =========================================================
+   DURATION VALIDATION
+   ========================================================= */
+
+function normalizeDuration(
+    value
+) {
+
+    const duration =
+        String(value || "")
+            .trim()
+            .toLowerCase();
+
+
+    if (
+        duration === "permanent" ||
+        duration === "perm"
+    ) {
+
+        return "permanent";
+    }
+
+
+    const match =
+        duration.match(
+            /^(\d+)\s*(s|m|h|d|w)$/
         );
 
-    const remaining =
-        Math.max(
-            0,
-            Number(expiresAt) - now
-        );
 
-    if (remaining <= 0) {
+    if (!match) {
 
-        return "Expired";
+        return null;
     }
 
-    if (remaining < 60) {
 
-        return `${remaining}s remaining`;
+    const amount =
+        Number(match[1]);
+
+
+    const unit =
+        match[2];
+
+
+    if (
+        !Number.isSafeInteger(amount) ||
+        amount <= 0
+    ) {
+
+        return null;
     }
 
-    if (remaining < 3600) {
 
-        return `${Math.ceil(
-            remaining / 60
-        )}m remaining`;
+    const secondsPerUnit = {
+        s: 1,
+        m: 60,
+        h: 3600,
+        d: 86400,
+        w: 604800
+    };
+
+
+    const seconds =
+        amount *
+        secondsPerUnit[unit];
+
+
+    if (
+        !Number.isSafeInteger(seconds) ||
+        seconds <= 0
+    ) {
+
+        return null;
     }
 
-    if (remaining < 86400) {
 
-        return `${Math.ceil(
-            remaining / 3600
-        )}h remaining`;
-    }
-
-    return `${Math.ceil(
-        remaining / 86400
-    )}d remaining`;
+    return `${amount}${unit}`;
 }
 
 
@@ -2344,6 +2719,7 @@ function escapeHTML(
 
         return "Unknown";
     }
+
 
     return String(value)
         .replace(
@@ -2370,7 +2746,7 @@ function escapeHTML(
 
 
 /* =========================================================
-   CUSTOM CONFIRMATION POPUP
+   CONFIRM POPUP
    ========================================================= */
 
 function showConfirm(
@@ -2379,24 +2755,37 @@ function showConfirm(
     acceptText = "Continue"
 ) {
 
+    if (
+        confirmResolve
+    ) {
+
+        closeConfirm(false);
+    }
+
+
     return new Promise(
         resolve => {
 
             confirmResolve =
                 resolve;
 
+
             confirmTitle.textContent =
                 title;
+
 
             confirmMessage.textContent =
                 message;
 
+
             confirmAccept.textContent =
                 acceptText;
+
 
             confirmOverlay.classList.add(
                 "visible"
             );
+
 
             document.body.style.overflow =
                 "hidden";
@@ -2404,10 +2793,6 @@ function showConfirm(
     );
 }
 
-
-/* =========================================================
-   CLOSE CONFIRMATION
-   ========================================================= */
 
 function closeConfirm(
     result = false
@@ -2417,16 +2802,22 @@ function closeConfirm(
         "visible"
     );
 
+
     document.body.style.overflow =
         "";
 
-    if (confirmResolve) {
+
+    if (
+        confirmResolve
+    ) {
 
         const resolve =
             confirmResolve;
 
+
         confirmResolve =
             null;
+
 
         resolve(result);
     }
@@ -2434,51 +2825,84 @@ function closeConfirm(
 
 
 /* =========================================================
-   IP INFORMATION
+   IP INFO
    ========================================================= */
 
 async function showIPInfo(
     ip
 ) {
 
+    const requestId =
+        ++ipInfoRequestId;
+
+
+    const cleanIP =
+        String(ip || "").trim();
+
+
+    if (
+        !isValidIP(cleanIP)
+    ) {
+
+        return;
+    }
+
+
     ipInfoTitle.textContent =
-        `IP Information • ${ip}`;
+        `IP Information • ${cleanIP}`;
+
 
     ipInfoBody.innerHTML =
         `
         <div class="ip-info-loading">
             Looking up information for
-            <strong>${escapeHTML(ip)}</strong>...
+            <strong>${escapeHTML(cleanIP)}</strong>...
         </div>
         `;
+
 
     ipInfoOverlay.classList.add(
         "visible"
     );
 
+
     document.body.style.overflow =
         "hidden";
+
 
     try {
 
         const response =
             await fetch(
-                `https://ipwho.is/${encodeURIComponent(ip)}`,
+                `https://ipwho.is/${encodeURIComponent(cleanIP)}`,
                 {
                     cache:
                         "no-store"
                 }
             );
 
-        if (!response.ok) {
+
+        if (
+            requestId !== ipInfoRequestId
+        ) {
+
+            return;
+        }
+
+
+        if (
+            !response.ok
+        ) {
 
             throw new Error(
                 "IP information service failed."
             );
         }
 
+
         const data =
             await response.json();
+
 
         if (
             data.success === false
@@ -2490,103 +2914,61 @@ async function showIPInfo(
             );
         }
 
+
         const connection =
             data.connection || {};
+
 
         const timezone =
             data.timezone || {};
 
+
+        const latitude =
+            Number(data.latitude);
+
+
+        const longitude =
+            Number(data.longitude);
+
+
         const hasCoordinates =
-            Number.isFinite(
-                Number(data.latitude)
-            ) &&
-            Number.isFinite(
-                Number(data.longitude)
-            );
+            Number.isFinite(latitude) &&
+            Number.isFinite(longitude);
 
-
-        /* =====================================================
-           IP INFORMATION CONTENT
-           ===================================================== */
 
         ipInfoBody.innerHTML =
             `
             <div class="ip-info-grid">
 
-                ${infoItem(
-                    "IP Address",
-                    data.ip
-                )}
+                ${infoItem("IP Address", data.ip)}
 
-                ${infoItem(
-                    "IP Type",
-                    data.type
-                )}
+                ${infoItem("IP Type", data.type)}
 
-                ${infoItem(
-                    "Country",
-                    data.country
-                )}
+                ${infoItem("Country", data.country)}
 
-                ${infoItem(
-                    "Country Code",
-                    data.country_code
-                )}
+                ${infoItem("Country Code", data.country_code)}
 
-                ${infoItem(
-                    "Region",
-                    data.region
-                )}
+                ${infoItem("Region", data.region)}
 
-                ${infoItem(
-                    "City",
-                    data.city
-                )}
+                ${infoItem("City", data.city)}
 
-                ${infoItem(
-                    "Postal Code",
-                    data.postal
-                )}
+                ${infoItem("Postal Code", data.postal)}
 
-                ${infoItem(
-                    "Continent",
-                    data.continent
-                )}
+                ${infoItem("Continent", data.continent)}
 
-                ${infoItem(
-                    "Latitude",
-                    data.latitude
-                )}
+                ${infoItem("Latitude", data.latitude)}
 
-                ${infoItem(
-                    "Longitude",
-                    data.longitude
-                )}
+                ${infoItem("Longitude", data.longitude)}
 
-                ${infoItem(
-                    "Timezone",
-                    timezone.id
-                )}
+                ${infoItem("Timezone", timezone.id)}
 
-                ${infoItem(
-                    "UTC Offset",
-                    timezone.utc
-                )}
+                ${infoItem("UTC Offset", timezone.utc)}
 
-                ${infoItem(
-                    "ISP",
-                    connection.isp
-                )}
+                ${infoItem("ISP", connection.isp)}
 
-                ${infoItem(
-                    "Organization",
-                    connection.org
-                )}
+                ${infoItem("Organization", connection.org)}
 
-                ${infoItem(
-                    "ASN",
-                    connection.asn
-                )}
+                ${infoItem("ASN", connection.asn)}
 
             </div>
 
@@ -2596,6 +2978,7 @@ async function showIPInfo(
                     <button
                         id="ipMapButton"
                         class="ip-map-button"
+                        type="button"
                     >
                         Open Location on Map
                     </button>
@@ -2625,6 +3008,7 @@ async function showIPInfo(
                     id="ipInfoDone"
                     class="popup-cancel"
                     style="width:120px;"
+                    type="button"
                 >
                     Close
                 </button>
@@ -2633,47 +3017,25 @@ async function showIPInfo(
             `;
 
 
-        /* =====================================================
-           MAP BUTTON
-           ===================================================== */
-
-        const ipMapButton =
+        const mapButton =
             document.getElementById(
                 "ipMapButton"
             );
 
-        if (ipMapButton) {
 
-            ipMapButton.addEventListener(
+        if (
+            mapButton
+        ) {
+
+            mapButton.addEventListener(
                 "click",
                 () => {
-
-                    const latitude =
-                        Number(
-                            data.latitude
-                        );
-
-                    const longitude =
-                        Number(
-                            data.longitude
-                        );
-
-                    if (
-                        !Number.isFinite(
-                            latitude
-                        ) ||
-                        !Number.isFinite(
-                            longitude
-                        )
-                    ) {
-
-                        return;
-                    }
 
                     const mapURL =
                         `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
                             `${latitude},${longitude}`
                         )}`;
+
 
                     window.open(
                         mapURL,
@@ -2685,25 +3047,39 @@ async function showIPInfo(
         }
 
 
-        /* =====================================================
-           CLOSE BUTTON
-           ===================================================== */
+        const doneButton =
+            document.getElementById(
+                "ipInfoDone"
+            );
 
-        document
-            .getElementById("ipInfoDone")
-            .addEventListener(
+
+        if (
+            doneButton
+        ) {
+
+            doneButton.addEventListener(
                 "click",
                 closeIPInfo
             );
+        }
+
 
     } catch (error) {
+
+        if (
+            requestId !== ipInfoRequestId
+        ) {
+
+            return;
+        }
+
 
         ipInfoBody.innerHTML =
             `
             <div class="ip-info-error">
 
                 Could not retrieve information for
-                <strong>${escapeHTML(ip)}</strong>.
+                <strong>${escapeHTML(cleanIP)}</strong>.
 
                 <br><br>
 
@@ -2720,6 +3096,7 @@ async function showIPInfo(
                     id="ipInfoErrorClose"
                     class="popup-cancel"
                     style="width:120px;"
+                    type="button"
                 >
                     Close
                 </button>
@@ -2727,12 +3104,22 @@ async function showIPInfo(
             </div>
             `;
 
-        document
-            .getElementById("ipInfoErrorClose")
-            .addEventListener(
+
+        const closeButton =
+            document.getElementById(
+                "ipInfoErrorClose"
+            );
+
+
+        if (
+            closeButton
+        ) {
+
+            closeButton.addEventListener(
                 "click",
                 closeIPInfo
             );
+        }
     }
 }
 
@@ -2743,9 +3130,13 @@ async function showIPInfo(
 
 function closeIPInfo() {
 
+    ++ipInfoRequestId;
+
+
     ipInfoOverlay.classList.remove(
         "visible"
     );
+
 
     document.body.style.overflow =
         "";
@@ -2784,7 +3175,7 @@ function infoItem(
 
 
 /* =========================================================
-   RENDER IPs
+   RENDER LOGGED IPs
    ========================================================= */
 
 function renderIPs(
@@ -2794,7 +3185,11 @@ function renderIPs(
     ipList.innerHTML =
         "";
 
-    if (!ips.length) {
+
+    if (
+        !Array.isArray(ips) ||
+        !ips.length
+    ) {
 
         ipList.innerHTML =
             `
@@ -2806,8 +3201,83 @@ function renderIPs(
         return;
     }
 
+
+    const uniqueIPs =
+        new Map();
+
+
     for (
         const item of ips
+    ) {
+
+        const ip =
+            String(
+                item?.ip || ""
+            ).trim();
+
+
+        if (
+            !isValidIP(ip)
+        ) {
+
+            continue;
+        }
+
+
+        if (
+            uniqueIPs.has(ip)
+        ) {
+
+            const existing =
+                uniqueIPs.get(ip);
+
+
+            existing.requests =
+                Math.max(
+                    Number(existing.requests) || 0,
+                    Number(item.requests) || 0
+                );
+
+
+            existing.blocked =
+                Boolean(
+                    existing.blocked ||
+                    item.blocked
+                );
+
+
+            if (
+                item.expiresAt
+            ) {
+
+                existing.expiresAt =
+                    item.expiresAt;
+            }
+
+
+            if (
+                item.permanent
+            ) {
+
+                existing.permanent =
+                    true;
+            }
+
+        } else {
+
+            uniqueIPs.set(
+                ip,
+                {
+                    ...item,
+                    ip
+                }
+            );
+        }
+    }
+
+
+    for (
+        const item of uniqueIPs.values()
     ) {
 
         const entry =
@@ -2848,8 +3318,15 @@ function renderIPs(
         requests.className =
             "ip-meta";
 
+
+        const requestCount =
+            Number(item.requests);
+
+
         requests.textContent =
-            `${item.requests || 0} requests`;
+            `${Number.isFinite(requestCount)
+                ? requestCount
+                : 0} requests`;
 
 
         const statusBox =
@@ -2857,13 +3334,20 @@ function renderIPs(
                 "div"
             );
 
+
+        const isBlocked =
+            Boolean(item.blocked);
+
+
         statusBox.className =
-            item.blocked
+            isBlocked
                 ? "ip-status blocked"
                 : "ip-status";
 
 
-        if (item.blocked) {
+        if (
+            isBlocked
+        ) {
 
             statusBox.textContent =
                 item.permanent
@@ -2889,10 +3373,6 @@ function renderIPs(
             "ip-actions";
 
 
-        /* =====================================================
-           INFO
-           ===================================================== */
-
         const info =
             document.createElement(
                 "button"
@@ -2904,21 +3384,26 @@ function renderIPs(
         info.textContent =
             "Info";
 
-        info.onclick =
+        info.type =
+            "button";
+
+
+        info.addEventListener(
+            "click",
             () => showIPInfo(
                 item.ip
-            );
+            )
+        );
+
 
         actions.appendChild(
             info
         );
 
 
-        /* =====================================================
-           BLOCK / UNBLOCK
-           ===================================================== */
-
-        if (item.blocked) {
+        if (
+            isBlocked
+        ) {
 
             const unblock =
                 document.createElement(
@@ -2928,10 +3413,17 @@ function renderIPs(
             unblock.textContent =
                 "Unblock";
 
-            unblock.onclick =
+            unblock.type =
+                "button";
+
+
+            unblock.addEventListener(
+                "click",
                 () => unblockIP(
                     item.ip
-                );
+                )
+            );
+
 
             actions.appendChild(
                 unblock
@@ -2947,14 +3439,21 @@ function renderIPs(
             block.textContent =
                 "Block";
 
-            block.onclick =
+            block.type =
+                "button";
+
+
+            block.addEventListener(
+                "click",
                 () => {
 
                     blockIP.value =
                         item.ip;
 
                     blockDuration.focus();
-                };
+                }
+            );
+
 
             actions.appendChild(
                 block
@@ -2978,13 +3477,28 @@ function renderIPs(
             actions
         );
 
+
         entry.appendChild(
             row
         );
 
+
         ipList.appendChild(
             entry
         );
+    }
+
+
+    if (
+        !ipList.children.length
+    ) {
+
+        ipList.innerHTML =
+            `
+            <div class="empty">
+                No valid IP records were returned.
+            </div>
+            `;
     }
 }
 
@@ -3000,7 +3514,11 @@ function renderBlockedIPs(
     blockedList.innerHTML =
         "";
 
-    if (!ips.length) {
+
+    if (
+        !Array.isArray(ips) ||
+        !ips.length
+    ) {
 
         blockedList.innerHTML =
             `
@@ -3012,8 +3530,57 @@ function renderBlockedIPs(
         return;
     }
 
+
+    const now =
+        Math.floor(
+            Date.now() / 1000
+        );
+
+
+    const uniqueIPs =
+        new Map();
+
+
     for (
         const item of ips
+    ) {
+
+        const ip =
+            String(
+                item?.ip || ""
+            ).trim();
+
+
+        if (
+            !isValidIP(ip)
+        ) {
+
+            continue;
+        }
+
+
+        if (
+            !item.permanent &&
+            Number(item.expiresAt) > 0 &&
+            Number(item.expiresAt) <= now
+        ) {
+
+            continue;
+        }
+
+
+        uniqueIPs.set(
+            ip,
+            {
+                ...item,
+                ip
+            }
+        );
+    }
+
+
+    for (
+        const item of uniqueIPs.values()
     ) {
 
         const row =
@@ -3092,10 +3659,16 @@ function renderBlockedIPs(
         infoButton.textContent =
             "Info";
 
-        infoButton.onclick =
+        infoButton.type =
+            "button";
+
+
+        infoButton.addEventListener(
+            "click",
             () => showIPInfo(
                 item.ip
-            );
+            )
+        );
 
 
         const unblock =
@@ -3106,10 +3679,16 @@ function renderBlockedIPs(
         unblock.textContent =
             "Revoke Block";
 
-        unblock.onclick =
+        unblock.type =
+            "button";
+
+
+        unblock.addEventListener(
+            "click",
             () => unblockIP(
                 item.ip
-            );
+            )
+        );
 
 
         actions.appendChild(
@@ -3134,6 +3713,19 @@ function renderBlockedIPs(
             row
         );
     }
+
+
+    if (
+        !blockedList.children.length
+    ) {
+
+        blockedList.innerHTML =
+            `
+            <div class="empty">
+                No IPs are currently blocked.
+            </div>
+            `;
+    }
 }
 
 
@@ -3143,33 +3735,76 @@ function renderBlockedIPs(
 
 async function blockIPAddress() {
 
+    if (
+        blockInProgress
+    ) {
+
+        return;
+    }
+
+
     const ip =
         blockIP.value.trim();
 
+
     const duration =
-        blockDuration.value.trim();
+        normalizeDuration(
+            blockDuration.value
+        );
 
 
-    if (!ip) {
+    if (
+        !isValidIP(ip)
+    ) {
 
         showStatus(
-            "Enter an IP address.",
+            "Enter a valid IPv4 or IPv6 address.",
             true
         );
+
+        blockIP.focus();
 
         return;
     }
 
 
-    if (!duration) {
+    if (
+        !duration
+    ) {
 
         showStatus(
-            "Enter a duration such as 30s, 5m, 2h, 1d, or permanent.",
+            "Enter a valid duration: 30s, 5m, 2h, 1d, 1w, or permanent.",
             true
         );
 
+        blockDuration.focus();
+
         return;
     }
+
+
+    const confirmed =
+        await showConfirm(
+            "Block IP Address",
+            `Block ${ip} for ${
+                duration === "permanent"
+                    ? "permanently"
+                    : duration
+            }?`,
+            "Block IP"
+        );
+
+
+    if (
+        !confirmed
+    ) {
+
+        return;
+    }
+
+
+    blockInProgress =
+        true;
 
 
     blockButton.disabled =
@@ -3197,10 +3832,13 @@ async function blockIPAddress() {
             );
 
 
-        if (!data.success) {
+        if (
+            !data ||
+            !data.success
+        ) {
 
             throw new Error(
-                data.error ||
+                data?.error ||
                 "Could not block IP."
             );
         }
@@ -3221,14 +3859,27 @@ async function blockIPAddress() {
 
         await loadIPs();
 
+
     } catch (error) {
 
+        console.error(
+            "Block IP:",
+            error
+        );
+
+
         showStatus(
-            error.message,
+            error.message ||
+            "Could not block IP.",
             true
         );
 
+
     } finally {
+
+        blockInProgress =
+            false;
+
 
         blockButton.disabled =
             false;
@@ -3247,6 +3898,19 @@ async function unblockIP(
     ip
 ) {
 
+    if (
+        !isValidIP(ip)
+    ) {
+
+        showStatus(
+            "Invalid IP address.",
+            true
+        );
+
+        return;
+    }
+
+
     const confirmed =
         await showConfirm(
             "Revoke IP Block",
@@ -3255,7 +3919,9 @@ async function unblockIP(
         );
 
 
-    if (!confirmed) {
+    if (
+        !confirmed
+    ) {
 
         return;
     }
@@ -3278,10 +3944,13 @@ async function unblockIP(
             );
 
 
-        if (!data.success) {
+        if (
+            !data ||
+            !data.success
+        ) {
 
             throw new Error(
-                data.error ||
+                data?.error ||
                 "Could not unblock IP."
             );
         }
@@ -3295,10 +3964,18 @@ async function unblockIP(
 
         await loadIPs();
 
+
     } catch (error) {
 
+        console.error(
+            "Unblock IP:",
+            error
+        );
+
+
         showStatus(
-            error.message,
+            error.message ||
+            "Could not unblock IP.",
             true
         );
     }
@@ -3306,10 +3983,18 @@ async function unblockIP(
 
 
 /* =========================================================
-   RESET EVERYONE
+   SIGN EVERYONE OUT
    ========================================================= */
 
 async function resetSessions() {
+
+    if (
+        sessionResetInProgress
+    ) {
+
+        return;
+    }
+
 
     const confirmed =
         await showConfirm(
@@ -3319,10 +4004,16 @@ async function resetSessions() {
         );
 
 
-    if (!confirmed) {
+    if (
+        !confirmed
+    ) {
 
         return;
     }
+
+
+    sessionResetInProgress =
+        true;
 
 
     resetSessionsButton.disabled =
@@ -3344,10 +4035,13 @@ async function resetSessions() {
             );
 
 
-        if (!data.success) {
+        if (
+            !data ||
+            !data.success
+        ) {
 
             throw new Error(
-                data.error ||
+                data?.error ||
                 "Could not reset sessions."
             );
         }
@@ -3376,6 +4070,10 @@ async function resetSessions() {
 
     } finally {
 
+        sessionResetInProgress =
+            false;
+
+
         resetSessionsButton.disabled =
             false;
 
@@ -3386,49 +4084,33 @@ async function resetSessions() {
 
 
 /* =========================================================
-   REFRESH
-   ========================================================= */
-
-async function refreshPanel() {
-
-    try {
-
-        await loadPassword();
-
-        await loadIPs();
-
-
-        showStatus(
-            "Admin panel refreshed.",
-            false
-        );
-
-    } catch (error) {
-
-        showStatus(
-            error.message,
-            true
-        );
-    }
-}
-
-
-/* =========================================================
    VERIFY ADMIN
    ========================================================= */
 
 async function verifyAdmin() {
 
+    if (
+        isAdminAuthenticated()
+    ) {
+
+        return;
+    }
+
+
     const password =
         adminPassword.value;
 
 
-    if (!password) {
+    if (
+        !password
+    ) {
 
         showStatus(
             "Enter the administrator password.",
             true
         );
+
+        adminPassword.focus();
 
         return;
     }
@@ -3449,27 +4131,39 @@ async function verifyAdmin() {
 
     try {
 
-        const response =
-            await fetch(
-                `${WORKER_URL}/admin/verify`,
-                {
-                    method:
-                        "POST",
+        let response;
 
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
 
-                    body:
-                        JSON.stringify({
-                            password
-                        }),
+        try {
 
-                    cache:
-                        "no-store"
-                }
+            response =
+                await fetch(
+                    `${WORKER_URL}/admin/verify`,
+                    {
+                        method:
+                            "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body:
+                            JSON.stringify({
+                                password
+                            }),
+
+                        cache:
+                            "no-store"
+                    }
+                );
+
+        } catch {
+
+            throw new Error(
+                "Could not connect to the SGS Worker."
             );
+        }
 
 
         let data;
@@ -3490,17 +4184,21 @@ async function verifyAdmin() {
 
         if (
             !response.ok ||
+            !data ||
             !data.success
         ) {
 
             throw new Error(
-                data.error ||
+                data?.error ||
                 "Incorrect administrator password."
             );
         }
 
 
-        if (!data.token) {
+        if (
+            typeof data.token !== "string" ||
+            !data.token
+        ) {
 
             throw new Error(
                 "Worker did not return an administrator token."
@@ -3541,9 +4239,18 @@ async function verifyAdmin() {
         );
 
 
+        adminToken =
+            "";
+
+
+        adminContent.classList.remove(
+            "visible"
+        );
+
+
         showStatus(
             error.message ||
-            "Could not contact the Worker.",
+            "Could not verify administrator access.",
             true
         );
 
@@ -3563,23 +4270,20 @@ async function verifyAdmin() {
    LOCK PANEL
    ========================================================= */
 
-function lockPanel() {
+function lockPanel(
+    message = "Admin panel locked."
+) {
 
     adminToken =
         "";
 
-    adminContent.classList.remove(
-        "visible"
-    );
-
-    currentPassword.textContent =
-        "------";
-
-    countdown.textContent =
-        "--";
+    expiresAt =
+        0;
 
 
-    if (timer) {
+    if (
+        timer
+    ) {
 
         clearInterval(
             timer
@@ -3590,10 +4294,40 @@ function lockPanel() {
     }
 
 
+    adminContent.classList.remove(
+        "visible"
+    );
+
+
+    currentPassword.textContent =
+        "------";
+
+
+    countdown.textContent =
+        "--";
+
+
+    blockIP.value =
+        "";
+
+    blockDuration.value =
+        "";
+
+
+    ipList.innerHTML =
+        "";
+
+    blockedList.innerHTML =
+        "";
+
+
     showStatus(
-        "Admin panel locked.",
+        message,
         false
     );
+
+
+    adminPassword.focus();
 }
 
 
@@ -3603,7 +4337,9 @@ function lockPanel() {
 
 function startTimer() {
 
-    if (timer) {
+    if (
+        timer
+    ) {
 
         clearInterval(
             timer
@@ -3613,7 +4349,26 @@ function startTimer() {
 
     timer =
         setInterval(
-            updateCountdown,
+            () => {
+
+                if (
+                    !isAdminAuthenticated()
+                ) {
+
+                    clearInterval(
+                        timer
+                    );
+
+                    timer =
+                        null;
+
+                    return;
+                }
+
+
+                updateCountdown();
+
+            },
             1000
         );
 
@@ -3654,7 +4409,7 @@ confirmClose.addEventListener(
 
 
 /* =========================================================
-   CLOSE POPUPS WITH ESC
+   ESCAPE
    ========================================================= */
 
 document.addEventListener(
@@ -3694,7 +4449,7 @@ document.addEventListener(
 
 
 /* =========================================================
-   CLICK OUTSIDE POPUP
+   OUTSIDE POPUP CLICK
    ========================================================= */
 
 confirmOverlay.addEventListener(
@@ -3769,6 +4524,22 @@ blockButton.addEventListener(
 );
 
 
+blockIP.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key === "Enter"
+        ) {
+
+            event.preventDefault();
+
+            blockDuration.focus();
+        }
+    }
+);
+
+
 blockDuration.addEventListener(
     "keydown",
     event => {
@@ -3793,7 +4564,10 @@ refreshButton.addEventListener(
 
 logoutAdminButton.addEventListener(
     "click",
-    lockPanel
+    () => {
+
+        lockPanel();
+    }
 );
 
 
@@ -3811,7 +4585,12 @@ window.addEventListener(
     "beforeunload",
     () => {
 
-        if (timer) {
+        adminToken =
+            "";
+
+        if (
+            timer
+        ) {
 
             clearInterval(
                 timer
@@ -3824,3 +4603,4 @@ window.addEventListener(
 
 </body>
 </html>
+```
