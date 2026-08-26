@@ -1,6 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script>
+(async function () {
+
+    /* =====================================================
+       SGS PASSWORD PROTECTION
+       ===================================================== */
+
+    const VERIFY_SERVER =
+        "https://sgs-pswrd.retropixel404.workers.dev";
+
+    const PASSWORD_PAGE =
+        "https://retropixel101.github.io/SGS/PSP.html";
+
+
+    /* =====================================================
+       DON'T PROTECT THE PASSWORD PAGE ITSELF
+       ===================================================== */
+
+    const currentPath =
+        window.location.pathname.replace(/\/+$/, "");
+
+    const passwordPath =
+        new URL(PASSWORD_PAGE).pathname.replace(/\/+$/, "");
+
+    if (currentPath === passwordPath) {
+        return;
+    }
+
+
+    /* =====================================================
+       CHECK SESSION WITH WORKER
+       ===================================================== */
+
+    try {
+
+        const response = await fetch(
+            `${VERIFY_SERVER}/current`,
+            {
+                method: "GET",
+                credentials: "include",
+                cache: "no-store"
+            }
+        );
+
+
+        if (!response.ok) {
+
+            console.error(
+                "SGS: Password server returned HTTP",
+                response.status
+            );
+
+            window.location.replace(
+                PASSWORD_PAGE
+            );
+
+            return;
+        }
+
+
+        let data;
+
+        try {
+
+            data = await response.json();
+
+        } catch {
+
+            console.error(
+                "SGS: Invalid response from password server."
+            );
+
+            window.location.replace(
+                PASSWORD_PAGE
+            );
+
+            return;
+        }
+
+
+        if (!data.authenticated) {
+
+            console.log(
+                "SGS: No valid session."
+            );
+
+            window.location.replace(
+                PASSWORD_PAGE
+            );
+
+            return;
+        }
+
+
+        console.log(
+            "SGS: Access verified."
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "SGS: Could not contact password server.",
+            error
+        );
+
+        window.location.replace(
+            PASSWORD_PAGE
+        );
+
+    }
+
+})();
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SGS • Games</title>
