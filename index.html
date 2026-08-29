@@ -66,7 +66,8 @@
 
         try {
 
-            data = await response.json();
+            data =
+                await response.json();
 
         } catch {
 
@@ -119,31 +120,113 @@
 
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
 <title>SGS - Home</title>
 
-<link rel="icon" type="image/png" href="Img/SGS.png">
+<link
+    rel="icon"
+    type="image/png"
+    href="Img/SGS.png"
+>
 
 
 <style>
 
+/* =========================================================
+   GLOBAL RESET
+   ========================================================= */
+
 * {
-  box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 html,
 body {
-  margin: 0;
-  padding: 0;
-  min-height: 100%;
+    margin: 0;
+    padding: 0;
+
+    min-height: 100%;
+}
+
+html {
+    background: #000;
 }
 
 body {
-  font-family: 'Segoe UI', Arial, sans-serif;
-  background: #0a0a0a;
-  color: #fff;
-  overflow-x: hidden;
+
+    font-family:
+        'Segoe UI',
+        Arial,
+        sans-serif;
+
+    background: #000;
+
+    color: #fff;
+
+    overflow-x: hidden;
+}
+
+
+/* =========================================================
+   VANTA BACKGROUND
+   ========================================================= */
+
+#vanta-bg {
+
+    position: fixed;
+
+    inset: 0;
+
+    width: 100vw;
+    height: 100vh;
+
+    z-index: 0;
+
+    pointer-events: none;
+
+    background: #000;
+}
+
+
+/*
+   Slight dark overlay.
+
+   This keeps the Vanta network visible while making
+   sure the SGS interface remains readable.
+*/
+
+#vanta-bg::after {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    background:
+        rgba(0, 0, 0, 0.16);
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   KEEP SGS CONTENT ABOVE VANTA
+   ========================================================= */
+
+.navbar,
+.main,
+.bottom-buttons,
+.games-section {
+
+    position: relative;
+
+    z-index: 2;
 }
 
 
@@ -153,7 +236,7 @@ body {
 
 button,
 a {
-  font-family: inherit;
+    font-family: inherit;
 }
 
 
@@ -162,92 +245,129 @@ a {
    ========================================================= */
 
 .navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 
-  background: linear-gradient(
-    90deg,
-    #ff0000,
-    #660000
-  );
+    display: flex;
 
-  box-shadow:
-    0 0 20px #ff0000;
+    justify-content: space-between;
 
-  padding: 12px 20px;
+    align-items: center;
 
-  position: sticky;
-  top: 0;
+    background:
+        linear-gradient(
+            90deg,
+            #ff0000,
+            #660000
+        );
 
-  z-index: 10;
+    box-shadow:
+        0 0 20px #ff0000;
 
-  /* FIX: make gradient extend completely across viewport */
-  width: 100vw;
-  max-width: 100vw;
+    padding:
+        12px 20px;
+
+    position: sticky;
+
+    top: 0;
+
+    z-index: 10;
+
+    width: 100vw;
+
+    max-width: 100vw;
 }
+
 
 .left {
-  display: flex;
-  align-items: center;
-  gap: 20px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 20px;
 }
+
 
 .logo {
-  font-size: 1.5em;
-  font-weight: bold;
+
+    font-size: 1.5em;
+
+    font-weight: bold;
 }
+
 
 .datetime {
-  font-size: 0.95em;
-  color: #ffd6d6;
-  text-shadow: 0 0 10px #ff0000;
+
+    font-size: 0.95em;
+
+    color: #ffd6d6;
+
+    text-shadow:
+        0 0 10px #ff0000;
 }
+
 
 .center {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+
+    position: absolute;
+
+    left: 50%;
+
+    transform:
+        translateX(-50%);
 }
+
 
 .tabs {
-  display: flex;
-  gap: 10px;
+
+    display: flex;
+
+    gap: 10px;
 }
+
 
 .tab {
-  display: block;
 
-  background: #111;
+    display: block;
 
-  padding: 8px 16px;
+    background: #111;
 
-  border-radius: 6px;
+    padding:
+        8px 16px;
 
-  transition: 0.3s ease;
+    border-radius: 6px;
 
-  cursor: pointer;
+    transition:
+        0.3s ease;
 
-  color: #fff;
-  text-decoration: none;
+    cursor: pointer;
+
+    color: #fff;
+
+    text-decoration: none;
 }
+
 
 .tab:hover {
-  transform: scale(1.05);
 
-  background: #222;
+    transform:
+        translateY(-1px);
 
-  box-shadow:
-    0 0 10px #ff0000;
+    background: #222;
+
+    box-shadow:
+        0 0 10px #ff0000;
 }
 
+
 .active {
-  background: #330000;
 
-  box-shadow:
-    0 0 12px #ff0000;
+    background: #330000;
 
-  transform: scale(1.03);
+    box-shadow:
+        0 0 12px #ff0000;
+
+    transform:
+        scale(1.03);
 }
 
 
@@ -256,200 +376,305 @@ a {
    ========================================================= */
 
 .main {
-  position: relative;
 
-  overflow: visible;
+    position: relative;
 
-  text-align: center;
+    overflow: visible;
 
-  width: 100%;
-  max-width: 1400px;
+    text-align: center;
 
-  margin: 100px auto 0;
+    width: 100%;
 
-  padding: 0 20px;
+    max-width: 1400px;
+
+    margin:
+        100px auto 0;
+
+    padding:
+        0 20px;
 }
+
 
 .hero-glow {
-  position: absolute;
 
-  width: min(620px, 90vw);
-  height: 300px;
+    position: absolute;
 
-  left: 50%;
-  top: 20px;
+    width:
+        min(620px, 90vw);
 
-  transform: translateX(-50%);
+    height: 300px;
 
-  background:
-    radial-gradient(
-      ellipse,
-      rgba(255, 0, 0, 0.18),
-      transparent 68%
-    );
+    left: 50%;
 
-  filter: blur(12px);
+    top: 20px;
 
-  pointer-events: none;
+    transform:
+        translateX(-50%);
 
-  animation:
-    heroPulse 4s ease-in-out infinite;
+    background:
+        radial-gradient(
+            ellipse,
+            rgba(
+                255,
+                0,
+                0,
+                0.18
+            ),
+            transparent 68%
+        );
 
-  z-index: 0;
+    filter:
+        blur(12px);
+
+    pointer-events: none;
+
+    animation:
+        heroPulse 4s
+        ease-in-out
+        infinite;
+
+    z-index: 0;
 }
+
 
 .hero-badge {
-  position: relative;
 
-  z-index: 1;
+    position: relative;
 
-  display: inline-flex;
+    z-index: 1;
 
-  align-items: center;
+    display: inline-flex;
 
-  gap: 8px;
+    align-items: center;
 
-  padding: 7px 13px;
+    gap: 8px;
 
-  border: 1px solid #660000;
+    padding:
+        7px 13px;
 
-  border-radius: 999px;
+    border:
+        1px solid #660000;
 
-  background: rgba(20, 0, 0, 0.75);
+    border-radius: 999px;
 
-  color: #ff7777;
+    background:
+        rgba(
+            20,
+            0,
+            0,
+            0.75
+        );
 
-  font-size: 0.76em;
+    color: #ff7777;
 
-  font-weight: 800;
+    font-size: 0.76em;
 
-  letter-spacing: 1.8px;
+    font-weight: 800;
 
-  box-shadow:
-    0 0 16px rgba(255, 0, 0, 0.28);
+    letter-spacing: 1.8px;
 
-  animation:
-    badgeFloat 3s ease-in-out infinite;
+    box-shadow:
+        0 0 16px
+        rgba(
+            255,
+            0,
+            0,
+            0.28
+        );
+
+    animation:
+        badgeFloat 3s
+        ease-in-out
+        infinite;
 }
+
 
 .status-dot {
-  width: 7px;
-  height: 7px;
 
-  border-radius: 50%;
+    width: 7px;
 
-  background: #ff2222;
+    height: 7px;
 
-  box-shadow:
-    0 0 10px #ff0000;
+    border-radius: 50%;
 
-  animation:
-    statusBlink 1.5s ease-in-out infinite;
+    background: #ff2222;
+
+    box-shadow:
+        0 0 10px #ff0000;
+
+    animation:
+        statusBlink 1.5s
+        ease-in-out
+        infinite;
 }
+
 
 .main h1 {
-  position: relative;
 
-  z-index: 1;
+    position: relative;
 
-  margin: 18px 0 0;
+    z-index: 1;
 
-  font-size: clamp(
-    2.6em,
-    6vw,
-    4.2em
-  );
+    margin:
+        18px 0 0;
 
-  letter-spacing: -1px;
+    font-size:
+        clamp(
+            2.6em,
+            6vw,
+            4.2em
+        );
 
-  color: #ff0000;
+    letter-spacing: -1px;
 
-  text-shadow:
-    0 0 18px #ff0000,
-    0 0 45px rgba(255, 0, 0, 0.35);
+    color: #ff0000;
 
-  animation:
-    titleIn 0.8s ease both;
+    text-shadow:
+        0 0 18px #ff0000,
+        0 0 45px
+        rgba(
+            255,
+            0,
+            0,
+            0.35
+        );
+
+    animation:
+        titleIn
+        0.8s
+        ease
+        both;
 }
+
 
 .main h1 span {
-  color: #fff;
 
-  text-shadow:
-    0 0 14px #fff,
-    0 0 28px rgba(255, 0, 0, 0.9);
+    color: #fff;
+
+    text-shadow:
+        0 0 14px #fff,
+        0 0 28px
+        rgba(
+            255,
+            0,
+            0,
+            0.9
+        );
 }
+
 
 .summary {
-  position: relative;
 
-  z-index: 1;
+    position: relative;
 
-  font-size: 1.12em;
+    z-index: 1;
 
-  max-width: 760px;
+    font-size: 1.12em;
 
-  margin: 18px auto 0;
+    max-width: 760px;
 
-  color: #cfcfcf;
+    margin:
+        18px auto 0;
 
-  line-height: 1.75em;
+    color: #cfcfcf;
 
-  animation:
-    titleIn 0.8s 0.12s ease both;
+    line-height: 1.75em;
+
+    animation:
+        titleIn
+        0.8s
+        0.12s
+        ease
+        both;
 }
+
 
 .summary strong {
-  color: #fff;
+
+    color: #fff;
 }
+
 
 .hero-pills {
-  position: relative;
 
-  z-index: 1;
+    position: relative;
 
-  display: flex;
+    z-index: 1;
 
-  justify-content: center;
+    display: flex;
 
-  flex-wrap: wrap;
+    justify-content: center;
 
-  gap: 9px;
+    flex-wrap: wrap;
 
-  margin-top: 22px;
+    gap: 9px;
 
-  animation:
-    titleIn 0.8s 0.2s ease both;
+    margin-top: 22px;
+
+    animation:
+        titleIn
+        0.8s
+        0.2s
+        ease
+        both;
 }
+
 
 .hero-pills span {
-  padding: 7px 12px;
 
-  border: 1px solid #3d1111;
+    padding:
+        7px 12px;
 
-  border-radius: 999px;
+    border:
+        1px solid #3d1111;
 
-  background: rgba(17, 17, 17, 0.9);
+    border-radius: 999px;
 
-  color: #aaa;
+    background:
+        rgba(
+            17,
+            17,
+            17,
+            0.9
+        );
 
-  font-size: 0.82em;
+    color: #aaa;
 
-  box-shadow:
-    inset 0 0 12px rgba(255, 0, 0, 0.06);
+    font-size: 0.82em;
 
-  transition: 0.25s ease;
+    box-shadow:
+        inset
+        0 0 12px
+        rgba(
+            255,
+            0,
+            0,
+            0.06
+        );
+
+    transition:
+        0.25s ease;
 }
 
+
 .hero-pills span:hover {
-  color: #fff;
 
-  border-color: #ff0000;
+    color: #fff;
 
-  box-shadow:
-    0 0 13px rgba(255, 0, 0, 0.35);
+    border-color:
+        #ff0000;
 
-  transform: translateY(-2px);
+    box-shadow:
+        0 0 13px
+        rgba(
+            255,
+            0,
+            0,
+            0.35
+        );
+
+    transform:
+        translateY(-2px);
 }
 
 
@@ -458,107 +683,143 @@ a {
    ========================================================= */
 
 .big-buttons {
-  position: relative;
 
-  z-index: 1;
+    position: relative;
 
-  margin-top: 38px;
+    z-index: 1;
 
-  padding-bottom: 8px;
+    margin-top: 38px;
 
-  display: flex;
+    padding-bottom: 8px;
 
-  justify-content: center;
+    display: flex;
 
-  flex-wrap: wrap;
+    justify-content: center;
 
-  gap: 25px;
+    flex-wrap: wrap;
 
-  width: min(100%, 1050px);
+    gap: 25px;
 
-  margin-left: auto;
-  margin-right: auto;
+    width:
+        min(
+            100%,
+            1050px
+        );
 
-  animation:
-    titleIn 0.8s 0.28s ease both;
+    margin-left: auto;
+
+    margin-right: auto;
+
+    animation:
+        titleIn
+        0.8s
+        0.28s
+        ease
+        both;
 }
+
 
 .big-btn {
-  position: relative;
 
-  overflow: hidden;
+    position: relative;
 
-  background: #111;
+    overflow: hidden;
 
-  border: 2px solid #ff0000;
+    background: #111;
 
-  padding: 20px 40px;
+    border:
+        2px solid #ff0000;
 
-  border-radius: 12px;
+    padding:
+        20px 40px;
 
-  font-size: 1.4em;
+    border-radius: 12px;
 
-  color: #fff;
+    font-size: 1.4em;
 
-  cursor: pointer;
+    color: #fff;
 
-  transition: 0.3s ease;
+    cursor: pointer;
 
-  box-shadow:
-    0 0 15px #ff0000;
+    transition:
+        0.3s ease;
 
-  text-decoration: none;
+    box-shadow:
+        0 0 15px #ff0000;
+
+    text-decoration: none;
 }
+
 
 .big-btn::after {
-  content: "";
 
-  position: absolute;
+    content: "";
 
-  top: -60%;
-  left: -80%;
+    position: absolute;
 
-  width: 45%;
-  height: 220%;
+    top: -60%;
 
-  background:
-    rgba(255, 255, 255, 0.08);
+    left: -80%;
 
-  transform: rotate(22deg);
+    width: 45%;
 
-  transition:
-    left 0.55s ease;
+    height: 220%;
+
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            0.08
+        );
+
+    transform:
+        rotate(22deg);
+
+    transition:
+        left
+        0.55s
+        ease;
 }
+
 
 .big-btn:hover::after {
-  left: 135%;
+
+    left: 135%;
 }
+
 
 .big-btn:hover {
-  background: #330000;
 
-  box-shadow:
-    0 0 25px #ff3333;
+    background: #330000;
 
-  transform: scale(1.05);
+    box-shadow:
+        0 0 25px #ff3333;
+
+    transform:
+        scale(1.05);
 }
 
-.big-btn.featured {
-  background:
-    linear-gradient(
-      180deg,
-      #2b0000,
-      #111
-    );
 
-  box-shadow:
-    0 0 18px #ff0000,
-    inset 0 0 18px rgba(
-      255,
-      0,
-      0,
-      0.12
-    );
+.big-btn.featured {
+
+    background:
+        linear-gradient(
+            180deg,
+            #2b0000,
+            #111
+        );
+
+    box-shadow:
+        0 0 18px #ff0000,
+        inset
+        0 0 18px
+        rgba(
+            255,
+            0,
+            0,
+            0.12
+        );
 }
 
 
@@ -567,67 +828,89 @@ a {
    ========================================================= */
 
 .bottom-buttons {
-  margin: 80px auto;
 
-  max-width: 1120px;
+    margin:
+        80px auto;
 
-  padding: 0 20px;
+    max-width:
+        1120px;
 
-  text-align: center;
+    padding:
+        0 20px;
+
+    text-align: center;
 }
+
 
 .bottom-buttons h2 {
-  font-size: 2em;
 
-  color: #ff3333;
+    font-size: 2em;
 
-  text-shadow:
-    0 0 15px #ff0000;
+    color: #ff3333;
 
-  margin-bottom: 30px;
+    text-shadow:
+        0 0 15px #ff0000;
+
+    margin-bottom: 30px;
 }
+
 
 .bottom-grid {
-  display: grid;
 
-  grid-template-columns:
-    repeat(3, minmax(0, 1fr));
+    display: grid;
 
-  gap: 14px;
+    grid-template-columns:
+        repeat(
+            3,
+            minmax(
+                0,
+                1fr
+            )
+        );
+
+    gap: 14px;
 }
+
 
 .bottom-btn {
-  width: 100%;
 
-  min-height: 58px;
+    width: 100%;
 
-  background: #111;
+    min-height: 58px;
 
-  border: 2px solid #ff0000;
+    background: #111;
 
-  padding: 14px 18px;
+    border:
+        2px solid #ff0000;
 
-  border-radius: 10px;
+    padding:
+        14px 18px;
 
-  font-size: 1em;
+    border-radius: 10px;
 
-  color: #fff;
+    font-size: 1em;
 
-  cursor: pointer;
+    color: #fff;
 
-  transition: 0.3s ease;
+    cursor: pointer;
 
-  box-shadow:
-    0 0 12px #ff0000;
+    transition:
+        0.3s ease;
+
+    box-shadow:
+        0 0 12px #ff0000;
 }
 
+
 .bottom-btn:hover {
-  background: #330000;
 
-  box-shadow:
-    0 0 22px #ff3333;
+    background: #330000;
 
-  transform: translateY(-2px);
+    box-shadow:
+        0 0 22px #ff3333;
+
+    transform:
+        translateY(-2px);
 }
 
 
@@ -636,48 +919,60 @@ a {
    ========================================================= */
 
 .games-section {
-  margin: 80px auto;
 
-  max-width: 1120px;
+    margin:
+        80px auto;
 
-  padding: 0 20px;
+    max-width:
+        1120px;
+
+    padding:
+        0 20px;
 }
+
 
 .games-heading {
-  text-align: center;
 
-  margin-bottom: 30px;
+    text-align: center;
+
+    margin-bottom: 30px;
 }
+
 
 .games-kicker {
-  color: #ff4444;
 
-  font-size: 0.72em;
+    color: #ff4444;
 
-  font-weight: 800;
+    font-size: 0.72em;
 
-  letter-spacing: 3px;
+    font-weight: 800;
 
-  margin-bottom: 6px;
+    letter-spacing: 3px;
+
+    margin-bottom: 6px;
 }
+
 
 .games-title {
-  font-size: 2em;
 
-  color: #ff3333;
+    font-size: 2em;
 
-  text-shadow:
-    0 0 15px #ff0000;
+    color: #ff3333;
 
-  margin-bottom: 5px;
+    text-shadow:
+        0 0 15px #ff0000;
 
-  text-align: center;
+    margin-bottom: 5px;
+
+    text-align: center;
 }
 
-.games-subtitle {
-  color: #777;
 
-  font-size: 0.92em;
+.games-subtitle {
+
+    color: #777;
+
+    font-size: 0.92em;
 }
 
 
@@ -686,19 +981,24 @@ a {
    ========================================================= */
 
 .games-grid {
-  display: grid;
 
-  grid-template-columns:
-    repeat(
-      auto-fit,
-      minmax(300px, 1fr)
-    );
+    display: grid;
 
-  justify-items: center;
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(
+                300px,
+                1fr
+            )
+        );
 
-  gap: 55px 40px;
+    justify-items: center;
 
-  width: 100%;
+    gap:
+        55px 40px;
+
+    width: 100%;
 }
 
 
@@ -707,49 +1007,61 @@ a {
    ========================================================= */
 
 .game-card {
-  width: min(300px, 100%);
 
-  background: #111;
+    width:
+        min(
+            300px,
+            100%
+        );
 
-  border: 2px solid #330000;
+    background: #111;
 
-  border-radius: 14px;
+    border:
+        2px solid #330000;
 
-  padding: 12px;
+    border-radius: 14px;
 
-  margin: 0 auto;
+    padding: 12px;
 
-  position: relative;
+    margin: 0 auto;
 
-  box-shadow:
-    0 0 15px #ff0000;
+    position: relative;
 
-  transition: 0.3s ease;
+    box-shadow:
+        0 0 15px #ff0000;
 
-  overflow: hidden;
+    transition:
+        0.3s ease;
+
+    overflow: hidden;
 }
+
 
 .game-card:hover {
-  transform: translateY(-6px);
 
-  box-shadow:
-    0 0 28px #ff3333;
+    transform:
+        translateY(-6px);
+
+    box-shadow:
+        0 0 28px #ff3333;
 }
 
+
 .game-thumb {
-  width: 100%;
 
-  aspect-ratio: 1 / 1;
+    width: 100%;
 
-  display: block;
+    aspect-ratio: 1 / 1;
 
-  background-color: #151515;
+    display: block;
 
-  background-size: cover;
+    background-color: #151515;
 
-  background-position: center;
+    background-size: cover;
 
-  border-radius: 8px;
+    background-position: center;
+
+    border-radius: 8px;
 }
 
 
@@ -758,43 +1070,52 @@ a {
    ========================================================= */
 
 .explore-more {
-  margin-top: 45px;
 
-  text-align: center;
+    margin-top: 45px;
+
+    text-align: center;
 }
+
 
 .explore-btn {
-  display: inline-block;
 
-  background: #111;
+    display: inline-block;
 
-  border: 2px solid #ff0000;
+    background: #111;
 
-  padding: 18px 40px;
+    border:
+        2px solid #ff0000;
 
-  border-radius: 12px;
+    padding:
+        18px 40px;
 
-  font-size: 1.4em;
+    border-radius: 12px;
 
-  color: #fff;
+    font-size: 1.4em;
 
-  cursor: pointer;
+    color: #fff;
 
-  transition: 0.3s ease;
+    cursor: pointer;
 
-  box-shadow:
-    0 0 15px #ff0000;
+    transition:
+        0.3s ease;
 
-  text-decoration: none;
+    box-shadow:
+        0 0 15px #ff0000;
+
+    text-decoration: none;
 }
 
+
 .explore-btn:hover {
-  background: #330000;
 
-  box-shadow:
-    0 0 25px #ff3333;
+    background: #330000;
 
-  transform: scale(1.05);
+    box-shadow:
+        0 0 25px #ff3333;
+
+    transform:
+        scale(1.05);
 }
 
 
@@ -804,69 +1125,76 @@ a {
 
 @keyframes heroPulse {
 
-  0%,
-  100% {
-    opacity: 0.65;
+    0%,
+    100% {
 
-    transform:
-      translateX(-50%)
-      scale(0.96);
-  }
+        opacity: 0.65;
 
-  50% {
-    opacity: 1;
+        transform:
+            translateX(-50%)
+            scale(0.96);
+    }
 
-    transform:
-      translateX(-50%)
-      scale(1.04);
-  }
+    50% {
 
+        opacity: 1;
+
+        transform:
+            translateX(-50%)
+            scale(1.04);
+    }
 }
+
 
 @keyframes badgeFloat {
 
-  0%,
-  100% {
-    transform:
-      translateY(0);
-  }
+    0%,
+    100% {
 
-  50% {
-    transform:
-      translateY(-3px);
-  }
+        transform:
+            translateY(0);
+    }
 
+    50% {
+
+        transform:
+            translateY(-3px);
+    }
 }
+
 
 @keyframes statusBlink {
 
-  0%,
-  100% {
-    opacity: 1;
-  }
+    0%,
+    100% {
 
-  50% {
-    opacity: 0.35;
-  }
+        opacity: 1;
+    }
 
+    50% {
+
+        opacity: 0.35;
+    }
 }
+
 
 @keyframes titleIn {
 
-  from {
-    opacity: 0;
+    from {
 
-    transform:
-      translateY(12px);
-  }
+        opacity: 0;
 
-  to {
-    opacity: 1;
+        transform:
+            translateY(12px);
+    }
 
-    transform:
-      translateY(0);
-  }
+    to {
 
+        opacity: 1;
+
+        transform:
+            translateY(0);
+    }
 }
 
 
@@ -877,35 +1205,49 @@ a {
 img,
 video,
 iframe {
-  max-width: 100%;
+
+    max-width: 100%;
 }
+
 
 body {
-  min-width: 0;
+
+    min-width: 0;
 }
+
 
 .navbar {
-  min-height: 58px;
+
+    min-height: 58px;
 }
+
 
 .main {
-  width: 100%;
+
+    width: 100%;
 }
+
 
 .big-btn {
-  flex: 0 1 auto;
 
-  max-width: 100%;
+    flex:
+        0 1 auto;
+
+    max-width: 100%;
 }
+
 
 .bottom-buttons,
 .games-section,
 .games-grid {
-  width: 100%;
+
+    width: 100%;
 }
 
+
 .game-card {
-  max-width: 100%;
+
+    max-width: 100%;
 }
 
 
@@ -915,66 +1257,92 @@ body {
 
 @media (max-width: 1100px) {
 
-  .navbar {
-    position: relative;
+    .navbar {
 
-    justify-content: center;
+        position: relative;
 
-    padding: 12px 16px;
-  }
+        justify-content: center;
 
-  .left {
-    width: 100%;
+        padding:
+            12px 16px;
+    }
 
-    justify-content: center;
+    .left {
 
-    flex-wrap: wrap;
-  }
+        width: 100%;
 
-  .center {
-    position: static;
+        justify-content: center;
 
-    width: 100%;
+        flex-wrap: wrap;
+    }
 
-    transform: none;
-  }
+    .center {
 
-  .tabs {
-    width: 100%;
+        position: static;
 
-    justify-content: center;
+        width: 100%;
 
-    flex-wrap: wrap;
-  }
+        transform: none;
+    }
 
-  .main {
-    margin-top: 55px;
+    .tabs {
 
-    padding-left:
-      clamp(14px, 3vw, 28px);
+        width: 100%;
 
-    padding-right:
-      clamp(14px, 3vw, 28px);
-  }
+        justify-content: center;
 
-  .big-buttons {
-    gap: 14px;
-  }
+        flex-wrap: wrap;
+    }
 
-  .big-btn {
-    padding: 16px 24px;
+    .main {
 
-    font-size: 1.1em;
-  }
+        margin-top: 55px;
 
-  .bottom-buttons,
-  .games-section {
-    padding-left:
-      clamp(14px, 3vw, 28px);
+        padding-left:
+            clamp(
+                14px,
+                3vw,
+                28px
+            );
 
-    padding-right:
-      clamp(14px, 3vw, 28px);
-  }
+        padding-right:
+            clamp(
+                14px,
+                3vw,
+                28px
+            );
+    }
+
+    .big-buttons {
+
+        gap: 14px;
+    }
+
+    .big-btn {
+
+        padding:
+            16px 24px;
+
+        font-size: 1.1em;
+    }
+
+    .bottom-buttons,
+    .games-section {
+
+        padding-left:
+            clamp(
+                14px,
+                3vw,
+                28px
+            );
+
+        padding-right:
+            clamp(
+                14px,
+                3vw,
+                28px
+            );
+    }
 
 }
 
@@ -985,105 +1353,132 @@ body {
 
 @media (max-width: 760px) {
 
-  .navbar {
-    padding: 10px 12px;
-  }
+    .navbar {
 
-  .logo {
-    font-size: 1.25em;
-  }
+        padding:
+            10px 12px;
+    }
 
-  .datetime {
-    font-size: 0.78em;
+    .logo {
 
-    text-align: center;
-  }
+        font-size: 1.25em;
+    }
 
-  .tabs {
-    gap: 5px;
-  }
+    .datetime {
 
-  .tab {
-    padding: 7px 9px;
+        font-size: 0.78em;
 
-    font-size: 0.78em;
-  }
+        text-align: center;
+    }
 
-  .main {
-    margin-top: 38px;
-  }
+    .tabs {
 
-  .main h1 {
-    font-size:
-      clamp(
-        2em,
-        9vw,
-        3em
-      );
-  }
+        gap: 5px;
+    }
 
-  .summary {
-    font-size: 0.98em;
+    .tab {
 
-    line-height: 1.55em;
-  }
+        padding:
+            7px 9px;
 
-  .hero-pills {
-    gap: 6px;
-  }
+        font-size: 0.78em;
+    }
 
-  .hero-pills span {
-    padding: 6px 9px;
+    .main {
 
-    font-size: 0.75em;
-  }
+        margin-top: 38px;
+    }
 
-  .big-buttons {
-    margin-top: 28px;
+    .main h1 {
 
-    gap: 10px;
-  }
+        font-size:
+            clamp(
+                2em,
+                9vw,
+                3em
+            );
+    }
 
-  .big-btn {
-    padding: 13px 16px;
+    .summary {
 
-    font-size: 0.95em;
+        font-size: 0.98em;
 
-    border-radius: 9px;
-  }
+        line-height: 1.55em;
+    }
 
-  .bottom-buttons {
-    margin-top: 55px;
+    .hero-pills {
 
-    margin-bottom: 55px;
-  }
+        gap: 6px;
+    }
 
-  .bottom-buttons h2 {
-    font-size: 1.55em;
-  }
+    .hero-pills span {
 
-  .bottom-grid {
-    grid-template-columns: 1fr;
-  }
+        padding:
+            6px 9px;
 
-  .games-title {
-    font-size: 1.65em;
-  }
+        font-size: 0.75em;
+    }
 
-  .games-grid {
-    grid-template-columns:
-      minmax(0, 1fr);
+    .big-buttons {
 
-    gap: 32px;
-  }
+        margin-top: 28px;
 
-  .game-card {
-    width:
-      min(
-        300px,
-        calc(100vw - 32px)
-      );
-  }
+        gap: 10px;
+    }
+
+    .big-btn {
+
+        padding:
+            13px 16px;
+
+        font-size: 0.95em;
+
+        border-radius: 9px;
+    }
+
+    .bottom-buttons {
+
+        margin-top: 55px;
+
+        margin-bottom: 55px;
+    }
+
+    .bottom-buttons h2 {
+
+        font-size: 1.55em;
+    }
+
+    .bottom-grid {
+
+        grid-template-columns: 1fr;
+    }
+
+    .games-title {
+
+        font-size: 1.65em;
+    }
+
+    .games-grid {
+
+        grid-template-columns:
+            minmax(
+                0,
+                1fr
+            );
+
+        gap: 32px;
+    }
+
+    .game-card {
+
+        width:
+            min(
+                300px,
+                calc(
+                    100vw - 32px
+                )
+            );
+    }
 
 }
 
@@ -1094,76 +1489,94 @@ body {
 
 @media (max-width: 420px) {
 
-  .navbar {
-    padding: 8px;
-  }
+    .navbar {
 
-  .left {
-    gap: 5px;
-  }
+        padding: 8px;
+    }
 
-  .tabs {
-    gap: 4px;
-  }
+    .left {
 
-  .tab {
-    padding: 6px 7px;
+        gap: 5px;
+    }
 
-    font-size: 0.72em;
-  }
+    .tabs {
 
-  .main {
-    margin-top: 25px;
+        gap: 4px;
+    }
 
-    padding-left: 10px;
+    .tab {
 
-    padding-right: 10px;
-  }
+        padding:
+            6px 7px;
 
-  .summary {
-    font-size: 0.92em;
-  }
+        font-size: 0.72em;
+    }
 
-  .big-buttons {
-    display: grid;
+    .main {
 
-    grid-template-columns:
-      repeat(
-        2,
-        minmax(0, 1fr)
-      );
+        margin-top: 25px;
 
-    width: 100%;
-  }
+        padding-left: 10px;
 
-  .big-btn {
-    width: 100%;
+        padding-right: 10px;
+    }
 
-    padding: 12px 8px;
+    .summary {
 
-    font-size: 0.85em;
-  }
+        font-size: 0.92em;
+    }
 
-  .games-section,
-  .bottom-buttons {
-    padding-left: 10px;
+    .big-buttons {
 
-    padding-right: 10px;
-  }
+        display: grid;
 
-  .game-card {
-    width:
-      min(
-        300px,
-        calc(100vw - 24px)
-      );
-  }
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(
+                    0,
+                    1fr
+                )
+            );
 
-  .game-thumb {
-    width: 100%;
+        width: 100%;
+    }
 
-    aspect-ratio: 1 / 1;
-  }
+    .big-btn {
+
+        width: 100%;
+
+        padding:
+            12px 8px;
+
+        font-size: 0.85em;
+    }
+
+    .games-section,
+    .bottom-buttons {
+
+        padding-left: 10px;
+
+        padding-right: 10px;
+    }
+
+    .game-card {
+
+        width:
+            min(
+                300px,
+                calc(
+                    100vw - 24px
+                )
+            );
+    }
+
+    .game-thumb {
+
+        width: 100%;
+
+        aspect-ratio: 1 / 1;
+    }
 
 }
 
@@ -1177,31 +1590,37 @@ body {
 and
 (min-width: 761px) {
 
-  .main {
-    margin-top: 45px;
-  }
+    .main {
 
-  .main h1 {
-    margin-top: 10px;
-  }
+        margin-top: 45px;
+    }
 
-  .summary {
-    margin-top: 12px;
-  }
+    .main h1 {
 
-  .hero-pills {
-    margin-top: 14px;
-  }
+        margin-top: 10px;
+    }
 
-  .big-buttons {
-    margin-top: 24px;
-  }
+    .summary {
 
-  .bottom-buttons {
-    margin-top: 55px;
+        margin-top: 12px;
+    }
 
-    margin-bottom: 55px;
-  }
+    .hero-pills {
+
+        margin-top: 14px;
+    }
+
+    .big-buttons {
+
+        margin-top: 24px;
+    }
+
+    .bottom-buttons {
+
+        margin-top: 55px;
+
+        margin-bottom: 55px;
+    }
 
 }
 
@@ -1212,23 +1631,26 @@ and
 
 @media (max-width: 1180px) {
 
-  .center {
-    position: static;
+    .center {
 
-    transform: none;
-  }
+        position: static;
 
-  .navbar {
-    flex-wrap: wrap;
+        transform: none;
+    }
 
-    gap: 12px;
-  }
+    .navbar {
 
-  .tabs {
-    flex-wrap: wrap;
+        flex-wrap: wrap;
 
-    justify-content: center;
-  }
+        gap: 12px;
+    }
+
+    .tabs {
+
+        flex-wrap: wrap;
+
+        justify-content: center;
+    }
 
 }
 
@@ -1239,16 +1661,21 @@ and
 
 @media (max-width: 850px) {
 
-  .bottom-grid {
-    grid-template-columns: 1fr;
-  }
+    .bottom-grid {
 
-  .games-grid {
-    grid-template-columns:
-      minmax(0, 300px);
+        grid-template-columns: 1fr;
+    }
 
-    justify-content: center;
-  }
+    .games-grid {
+
+        grid-template-columns:
+            minmax(
+                0,
+                300px
+            );
+
+        justify-content: center;
+    }
 
 }
 
@@ -1259,61 +1686,78 @@ and
 
 @media (max-width: 560px) {
 
-  .main {
-    margin-top: 55px;
+    .main {
 
-    padding-top: 18px;
-  }
+        margin-top: 55px;
 
-  .main h1 {
-    font-size: 2.2em;
+        padding-top: 18px;
+    }
 
-    margin-top: 14px;
-  }
+    .main h1 {
 
-  .game-card {
-    width:
-      min(
-        300px,
-        calc(100vw - 40px)
-      );
+        font-size: 2.2em;
 
-    max-width:
-      calc(100vw - 40px);
-  }
+        margin-top: 14px;
+    }
 
-  .game-thumb {
-    width: 100%;
+    .game-card {
 
-    aspect-ratio: 1 / 1;
-  }
+        width:
+            min(
+                300px,
+                calc(
+                    100vw - 40px
+                )
+            );
 
-  .games-grid {
-    grid-template-columns:
-      minmax(0, 1fr);
-  }
+        max-width:
+            calc(
+                100vw - 40px
+            );
+    }
 
-  .left {
-    flex-direction: column;
+    .game-thumb {
 
-    align-items: flex-start;
+        width: 100%;
 
-    gap: 6px;
-  }
+        aspect-ratio: 1 / 1;
+    }
 
-  .center {
-    width: 100%;
-  }
+    .games-grid {
 
-  .tabs {
-    gap: 6px;
-  }
+        grid-template-columns:
+            minmax(
+                0,
+                1fr
+            );
+    }
 
-  .tab {
-    padding: 7px 10px;
+    .left {
 
-    font-size: 0.88em;
-  }
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 6px;
+    }
+
+    .center {
+
+        width: 100%;
+    }
+
+    .tabs {
+
+        gap: 6px;
+    }
+
+    .tab {
+
+        padding:
+            7px 10px;
+
+        font-size: 0.88em;
+    }
 
 }
 
@@ -1324,57 +1768,58 @@ and
 
 @media (min-width: 1201px) {
 
-  .main,
-  .bottom-buttons,
-  .games-section {
+    .main,
+    .bottom-buttons,
+    .games-section {
 
-    width:
-      min(
-        100% - 40px,
-        1040px
-      ) !important;
+        width:
+            min(
+                calc(100% - 40px),
+                1040px
+            ) !important;
 
-    max-width:
-      1040px !important;
+        max-width:
+            1040px !important;
 
-    margin-left:
-      auto !important;
+        margin-left:
+            auto !important;
 
-    margin-right:
-      auto !important;
-  }
+        margin-right:
+            auto !important;
+    }
 
-  .main {
-    padding-left:
-      20px !important;
+    .main {
 
-    padding-right:
-      20px !important;
-  }
+        padding-left:
+            20px !important;
 
-  .bottom-buttons,
-  .games-section {
+        padding-right:
+            20px !important;
+    }
 
-    padding-left:
-      20px !important;
+    .bottom-buttons,
+    .games-section {
 
-    padding-right:
-      20px !important;
-  }
+        padding-left:
+            20px !important;
 
-  .big-buttons {
+        padding-right:
+            20px !important;
+    }
 
-    width: 100% !important;
+    .big-buttons {
 
-    max-width:
-      860px !important;
+        width: 100% !important;
 
-    margin-left:
-      auto !important;
+        max-width:
+            860px !important;
 
-    margin-right:
-      auto !important;
-  }
+        margin-left:
+            auto !important;
+
+        margin-right:
+            auto !important;
+    }
 
 }
 
@@ -1388,124 +1833,127 @@ and
 and
 (min-width: 901px) {
 
-  .navbar {
+    .navbar {
 
-    display: flex !important;
+        display: flex !important;
 
-    align-items: center !important;
+        align-items:
+            center !important;
 
-    justify-content:
-      space-between !important;
+        justify-content:
+            space-between !important;
 
-    gap: 14px !important;
+        gap:
+            14px !important;
 
-    padding:
-      9px 16px !important;
+        padding:
+            9px 16px !important;
 
-    min-height:
-      54px !important;
-  }
+        min-height:
+            54px !important;
+    }
 
-  .left {
+    .left {
 
-    flex:
-      0 1 auto !important;
+        flex:
+            0 1 auto !important;
 
-    min-width:
-      0 !important;
+        min-width:
+            0 !important;
 
-    gap:
-      12px !important;
+        gap:
+            12px !important;
 
-    white-space:
-      nowrap !important;
-  }
+        white-space:
+            nowrap !important;
+    }
 
-  .logo {
-    font-size:
-      1.25em !important;
-  }
+    .logo {
 
-  .datetime {
-    font-size:
-      .78em !important;
+        font-size:
+            1.25em !important;
+    }
 
-    white-space:
-      nowrap !important;
-  }
+    .datetime {
 
-  .center {
+        font-size:
+            .78em !important;
 
-    position:
-      static !important;
+        white-space:
+            nowrap !important;
+    }
 
-    left:
-      auto !important;
+    .center {
 
-    transform:
-      none !important;
+        position:
+            static !important;
 
-    flex:
-      0 1 auto !important;
+        left: auto !important;
 
-    min-width:
-      0 !important;
+        transform:
+            none !important;
 
-    width:
-      auto !important;
+        flex:
+            0 1 auto !important;
 
-    margin-left:
-      auto !important;
-  }
+        min-width:
+            0 !important;
 
-  .tabs {
+        width:
+            auto !important;
 
-    display:
-      flex !important;
+        margin-left:
+            auto !important;
+    }
 
-    flex-wrap:
-      nowrap !important;
+    .tabs {
 
-    justify-content:
-      flex-end !important;
+        display:
+            flex !important;
 
-    gap:
-      6px !important;
-  }
+        flex-wrap:
+            nowrap !important;
 
-  .tab {
+        justify-content:
+            flex-end !important;
 
-    flex:
-      0 0 auto !important;
+        gap:
+            6px !important;
+    }
 
-    padding:
-      8px 11px !important;
+    .tab {
 
-    font-size:
-      .78em !important;
+        flex:
+            0 0 auto !important;
 
-    white-space:
-      nowrap !important;
-  }
+        padding:
+            8px 11px !important;
 
-  .main {
+        font-size:
+            .78em !important;
 
-    margin-top:
-      24px !important;
+        white-space:
+            nowrap !important;
+    }
 
-    padding-top:
-      18px !important;
-  }
+    .main {
 
-  .main h1 {
+        margin-top:
+            24px !important;
 
-    font-size:
-      clamp(
-        2.4rem,
-        5vw,
-        3.5rem
-      ) !important;
-  }
+        padding-top:
+            18px !important;
+    }
+
+    .main h1 {
+
+        font-size:
+            clamp(
+                2.4rem,
+                5vw,
+                3.5rem
+            ) !important;
+    }
 
 }
 
@@ -1516,86 +1964,86 @@ and
 
 @media (max-width: 900px) {
 
-  .navbar {
+    .navbar {
 
-    display:
-      flex !important;
+        display:
+            flex !important;
 
-    flex-direction:
-      column !important;
+        flex-direction:
+            column !important;
 
-    align-items:
-      stretch !important;
+        align-items:
+            stretch !important;
 
-    justify-content:
-      center !important;
+        justify-content:
+            center !important;
 
-    gap:
-      8px !important;
+        gap:
+            8px !important;
 
-    padding:
-      9px 10px !important;
-  }
+        padding:
+            9px 10px !important;
+    }
 
-  .left {
+    .left {
 
-    width:
-      100% !important;
+        width:
+            100% !important;
 
-    justify-content:
-      center !important;
+        justify-content:
+            center !important;
 
-    gap:
-      8px 12px !important;
-  }
+        gap:
+            8px 12px !important;
+    }
 
-  .center {
+    .center {
 
-    position:
-      static !important;
+        position:
+            static !important;
 
-    width:
-      100% !important;
+        width:
+            100% !important;
 
-    transform:
-      none !important;
-  }
+        transform:
+            none !important;
+    }
 
-  .tabs {
+    .tabs {
 
-    width:
-      100% !important;
+        width:
+            100% !important;
 
-    justify-content:
-      center !important;
+        justify-content:
+            center !important;
 
-    flex-wrap:
-      wrap !important;
+        flex-wrap:
+            wrap !important;
 
-    gap:
-      5px !important;
-  }
+        gap:
+            5px !important;
+    }
 
-  .tab {
+    .tab {
 
-    padding:
-      7px 10px !important;
+        padding:
+            7px 10px !important;
 
-    font-size:
-      .76em !important;
+        font-size:
+            .76em !important;
 
-    white-space:
-      nowrap !important;
-  }
+        white-space:
+            nowrap !important;
+    }
 
-  .main {
+    .main {
 
-    margin-top:
-      22px !important;
+        margin-top:
+            22px !important;
 
-    padding-top:
-      12px !important;
-  }
+        padding-top:
+            12px !important;
+    }
 
 }
 
@@ -1606,54 +2054,56 @@ and
 
 @media (max-width: 600px) {
 
-  .left {
+    .left {
 
-    flex-direction:
-      column !important;
+        flex-direction:
+            column !important;
 
-    gap:
-      3px !important;
-  }
+        gap:
+            3px !important;
+    }
 
-  .logo {
+    .logo {
 
-    font-size:
-      1.25em !important;
-  }
+        font-size:
+            1.25em !important;
+    }
 
-  .datetime {
+    .datetime {
 
-    font-size:
-      .72em !important;
-  }
+        font-size:
+            .72em !important;
+    }
 
-  .tabs {
-    gap:
-      4px !important;
-  }
+    .tabs {
 
-  .tab {
+        gap:
+            4px !important;
+    }
 
-    padding:
-      6px 8px !important;
+    .tab {
 
-    font-size:
-      .7em !important;
-  }
+        padding:
+            6px 8px !important;
 
-  .main {
+        font-size:
+            .7em !important;
+    }
 
-    margin-top:
-      14px !important;
+    .main {
 
-    padding-top:
-      8px !important;
-  }
+        margin-top:
+            14px !important;
 
-  .hero-badge {
-    margin-top:
-      4px !important;
-  }
+        padding-top:
+            8px !important;
+    }
+
+    .hero-badge {
+
+        margin-top:
+            4px !important;
+    }
 
 }
 
@@ -1667,20 +2117,22 @@ and
 .navbar .tab.active,
 .navbar .active {
 
-  box-sizing:
-    border-box !important;
+    box-sizing:
+        border-box !important;
 }
+
 
 .navbar .tab:hover {
 
-  transform:
-    translateY(-1px) !important;
+    transform:
+        translateY(-1px) !important;
 }
+
 
 .navbar .active {
 
-  transform:
-    none !important;
+    transform:
+        none !important;
 }
 
 
@@ -1690,92 +2142,91 @@ and
 
 @media (min-width: 1401px) {
 
-  .navbar {
+    .navbar {
 
-    min-height:
-      58px !important;
+        min-height:
+            58px !important;
 
-    display:
-      flex !important;
+        display:
+            flex !important;
 
-    align-items:
-      center !important;
+        align-items:
+            center !important;
 
-    justify-content:
-      space-between !important;
+        justify-content:
+            space-between !important;
 
-    gap:
-      20px !important;
+        gap:
+            20px !important;
 
-    padding:
-      9px 18px !important;
-  }
+        padding:
+            9px 18px !important;
+    }
 
-  .navbar .left {
+    .navbar .left {
 
-    flex:
-      0 1 auto !important;
+        flex:
+            0 1 auto !important;
 
-    min-width:
-      0 !important;
+        min-width:
+            0 !important;
 
-    display:
-      flex !important;
+        display:
+            flex !important;
 
-    align-items:
-      center !important;
+        align-items:
+            center !important;
 
-    gap:
-      16px !important;
-  }
+        gap:
+            16px !important;
+    }
 
-  .navbar .center {
+    .navbar .center {
 
-    position:
-      static !important;
+        position:
+            static !important;
 
-    left:
-      auto !important;
+        left: auto !important;
 
-    transform:
-      none !important;
+        transform:
+            none !important;
 
-    flex:
-      0 0 auto !important;
+        flex:
+            0 0 auto !important;
 
-    min-width:
-      0 !important;
+        min-width:
+            0 !important;
 
-    margin-left:
-      auto !important;
-  }
+        margin-left:
+            auto !important;
+    }
 
-  .navbar .tabs {
+    .navbar .tabs {
 
-    display:
-      flex !important;
+        display:
+            flex !important;
 
-    flex-wrap:
-      nowrap !important;
+        flex-wrap:
+            nowrap !important;
 
-    gap:
-      7px !important;
-  }
+        gap:
+            7px !important;
+    }
 
-  .navbar .tab {
+    .navbar .tab {
 
-    flex:
-      0 0 auto !important;
+        flex:
+            0 0 auto !important;
 
-    padding:
-      8px 13px !important;
+        padding:
+            8px 13px !important;
 
-    white-space:
-      nowrap !important;
+        white-space:
+            nowrap !important;
 
-    font-size:
-      .86em !important;
-  }
+        font-size:
+            .86em !important;
+    }
 
 }
 
@@ -1786,140 +2237,140 @@ and
 
 @media (max-width: 1400px) {
 
-  .navbar {
+    .navbar {
 
-    display:
-      flex !important;
+        display:
+            flex !important;
 
-    flex-direction:
-      column !important;
+        flex-direction:
+            column !important;
 
-    align-items:
-      center !important;
+        align-items:
+            center !important;
 
-    justify-content:
-      center !important;
+        justify-content:
+            center !important;
 
-    gap:
-      8px !important;
+        gap:
+            8px !important;
 
-    min-height:
-      auto !important;
+        min-height:
+            auto !important;
 
-    padding:
-      9px 12px 10px !important;
-  }
+        padding:
+            9px 12px 10px !important;
+    }
 
-  .navbar .left {
+    .navbar .left {
 
-    width:
-      100% !important;
+        width:
+            100% !important;
 
-    min-width:
-      0 !important;
+        min-width:
+            0 !important;
 
-    display:
-      flex !important;
+        display:
+            flex !important;
 
-    align-items:
-      center !important;
+        align-items:
+            center !important;
 
-    justify-content:
-      center !important;
+        justify-content:
+            center !important;
 
-    gap:
-      12px !important;
-  }
+        gap:
+            12px !important;
+    }
 
-  .navbar .logo {
+    .navbar .logo {
 
-    font-size:
-      clamp(
-        1.15em,
-        1.7vw,
-        1.5em
-      ) !important;
+        font-size:
+            clamp(
+                1.15em,
+                1.7vw,
+                1.5em
+            ) !important;
 
-    white-space:
-      nowrap !important;
-  }
+        white-space:
+            nowrap !important;
+    }
 
-  .navbar .datetime {
+    .navbar .datetime {
 
-    font-size:
-      clamp(
-        .72em,
-        1vw,
-        .9em
-      ) !important;
+        font-size:
+            clamp(
+                .72em,
+                1vw,
+                .9em
+            ) !important;
 
-    white-space:
-      nowrap !important;
-  }
+        white-space:
+            nowrap !important;
+    }
 
-  .navbar .center {
+    .navbar .center {
 
-    position:
-      static !important;
+        position:
+            static !important;
 
-    width:
-      100% !important;
+        width:
+            100% !important;
 
-    min-width:
-      0 !important;
+        min-width:
+            0 !important;
 
-    transform:
-      none !important;
-  }
+        transform:
+            none !important;
+    }
 
-  .navbar .tabs {
+    .navbar .tabs {
 
-    width:
-      100% !important;
+        width:
+            100% !important;
 
-    display:
-      flex !important;
+        display:
+            flex !important;
 
-    justify-content:
-      center !important;
+        justify-content:
+            center !important;
 
-    align-items:
-      center !important;
+        align-items:
+            center !important;
 
-    flex-wrap:
-      wrap !important;
+        flex-wrap:
+            wrap !important;
 
-    gap:
-      6px !important;
-  }
+        gap:
+            6px !important;
+    }
 
-  .navbar .tab {
+    .navbar .tab {
 
-    flex:
-      0 0 auto !important;
+        flex:
+            0 0 auto !important;
 
-    padding:
-      7px 11px !important;
+        padding:
+            7px 11px !important;
 
-    font-size:
-      clamp(
-        .72em,
-        1.15vw,
-        .86em
-      ) !important;
+        font-size:
+            clamp(
+                .72em,
+                1.15vw,
+                .86em
+            ) !important;
 
-    line-height:
-      1.1 !important;
+        line-height:
+            1.1 !important;
 
-    white-space:
-      nowrap !important;
-  }
+        white-space:
+            nowrap !important;
+    }
 
-  .main {
+    .main {
 
-    margin-top:
-      24px !important;
-  }
+        margin-top:
+            24px !important;
+    }
 
 }
 
@@ -1930,46 +2381,47 @@ and
 
 @media (max-width: 900px) {
 
-  .navbar {
+    .navbar {
 
-    gap:
-      7px !important;
+        gap:
+            7px !important;
 
-    padding:
-      8px 8px 9px !important;
-  }
+        padding:
+            8px 8px 9px !important;
+    }
 
-  .navbar .left {
+    .navbar .left {
 
-    gap:
-      7px 10px !important;
+        gap:
+            7px 10px !important;
 
-    flex-wrap:
-      wrap !important;
-  }
+        flex-wrap:
+            wrap !important;
+    }
 
-  .navbar .tabs {
-    gap:
-      5px !important;
-  }
+    .navbar .tabs {
 
-  .navbar .tab {
+        gap:
+            5px !important;
+    }
 
-    padding:
-      6px 9px !important;
+    .navbar .tab {
 
-    font-size:
-      .73em !important;
-  }
+        padding:
+            6px 9px !important;
 
-  .main {
+        font-size:
+            .73em !important;
+    }
 
-    margin-top:
-      16px !important;
+    .main {
 
-    padding-top:
-      10px !important;
-  }
+        margin-top:
+            16px !important;
+
+        padding-top:
+            10px !important;
+    }
 
 }
 
@@ -1980,40 +2432,41 @@ and
 
 @media (max-width: 600px) {
 
-  .navbar .left {
+    .navbar .left {
 
-    flex-direction:
-      column !important;
+        flex-direction:
+            column !important;
 
-    gap:
-      2px !important;
-  }
+        gap:
+            2px !important;
+    }
 
-  .navbar .logo {
+    .navbar .logo {
 
-    font-size:
-      1.2em !important;
-  }
+        font-size:
+            1.2em !important;
+    }
 
-  .navbar .datetime {
+    .navbar .datetime {
 
-    font-size:
-      .68em !important;
-  }
+        font-size:
+            .68em !important;
+    }
 
-  .navbar .tabs {
-    gap:
-      4px !important;
-  }
+    .navbar .tabs {
 
-  .navbar .tab {
+        gap:
+            4px !important;
+    }
 
-    padding:
-      6px 7px !important;
+    .navbar .tab {
 
-    font-size:
-      .68em !important;
-  }
+        padding:
+            6px 7px !important;
+
+        font-size:
+            .68em !important;
+    }
 
 }
 
@@ -2024,98 +2477,98 @@ and
 
 @media (min-width: 1401px) {
 
-  .navbar {
+    .navbar {
 
-    position:
-      relative !important;
+        position:
+            relative !important;
 
-    display:
-      flex !important;
+        display:
+            flex !important;
 
-    align-items:
-      center !important;
+        align-items:
+            center !important;
 
-    min-height:
-      58px !important;
+        min-height:
+            58px !important;
 
-    width:
-      100vw !important;
+        width:
+            100vw !important;
 
-    max-width:
-      100vw !important;
-  }
+        max-width:
+            100vw !important;
+    }
 
-  .navbar .left {
+    .navbar .left {
 
-    position:
-      absolute !important;
+        position:
+            absolute !important;
 
-    left:
-      18px !important;
+        left:
+            18px !important;
 
-    top:
-      50% !important;
+        top:
+            50% !important;
 
-    transform:
-      translateY(-50%) !important;
+        transform:
+            translateY(-50%) !important;
 
-    z-index:
-      2 !important;
-  }
+        z-index:
+            2 !important;
+    }
 
-  .navbar .center {
+    .navbar .center {
 
-    position:
-      absolute !important;
+        position:
+            absolute !important;
 
-    left:
-      50% !important;
+        left:
+            50% !important;
 
-    top:
-      50% !important;
+        top:
+            50% !important;
 
-    transform:
-      translate(
-        -50%,
-        -50%
-      ) !important;
+        transform:
+            translate(
+                -50%,
+                -50%
+            ) !important;
 
-    width:
-      auto !important;
+        width:
+            auto !important;
 
-    margin:
-      0 !important;
+        margin:
+            0 !important;
 
-    z-index:
-      3 !important;
-  }
+        z-index:
+            3 !important;
+    }
 
-  .navbar .tabs {
+    .navbar .tabs {
 
-    display:
-      flex !important;
+        display:
+            flex !important;
 
-    justify-content:
-      center !important;
+        justify-content:
+            center !important;
 
-    align-items:
-      center !important;
+        align-items:
+            center !important;
 
-    flex-wrap:
-      nowrap !important;
+        flex-wrap:
+            nowrap !important;
 
-    gap:
-      7px !important;
-  }
+        gap:
+            7px !important;
+    }
 
-  .navbar .tab {
+    .navbar .tab {
 
-    flex:
-      0 0 auto !important;
+        flex:
+            0 0 auto !important;
 
-    white-space:
-      nowrap !important;
-  }
+        white-space:
+            nowrap !important;
+    }
 
 }
 
@@ -2125,15 +2578,27 @@ and
    ========================================================= */
 
 .navbar {
-  width: 100vw !important;
-  max-width: 100vw !important;
+
+    width:
+        100vw !important;
+
+    max-width:
+        100vw !important;
 }
 
 </style>
+
 </head>
 
 
 <body>
+
+
+<!-- =====================================================
+     VANTA.NET BACKGROUND
+     ===================================================== -->
+
+<div id="vanta-bg"></div>
 
 
 <!-- =====================================================
@@ -2142,70 +2607,78 @@ and
 
 <div class="navbar">
 
-  <div class="left">
+    <div class="left">
 
-    <div class="logo">
-      Secret Game Site
-    </div>
+        <div class="logo">
+            Secret Game Site
+        </div>
 
-    <div
-      class="datetime"
-      id="datetime">
-      Loading...
-    </div>
-
-  </div>
-
-
-  <div class="center">
-
-    <div class="tabs">
-
-      <a
-        class="tab active"
-        href="index.html">
-        Home
-      </a>
-
-      <a
-        class="tab"
-        href="games.html">
-        Games
-      </a>
-
-      <a
-        class="tab"
-        href="utilities.html">
-        Utilities
-      </a>
-
-      <a
-        class="tab"
-        href="browser.html">
-        Browser
-      </a>
-
-      <a
-        class="tab"
-        href="music.html">
-        Music Player
-      </a>
-
-      <a
-        class="tab"
-        href="forums.html">
-        Forums
-      </a>
-
-      <a
-        class="tab"
-        href="settings.html">
-        Settings
-      </a>
+        <div
+            class="datetime"
+            id="datetime"
+        >
+            Loading...
+        </div>
 
     </div>
 
-  </div>
+
+    <div class="center">
+
+        <div class="tabs">
+
+            <a
+                class="tab active"
+                href="index.html"
+            >
+                Home
+            </a>
+
+            <a
+                class="tab"
+                href="games.html"
+            >
+                Games
+            </a>
+
+            <a
+                class="tab"
+                href="utilities.html"
+            >
+                Utilities
+            </a>
+
+            <a
+                class="tab"
+                href="browser.html"
+            >
+                Browser
+            </a>
+
+            <a
+                class="tab"
+                href="music.html"
+            >
+                Music Player
+            </a>
+
+            <a
+                class="tab"
+                href="forums.html"
+            >
+                Forums
+            </a>
+
+            <a
+                class="tab"
+                href="settings.html"
+            >
+                Settings
+            </a>
+
+        </div>
+
+    </div>
 
 </div>
 
@@ -2216,89 +2689,97 @@ and
 
 <div class="main">
 
-  <div class="hero-glow"></div>
+    <div class="hero-glow"></div>
 
 
-  <div class="hero-badge">
+    <div class="hero-badge">
 
-    <span class="status-dot"></span>
+        <span class="status-dot"></span>
 
-    SGS • ONLINE
+        SGS • ONLINE
 
-  </div>
-
-
-  <h1>
-    Welcome to
-    <span>SGS</span>
-  </h1>
+    </div>
 
 
-  <div class="summary">
+    <h1>
 
-    Your private little corner of the web
-    for games, tools, and more.
+        Welcome to
+        <span>SGS</span>
 
-    <strong>SGS</strong>
-    keeps everything fast, clean, and easy
-    to access — with a sleek interface built
-    for getting straight to what you want.
-
-  </div>
+    </h1>
 
 
-  <div class="hero-pills">
+    <div class="summary">
 
-    <span>⚡ Fast</span>
+        Your private little corner of the web
+        for games, tools, and more.
 
-    <span>🎮 Games</span>
+        <strong>SGS</strong>
+        keeps everything fast, clean, and easy
+        to access — with a sleek interface built
+        for getting straight to what you want.
 
-    <span>🛠 Tools</span>
-
-    <span>🔒 Secure</span>
-
-  </div>
+    </div>
 
 
-  <div class="big-buttons">
+    <div class="hero-pills">
 
-    <a
-      class="big-btn featured"
-      href="games.html">
-      🎮 Games
-    </a>
+        <span>⚡ Fast</span>
 
-    <a
-      class="big-btn"
-      href="utilities.html">
-      🛠 Utilities
-    </a>
+        <span>🎮 Games</span>
 
-    <a
-      class="big-btn"
-      href="browser.html">
-      🌐 Browser
-    </a>
+        <span>🛠 Tools</span>
 
-    <a
-      class="big-btn"
-      href="music.html">
-      🎵 Music Player
-    </a>
+        <span>🔒 Secure</span>
 
-    <a
-      class="big-btn"
-      href="forums.html">
-      💬 Forums
-    </a>
+    </div>
 
-    <a
-      class="big-btn"
-      href="settings.html">
-      ⚙ Settings
-    </a>
 
-  </div>
+    <div class="big-buttons">
+
+        <a
+            class="big-btn featured"
+            href="games.html"
+        >
+            🎮 Games
+        </a>
+
+        <a
+            class="big-btn"
+            href="utilities.html"
+        >
+            🛠 Utilities
+        </a>
+
+        <a
+            class="big-btn"
+            href="browser.html"
+        >
+            🌐 Browser
+        </a>
+
+        <a
+            class="big-btn"
+            href="music.html"
+        >
+            🎵 Music Player
+        </a>
+
+        <a
+            class="big-btn"
+            href="forums.html"
+        >
+            💬 Forums
+        </a>
+
+        <a
+            class="big-btn"
+            href="settings.html"
+        >
+            ⚙ Settings
+        </a>
+
+    </div>
 
 </div>
 
@@ -2309,57 +2790,61 @@ and
 
 <div class="bottom-buttons">
 
-  <h2>
-    Open Options
-  </h2>
+    <h2>
+        Open Options
+    </h2>
 
 
-  <div class="bottom-grid">
+    <div class="bottom-grid">
+
+        <button
+            class="bottom-btn"
+            onclick="openSiteTab()"
+        >
+            Open In Normal Tab
+        </button>
 
 
-    <button
-      class="bottom-btn"
-      onclick="openSiteTab()">
-      Open In Normal Tab
-    </button>
+        <button
+            class="bottom-btn"
+            onclick="openSiteABTab()"
+        >
+            Open In About:Blank Tab
+        </button>
 
 
-    <button
-      class="bottom-btn"
-      onclick="openSiteABTab()">
-      Open In About:Blank Tab
-    </button>
+        <button
+            class="bottom-btn"
+            onclick="openSiteBlobTab()"
+        >
+            Open In Blob Tab
+        </button>
 
 
-    <button
-      class="bottom-btn"
-      onclick="openSiteBlobTab()">
-      Open In Blob Tab
-    </button>
+        <button
+            class="bottom-btn"
+            onclick="openSiteWindow()"
+        >
+            Open In Normal Window
+        </button>
 
 
-    <button
-      class="bottom-btn"
-      onclick="openSiteWindow()">
-      Open In Normal Window
-    </button>
+        <button
+            class="bottom-btn"
+            onclick="openSiteABWindow()"
+        >
+            Open In About:Blank Window
+        </button>
 
 
-    <button
-      class="bottom-btn"
-      onclick="openSiteABWindow()">
-      Open In About:Blank Window
-    </button>
+        <button
+            class="bottom-btn"
+            onclick="openSiteBlobWindow()"
+        >
+            Open In Blob Window
+        </button>
 
-
-    <button
-      class="bottom-btn"
-      onclick="openSiteBlobWindow()">
-      Open In Blob Window
-    </button>
-
-
-  </div>
+    </div>
 
 </div>
 
@@ -2370,166 +2855,164 @@ and
 
 <div class="games-section">
 
+    <div class="games-heading">
 
-  <div class="games-heading">
+        <div class="games-kicker">
+            THE ARCADE
+        </div>
 
-    <div class="games-kicker">
-      THE ARCADE
-    </div>
+        <div class="games-title">
+            Popular Games 🔥
+        </div>
 
-    <div class="games-title">
-      Popular Games 🔥
-    </div>
-
-    <div class="games-subtitle">
-      Jump straight into some of the favorites.
-    </div>
-
-  </div>
-
-
-  <div class="games-grid">
-
-
-    <div class="game-card">
-
-      <div
-        class="game-thumb"
-        style="
-          background-image:
-          url('Img/retrobowl.png');
-        ">
-      </div>
+        <div class="games-subtitle">
+            Jump straight into some of the favorites.
+        </div>
 
     </div>
 
 
-    <div class="game-card">
+    <div class="games-grid">
 
-      <div
-        class="game-thumb"
-        style="
-          background-image:
-          url('Img/MC.png');
-        ">
-      </div>
+
+        <div class="game-card">
+
+            <div
+                class="game-thumb"
+                style="
+                    background-image:
+                    url('Img/retrobowl.png');
+                "
+            ></div>
+
+        </div>
+
+
+        <div class="game-card">
+
+            <div
+                class="game-thumb"
+                style="
+                    background-image:
+                    url('Img/MC.png');
+                "
+            ></div>
+
+        </div>
+
+
+        <div class="game-card">
+
+            <div
+                class="game-thumb"
+                style="
+                    background-image:
+                    url('Img/cookieclicker.png');
+                "
+            ></div>
+
+        </div>
+
+
+        <div class="game-card">
+
+            <div
+                class="game-thumb"
+                style="
+                    background-image:
+                    url('Img/1v1lol.png');
+                "
+            ></div>
+
+        </div>
+
+
+        <div class="game-card">
+
+            <div
+                class="game-thumb"
+                style="
+                    background-image:
+                    url('Img/drifthunt.png');
+                "
+            ></div>
+
+        </div>
+
+
+        <div class="game-card">
+
+            <div
+                class="game-thumb"
+                style="
+                    background-image:
+                    url('Img/bitlife.png');
+                "
+            ></div>
+
+        </div>
+
+
+        <div class="game-card">
+
+            <div
+                class="game-thumb"
+                style="
+                    background-image:
+                    url('Img/slope.png');
+                "
+            ></div>
+
+        </div>
+
+
+        <div class="game-card">
+
+            <div
+                class="game-thumb"
+                style="
+                    background-image:
+                    url('Img/run3.png');
+                "
+            ></div>
+
+        </div>
+
+
+        <div class="game-card">
+
+            <div
+                class="game-thumb"
+                style="
+                    background-image:
+                    url('Img/escroad.png');
+                "
+            ></div>
+
+        </div>
 
     </div>
 
 
-    <div class="game-card">
+    <div class="explore-more">
 
-      <div
-        class="game-thumb"
-        style="
-          background-image:
-          url('Img/cookieclicker.png');
-        ">
-      </div>
-
-    </div>
-
-
-    <div class="game-card">
-
-      <div
-        class="game-thumb"
-        style="
-          background-image:
-          url('Img/1v1lol.png');
-        ">
-      </div>
+        <a
+            class="explore-btn"
+            href="games.html"
+        >
+            ✨ Explore More
+        </a>
 
     </div>
-
-
-    <div class="game-card">
-
-      <div
-        class="game-thumb"
-        style="
-          background-image:
-          url('Img/drifthunt.png');
-        ">
-      </div>
-
-    </div>
-
-
-    <div class="game-card">
-
-      <div
-        class="game-thumb"
-        style="
-          background-image:
-          url('Img/bitlife.png');
-        ">
-      </div>
-
-    </div>
-
-
-    <div class="game-card">
-
-      <div
-        class="game-thumb"
-        style="
-          background-image:
-          url('Img/slope.png');
-        ">
-      </div>
-
-    </div>
-
-
-    <div class="game-card">
-
-      <div
-        class="game-thumb"
-        style="
-          background-image:
-          url('Img/run3.png');
-        ">
-      </div>
-
-    </div>
-
-
-    <div class="game-card">
-
-      <div
-        class="game-thumb"
-        style="
-          background-image:
-          url('Img/escroad.png');
-        ">
-      </div>
-
-    </div>
-
-
-  </div>
-
-
-  <div class="explore-more">
-
-    <a
-      class="explore-btn"
-      href="games.html">
-      ✨ Explore More
-    </a>
-
-  </div>
 
 </div>
 
 
 <!-- =====================================================
-     JAVASCRIPT
+     EXISTING SGS JAVASCRIPT
      ===================================================== -->
 
 <script>
-
 
 /* =========================================================
    TIME
@@ -2537,62 +3020,72 @@ and
 
 function updateDateTime() {
 
-  const now = new Date();
+    const now =
+        new Date();
 
-  const month =
-    now.toLocaleString(
-      'en-US',
-      {
-        month: 'long'
-      }
-    );
 
-  const day =
-    now.getDate();
+    const month =
+        now.toLocaleString(
+            'en-US',
+            {
+                month: 'long'
+            }
+        );
 
-  const year =
-    now.getFullYear();
 
-  let hours =
-    now.getHours();
+    const day =
+        now.getDate();
 
-  const minutes =
-    String(
-      now.getMinutes()
-    ).padStart(
-      2,
-      '0'
-    );
 
-  const seconds =
-    String(
-      now.getSeconds()
-    ).padStart(
-      2,
-      '0'
-    );
+    const year =
+        now.getFullYear();
 
-  const ampm =
-    hours >= 12
-      ? "PM"
-      : "AM";
 
-  hours =
-    hours % 12 || 12;
+    let hours =
+        now.getHours();
 
-  document
-    .getElementById(
-      'datetime'
-    )
-    .textContent =
-      `${month} ${day}, ${year} • ${hours}:${minutes}:${seconds} ${ampm}`;
+
+    const minutes =
+        String(
+            now.getMinutes()
+        ).padStart(
+            2,
+            '0'
+        );
+
+
+    const seconds =
+        String(
+            now.getSeconds()
+        ).padStart(
+            2,
+            '0'
+        );
+
+
+    const ampm =
+        hours >= 12
+            ? "PM"
+            : "AM";
+
+
+    hours =
+        hours % 12 || 12;
+
+
+    document
+        .getElementById(
+            'datetime'
+        )
+        .textContent =
+            `${month} ${day}, ${year} • ${hours}:${minutes}:${seconds} ${ampm}`;
 
 }
 
 
 setInterval(
-  updateDateTime,
-  1000
+    updateDateTime,
+    1000
 );
 
 updateDateTime();
@@ -2604,206 +3097,352 @@ updateDateTime();
 
 function getSiteURL() {
 
-  return window.location.href;
+    return window.location.href;
 
 }
 
 
 function createSiteWrapper(url) {
 
-  return `
+    return `
 
-    <!DOCTYPE html>
+        <!DOCTYPE html>
 
-    <html>
+        <html>
 
-    <head>
+        <head>
 
-      <meta charset="UTF-8">
+            <meta charset="UTF-8">
 
-      <title>SGS</title>
+            <title>SGS</title>
 
-      <style>
+            <style>
 
-        html,
-        body {
+                html,
+                body {
 
-          margin: 0;
+                    margin: 0;
 
-          padding: 0;
+                    padding: 0;
 
-          width: 100%;
+                    width: 100%;
 
-          height: 100%;
+                    height: 100%;
 
-          overflow: hidden;
+                    overflow: hidden;
 
-          background: #000;
+                    background: #000;
 
-        }
-
-
-        iframe {
-
-          position: fixed;
-
-          inset: 0;
-
-          width: 100vw;
-
-          height: 100vh;
-
-          border: none;
-
-          background: #000;
-
-          display: block;
-
-        }
-
-      </style>
-
-    </head>
+                }
 
 
-    <body>
+                iframe {
 
-      <iframe
-        src="${url}">
-      </iframe>
+                    position: fixed;
 
-    </body>
+                    inset: 0;
 
-    </html>
+                    width: 100vw;
 
-  `;
+                    height: 100vh;
+
+                    border: none;
+
+                    background: #000;
+
+                    display: block;
+
+                }
+
+            </style>
+
+        </head>
+
+
+        <body>
+
+            <iframe
+                src="${url}"
+            ></iframe>
+
+        </body>
+
+        </html>
+
+    `;
 
 }
 
 
 function openSiteTab() {
 
-  window.open(
-    getSiteURL(),
-    "_blank"
-  );
+    window.open(
+        getSiteURL(),
+        "_blank"
+    );
 
 }
 
 
 function openSiteABTab() {
 
-  const win =
-    window.open(
-      "about:blank",
-      "_blank"
+    const win =
+        window.open(
+            "about:blank",
+            "_blank"
+        );
+
+
+    if (!win) return;
+
+
+    win.document.open();
+
+
+    win.document.write(
+        createSiteWrapper(
+            getSiteURL()
+        )
     );
 
-  if (!win) return;
 
-  win.document.open();
-
-  win.document.write(
-    createSiteWrapper(
-      getSiteURL()
-    )
-  );
-
-  win.document.close();
+    win.document.close();
 
 }
 
 
 function openSiteBlobTab() {
 
-  const blob =
-    new Blob(
-      [
-        createSiteWrapper(
-          getSiteURL()
-        )
-      ],
-      {
-        type:
-          "text/html"
-      }
-    );
+    const blob =
+        new Blob(
+            [
+                createSiteWrapper(
+                    getSiteURL()
+                )
+            ],
+            {
+                type:
+                    "text/html"
+            }
+        );
 
-  const url =
-    URL.createObjectURL(
-      blob
-    );
 
-  window.open(
-    url,
-    "_blank"
-  );
+    const url =
+        URL.createObjectURL(
+            blob
+        );
+
+
+    window.open(
+        url,
+        "_blank"
+    );
 
 }
 
 
 function openSiteWindow() {
 
-  window.open(
-    getSiteURL(),
-    "",
-    "width=1100,height=700,resizable=yes,scrollbars=yes"
-  );
+    window.open(
+        getSiteURL(),
+        "",
+        "width=1100,height=700,resizable=yes,scrollbars=yes"
+    );
 
 }
 
 
 function openSiteABWindow() {
 
-  const win =
-    window.open(
-      "about:blank",
-      "",
-      "width=1100,height=700,resizable=yes,scrollbars=yes"
+    const win =
+        window.open(
+            "about:blank",
+            "",
+            "width=1100,height=700,resizable=yes,scrollbars=yes"
+        );
+
+
+    if (!win) return;
+
+
+    win.document.open();
+
+
+    win.document.write(
+        createSiteWrapper(
+            getSiteURL()
+        )
     );
 
-  if (!win) return;
 
-  win.document.open();
-
-  win.document.write(
-    createSiteWrapper(
-      getSiteURL()
-    )
-  );
-
-  win.document.close();
+    win.document.close();
 
 }
 
 
 function openSiteBlobWindow() {
 
-  const blob =
-    new Blob(
-      [
-        createSiteWrapper(
-          getSiteURL()
-        )
-      ],
-      {
-        type:
-          "text/html"
-      }
-    );
+    const blob =
+        new Blob(
+            [
+                createSiteWrapper(
+                    getSiteURL()
+                )
+            ],
+            {
+                type:
+                    "text/html"
+            }
+        );
 
-  const url =
-    URL.createObjectURL(
-      blob
-    );
 
-  window.open(
-    url,
-    "",
-    "width=1100,height=700,resizable=yes,scrollbars=yes"
-  );
+    const url =
+        URL.createObjectURL(
+            blob
+        );
+
+
+    window.open(
+        url,
+        "",
+        "width=1100,height=700,resizable=yes,scrollbars=yes"
+    );
 
 }
+
+</script>
+
+
+<!-- =====================================================
+     THREE.JS
+     ===================================================== -->
+
+<script
+    src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js">
+</script>
+
+
+<!-- =====================================================
+     VANTA.NET
+     ===================================================== -->
+
+<script
+    src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js">
+</script>
+
+
+<!-- =====================================================
+     INITIALIZE VANTA
+     ===================================================== -->
+
+<script>
+
+(function () {
+
+    function startVanta() {
+
+        if (
+            typeof THREE === "undefined" ||
+            typeof VANTA === "undefined" ||
+            !VANTA.NET
+        ) {
+
+            console.error(
+                "SGS: Vanta or Three.js failed to load."
+            );
+
+            return;
+        }
+
+
+        const element =
+            document.getElementById(
+                "vanta-bg"
+            );
+
+
+        if (!element) {
+
+            console.error(
+                "SGS: Vanta background element not found."
+            );
+
+            return;
+        }
+
+
+        window.SGS_VANTA =
+            VANTA.NET({
+
+                el:
+                    element,
+
+                mouseControls:
+                    true,
+
+                touchControls:
+                    true,
+
+                gyroControls:
+                    false,
+
+                minHeight:
+                    200.00,
+
+                minWidth:
+                    200.00,
+
+                scale:
+                    1.00,
+
+                scaleMobile:
+                    1.00,
+
+                color:
+                    0xff0000,
+
+                backgroundColor:
+                    0x000000,
+
+                points:
+                    10.00,
+
+                maxDistance:
+                    22.00,
+
+                spacing:
+                    18.00
+
+            });
+
+    }
+
+
+    /*
+       Wait until the page has completely loaded so that
+       Vanta never interferes with the existing SGS layout.
+    */
+
+    if (
+        document.readyState ===
+        "complete"
+    ) {
+
+        startVanta();
+
+    } else {
+
+        window.addEventListener(
+            "load",
+            startVanta,
+            {
+                once: true
+            }
+        );
+
+    }
+
+})();
 
 </script>
 
