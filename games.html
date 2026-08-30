@@ -1,6 +1,260 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script>
+(function () {
+    "use strict";
+
+    /* ============================================================
+       DOMAIN PROTECTION
+       ============================================================ */
+    const allowedOrigin = "https://retropixel101.github.io";
+    const allowedPath = "/SGS/";
+
+    const isAllowed =
+        window.location.origin === allowedOrigin &&
+        window.location.pathname.startsWith(allowedPath);
+
+    /* ============================================================
+       CONSOLE GUARD – detect devtools opening
+       ============================================================ */
+    let consoleOpen = false;
+    let originalContent = null;
+    let restoreTimer = null;
+    const CHECK_INTERVAL = 380;
+
+    // Helper: get current document HTML (including doctype)
+    function getFullHTML() {
+        return new XMLSerializer().serializeToString(document);
+    }
+
+    // Wipe everything inside <html> (keep <head> alive to preserve style)
+    function wipePage() {
+        if (originalContent === null) {
+            originalContent = getFullHTML();
+        }
+
+        const htmlEl = document.documentElement;
+        while (htmlEl.firstChild) {
+            if (htmlEl.firstChild.tagName === 'HEAD') {
+                const head = htmlEl.firstChild;
+                while (head.firstChild) {
+                    head.removeChild(head.firstChild);
+                }
+                const style = document.createElement('style');
+                style.textContent = `
+                    * { margin:0; padding:0; box-sizing:border-box; }
+                    html, body { width:100%; min-height:100%; background:#0a0a0a; display:flex; align-items:center; justify-content:center; font-family:'Segoe UI',Arial,sans-serif; }
+                    .console-msg { color:#ff4444; font-size:1.8rem; text-align:center; padding:2rem; border:2px solid #ff0000; border-radius:12px; background:#111; box-shadow:0 0 30px #ff000088; max-width:90%; }
+                    .console-msg small { display:block; margin-top:1rem; font-size:1rem; color:#888; }
+                `;
+                head.appendChild(style);
+            } else {
+                htmlEl.removeChild(htmlEl.firstChild);
+            }
+        }
+
+        let body = document.body;
+        if (!body) {
+            body = document.createElement('body');
+            document.documentElement.appendChild(body);
+        }
+        while (body.firstChild) {
+            body.removeChild(body.firstChild);
+        }
+        const wrapper = document.createElement('div');
+        wrapper.className = 'console-msg';
+        wrapper.innerHTML = `
+            <div>🛡️ CONSOLE DETECTED</div>
+            <small>close devtools to restore SGS</small>
+        `;
+        body.appendChild(wrapper);
+
+        const title = document.querySelector('title');
+        if (title) title.textContent = '🔒 SGS · console lock';
+    }
+
+    // Restore the page to its original state
+    function restorePage() {
+        if (originalContent === null) return;
+
+        try {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(originalContent, 'text/html');
+            const newHtml = doc.documentElement;
+
+            const currentHtml = document.documentElement;
+            while (currentHtml.firstChild) {
+                currentHtml.removeChild(currentHtml.firstChild);
+            }
+            while (newHtml.firstChild) {
+                currentHtml.appendChild(newHtml.firstChild.cloneNode(true));
+            }
+
+            originalContent = null;
+            consoleOpen = false;
+
+            if (window._consoleGuardInterval) {
+                clearInterval(window._consoleGuardInterval);
+                window._consoleGuardInterval = null;
+            }
+            startConsoleGuard();
+
+        } catch (e) {
+            window.location.reload();
+        }
+    }
+
+    // Detect if console is open using multiple techniques
+    function isConsoleOpen() {
+        // Technique 1: element offset trick (Firebug / devtools)
+        let dummy = document.getElementById('__sgs_console_dummy');
+        if (!dummy) {
+            dummy = document.createElement('div');
+            dummy.id = '__sgs_console_dummy';
+            dummy.style.cssText = 'position:fixed; bottom:0; left:0; width:10px; height:10px; z-index:-9999; opacity:0; pointer-events:none;';
+            document.body.appendChild(dummy);
+        }
+
+        // Check if devtools is open via element dimensions (common)
+        // We use a more robust check: if the element's offsetParent is null or
+        // if its dimensions are altered.
+        let detected = false;
+
+        // Method A: check if offsetParent is null (often means devtools is open)
+        // But this can be unreliable. We'll combine with other checks.
+        // Method B: check for Firebug / devtools using console.log timing
+        // We'll use a hybrid: check if console.log is defined and if the
+        // devtools is open via the element trick.
+
+        // Classic method: compare time between two Date objects
+        // But we use a simpler method: check if the element's offsetHeight is 0
+        // or if the element is not visible.
+        if (dummy) {
+            const rect = dummy.getBoundingClientRect();
+            // If the element is not visible or has 0 dimensions, it might be hidden by devtools?
+            // Actually we just want to know if devtools is open.
+            // We use the "debugger" statement trick? That would pause execution.
+            // We'll use the most reliable cross-browser method: check if the
+            // console is open by checking the size of the window vs available screen.
+            // But that can be faked.
+
+            // We'll use the "element offset" trick:
+            // In Firebug and some devtools, the offsetParent of a fixed element
+            // can be null when devtools is open.
+            // We also check if the element's offsetHeight is 0.
+            // We'll combine this with a time-based check.
+            if (dummy.offsetParent === null || dummy.offsetHeight === 0) {
+                detected = true;
+            }
+        }
+
+        // Technique 2: check window.outerHeight vs window.innerHeight
+        // If devtools is open, outerHeight - innerHeight > some threshold
+        // This is reliable for most browsers.
+        if (!detected) {
+            const threshold = 120;
+            const diff = window.outerHeight - window.innerHeight;
+            if (diff > threshold) {
+                detected = true;
+            }
+        }
+
+        // Technique 3: check for Firebug / devtools via console.log
+        // We'll also check if the console is open by using a time-based
+        // approach: if console.log takes longer than usual, devtools is open.
+        // But this is not reliable.
+
+        return detected;
+    }
+
+    // Main guard: check console state and act
+    function consoleGuard() {
+        const open = isConsoleOpen();
+
+        if (open && !consoleOpen) {
+            // Console just opened -> wipe page
+            consoleOpen = true;
+            wipePage();
+        } else if (!open && consoleOpen) {
+            // Console just closed -> restore page
+            consoleOpen = false;
+            restorePage();
+        }
+    }
+
+    // Start the console guard interval
+    function startConsoleGuard() {
+        if (window._consoleGuardInterval) {
+            clearInterval(window._consoleGuardInterval);
+        }
+        window._consoleGuardInterval = setInterval(consoleGuard, CHECK_INTERVAL);
+    }
+
+    /* ============================================================
+       INITIALIZATION
+       ============================================================ */
+
+    // If unauthorized, show the block page and stop everything
+    if (!isAllowed) {
+        document.documentElement.innerHTML = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SGS • Unauthorized</title>
+<style>
+* { box-sizing: border-box; }
+html, body { margin:0; padding:0; min-height:100%; }
+body { background:#0a0a0a; color:#fff; font-family:'Segoe UI',Arial,sans-serif; overflow-x:hidden; }
+.topbar { min-height:58px; display:flex; align-items:center; justify-content:center; padding:12px 20px; background:linear-gradient(90deg,#ff0000,#660000); box-shadow:0 0 20px #ff0000; }
+.logo { font-size:1.5em; font-weight:bold; color:#fff; text-shadow:0 0 10px #ff0000; }
+.main { min-height:calc(100vh - 58px); display:flex; align-items:center; justify-content:center; padding:40px 20px; position:relative; overflow:hidden; }
+.glow { position:absolute; width:min(700px,90vw); height:500px; left:50%; top:50%; transform:translate(-50%,-50%); background:radial-gradient(ellipse,rgba(255,0,0,0.18),transparent 68%); filter:blur(14px); pointer-events:none; animation:pulse 4s ease-in-out infinite; }
+.card { position:relative; z-index:1; width:min(650px,92vw); padding:42px 35px; text-align:center; background:#111; border:2px solid #ff0000; border-radius:16px; box-shadow:0 0 25px #ff0000, inset 0 0 25px rgba(255,0,0,0.08); animation:cardIn .7s ease both; }
+.badge { display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:7px 13px; border:1px solid #660000; border-radius:999px; background:rgba(20,0,0,.75); color:#ff7777; font-size:.76em; font-weight:800; letter-spacing:1.8px; box-shadow:0 0 16px rgba(255,0,0,.28); margin-bottom:20px; }
+.dot { width:7px; height:7px; border-radius:50%; background:#ff2222; box-shadow:0 0 10px #ff0000; animation:blink 1.5s ease-in-out infinite; }
+h1 { margin:0; font-size:clamp(2em,5vw,3.2em); color:#ff0000; text-shadow:0 0 18px #ff0000, 0 0 35px rgba(255,0,0,.4); }
+p { margin:20px auto 0; max-width:520px; color:#ccc; font-size:1.08em; line-height:1.7; }
+p strong { color:#fff; text-shadow:0 0 8px rgba(255,0,0,.5); }
+.home-btn { display:inline-block; margin-top:30px; padding:14px 32px; background:#111; border:2px solid #ff0000; border-radius:10px; color:#fff; font-size:1.05em; font-weight:600; text-decoration:none; box-shadow:0 0 15px #ff0000; transition:.3s ease; }
+.home-btn:hover { background:#330000; box-shadow:0 0 25px #ff3333; transform:scale(1.05); }
+@keyframes pulse { 0%,100% { opacity:.65; transform:translate(-50%,-50%) scale(.96); } 50% { opacity:1; transform:translate(-50%,-50%) scale(1.04); } }
+@keyframes blink { 0%,100% { opacity:1; } 50% { opacity:.35; } }
+@keyframes cardIn { from { opacity:0; transform:translateY(15px) scale(.98); } to { opacity:1; transform:translateY(0) scale(1); } }
+img,video,iframe { max-width:100%; }
+body { min-width:0; }
+@media (max-width:1200px) { .topbar { min-height:54px; padding:10px 16px; } .main { min-height:calc(100vh - 54px); padding:clamp(25px,5vw,45px) clamp(14px,3vw,28px); } .card { width:min(650px,94vw); } }
+@media (max-width:900px) { .topbar { padding:9px 12px; } .logo { font-size:1.3em; } .main { padding:30px clamp(12px,4vw,25px); } .card { padding:36px 28px; } }
+@media (max-width:600px) { .topbar { padding:9px 8px; } .logo { font-size:1.2em; } .main { min-height:calc(100vh - 50px); padding:25px 12px; } .card { width:calc(100vw - 24px); padding:30px 20px; border-radius:13px; } .badge { font-size:.65em; padding:6px 10px; } h1 { font-size:clamp(1.8rem,10vw,2.5rem); } p { font-size:.92rem; line-height:1.55; } .home-btn { width:100%; padding:13px 15px; font-size:.95em; } }
+@media (max-width:420px) { .topbar { padding:8px; } .logo { font-size:1.1em; } .main { padding:20px 10px; } .card { width:calc(100vw - 20px); padding:26px 16px; } h1 { font-size:1.8em; } p { font-size:.88em; } }
+@media (max-height:700px) and (min-width:601px) { .main { padding-top:25px; padding-bottom:25px; } .card { padding:28px 30px; } .badge { margin-bottom:12px; } p { margin-top:12px; } .home-btn { margin-top:20px; } }
+@media (hover:none) { .home-btn:hover { transform:none; background:#111; box-shadow:0 0 15px #ff0000; } }
+</style>
+</head>
+<body>
+<div class="topbar"><div class="logo">Secret Game Site</div></div>
+<div class="main">
+    <div class="glow"></div>
+    <div class="card">
+        <div class="badge"><span class="dot"></span> UNAUTHORIZED</div>
+        <h1>Uh Oh!</h1>
+        <p>You aren't supposed to be here.<br>This page is only available through <strong>SGS</strong>.<br><br>Please return to the home page.</p>
+        <a class="home-btn" href="https://retropixel101.github.io/SGS/">← Back to Home</a>
+    </div>
+</div>
+</body>
+</html>
+`;
+        throw new Error("SGS: Unauthorized origin.");
+    }
+
+    // If authorized, start the console guard
+    startConsoleGuard();
+
+})();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SGS • Games</title>
