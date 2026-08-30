@@ -4703,12 +4703,10 @@ function blocked() {
    GAME PLAYER + NOTES
    ========================================================= */
 
-const NOTES_STATE_STORAGE =
-  "sgsNotesState_v2";
+const NOTES_STATE_STORAGE_PREFIX = "sgsNotesState:";
+const NOTES_CONTENT_STORAGE_PREFIX = "sgsNoteContent:";
 
-const NOTES_CONTENT_STORAGE_PREFIX =
-  "sgsNoteContent_v2:";
-
+let currentNotesGameKey = "";
 let notesState;
 
 
@@ -4774,6 +4772,7 @@ function loadNotesState() {
 
 function saveNotesState() {
   if (!notesState) return;
+
   localStorage.setItem(
     getNotesStateStorageKey(),
     JSON.stringify(notesState)
@@ -4781,8 +4780,18 @@ function saveNotesState() {
 }
 
 
-notesState = loadNotesState();
 
+function getNotesGameKey() {
+  /*
+   * Each game is identified by its embed URL. This keeps every game's
+   * notebook completely separate.
+   */
+  return currentGameURL || "sgs-home";
+}
+
+function getNotesStateStorageKey() {
+  return NOTES_STATE_STORAGE_PREFIX + encodeURIComponent(getNotesGameKey());
+}
 
 function getActiveNote() {
 
