@@ -1919,7 +1919,10 @@ and (max-height: 700px) {
 
 .note-tabs {
   overflow-x: auto;
-  padding-bottom: 2px;
+  overflow-y: visible;
+  padding: 3px 4px 5px;
+  margin: -3px -4px -5px;
+  scrollbar-width: thin;
 }
 
 .note-tab {
@@ -1942,6 +1945,7 @@ and (max-height: 700px) {
   border-color: #ff2222;
   background: #390000;
   color: #fff;
+  box-shadow: 0 0 5px rgba(255,0,0,.28);
 }
 
 #note-title,
@@ -3752,31 +3756,7 @@ and
       placeholder="Write notes here..."
       aria-label="Note contents"
     ></textarea>
-
-
-    <div class="note-editor-actions">
-
-      <button
-        class="note-action"
-        type="button"
-        onclick="renameActiveNoteTab()"
-      >
-        Rename
-      </button>
-
-
-      <button
-        class="note-action"
-        type="button"
-        onclick="saveActiveNoteTab()"
-      >
-        Save
-      </button>
-
-    </div>
-
-
-    <p class="notes-status">
+<p class="notes-status">
       Saved in this browser.
     </p>
 
@@ -4895,33 +4875,6 @@ function saveActiveNoteTab(showStatus = true) {
 }
 
 
-function renameActiveNoteTab() {
-
-  const activeNote =
-    getActiveNote();
-
-  if (!activeNote) {
-    return;
-  }
-
-  activeNote.title =
-    noteTitle.value.trim() ||
-    `Note ${
-      notesState.tabs.indexOf(activeNote) +
-      1
-    }`;
-
-  saveNotesState();
-
-  renderNoteTabs();
-
-  setNotesStatus(
-    "Tab renamed."
-  );
-
-}
-
-
 function createNoteTab() {
 
   saveActiveNoteTab(false);
@@ -5048,16 +5001,35 @@ function toggleNotesDrawer(open) {
 
 }
 
-[gameNotes, noteTitle].forEach(field => {
-  field.addEventListener("input", () => {
-    saveActiveNoteTab(false);
-    setNotesStatus("Saving...");
-    clearTimeout(window.__sgsNoteSaveTimer);
-    window.__sgsNoteSaveTimer = setTimeout(() => {
-      saveActiveNoteTab(false);
-      setNotesStatus("Saved in this browser.");
-    }, 250);
-  });
+gameNotes.addEventListener("input", () => {
+  /* Save note contents immediately on every edit. */
+  saveActiveNoteTab(false);
+  setNotesStatus("Saved in this browser.");
+});
+
+noteTitle.addEventListener("input", () => {
+  const activeNote = getActiveNote();
+
+  if (!activeNote) {
+    return;
+  }
+
+  /* Rename the tab live, one character at a time. */
+  activeNote.title =
+    noteTitle.value.trim() ||
+    `Note ${notesState.tabs.indexOf(activeNote) + 1}`;
+
+  saveNotesState();
+  renderNoteTabs();
+
+  /* Keep the cursor in the name field after re-rendering the tab strip. */
+  noteTitle.focus();
+  noteTitle.setSelectionRange(
+    noteTitle.value.length,
+    noteTitle.value.length
+  );
+
+  setNotesStatus("Saved in this browser.");
 });
 
 
