@@ -634,14 +634,15 @@ body {
   background: #000;
 }
 
+/* Player footer - simplified with just game info title */
 .player-footer {
-  display: grid;
-  grid-template-rows: auto auto;
-  gap: 8px;
-  padding: 8px 14px 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 14px;
   background: linear-gradient(90deg, #250000, #111 52%, #250000);
   border-top: 1px solid #8b0000;
-  min-height: 94px;
+  min-height: 54px;
 }
 
 .game-info-title {
@@ -650,29 +651,6 @@ body {
   font-weight: 800;
   letter-spacing: .9px;
   text-align: center;
-}
-
-.player-detail-actions {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 7px;
-}
-
-.game-detail-button {
-  min-width: 0;
-  padding: 7px 10px;
-  border: 1px solid #a40000;
-  border-radius: 7px;
-  background: #111;
-  color: #fff;
-  cursor: pointer;
-  font: inherit;
-  text-align: left;
-}
-
-.game-detail-button:hover {
-  background: #3a0000;
-  box-shadow: 0 0 12px rgba(255,0,0,.55);
 }
 
 
@@ -796,7 +774,8 @@ body {
   .player-topbar { gap: 7px; padding: 6px 8px; }
   #game-player-title { display: none; }
   .player-top-actions { width: 100%; justify-content: space-between; }
-  .game-detail-button { padding: 7px; font-size: .77em; }
+  .player-footer { min-height: 44px; padding: 8px 12px; }
+  .game-info-title { font-size: .78em; }
 }
 
 @media (max-width: 420px) {
@@ -1056,26 +1035,10 @@ iframe {
       ></iframe>
     </div>
 
+    <!-- Simplified footer - just the game info title, no buttons -->
     <footer class="player-footer">
       <div id="player-game-info-title" class="game-info-title">
         Game Information
-      </div>
-      <div class="player-detail-actions">
-        <button
-          class="game-detail-button"
-          type="button"
-          onclick="showPlayerInfo('controls')"
-        >🎮 Controls</button>
-        <button
-          class="game-detail-button"
-          type="button"
-          onclick="showPlayerInfo('howToPlay')"
-        >❔ How to Play</button>
-        <button
-          class="game-detail-button side-notes-button"
-          type="button"
-          onclick="showPlayerInfo('sideNotes')"
-        >❗ Side Notes</button>
       </div>
     </footer>
 
@@ -1468,58 +1431,6 @@ function toggleGameFullscreen() {
   gameFrame.requestFullscreen().catch(error => {
     console.error("SGS: Game iframe fullscreen could not be started.", error);
   });
-}
-
-
-/* =========================================================
-   SHOW PLAYER INFO (from game player footer)
-   ========================================================= */
-
-function showPlayerInfo(type) {
-  const labels = {
-    controls: "🎮 Controls",
-    howToPlay: "❔ How to Play",
-    sideNotes: "❗ Side Notes"
-  };
-
-  const content = {
-    controls: currentGameDetails.controls || "No controls information available.",
-    howToPlay: currentGameDetails.howToPlay || "No gameplay instructions available.",
-    sideNotes: currentGameDetails.sideNotes || "No additional notes available."
-  };
-
-  // Open the info popup with the specific tab
-  const title = currentGameTitle || "Game";
-
-  // Store the data and open popup
-  currentInfoData = {
-    title: title,
-    description: currentGameDetails.description || "No description available.",
-    controls: currentGameDetails.controls || "No controls information available.",
-    howToPlay: currentGameDetails.howToPlay || "No gameplay instructions available.",
-    sideNotes: currentGameDetails.sideNotes || "No additional notes available."
-  };
-
-  currentInfoTab = type;
-
-  infoTitle.textContent = title;
-
-  // Update tab buttons
-  document.querySelectorAll(".info-tab-btn").forEach(btn => {
-    btn.classList.toggle("active", btn.dataset.tab === type);
-  });
-
-  // Update content
-  const tabLabels = {
-    controls: "🎮 Controls",
-    howToPlay: "❔ How to Play",
-    sideNotes: "❗ Side Notes"
-  };
-
-  infoCategory.textContent = tabLabels[type] || "Information";
-  infoText.textContent = content[type] || "No information available.";
-
-  infoPopup.classList.add("open");
 }
 
 
