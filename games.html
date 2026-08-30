@@ -3502,6 +3502,37 @@ and
 .games-data-error span {
   color: #aaa;
 }
+
+/* Center empty game/search results. */
+#games-grid:has(.no-games),
+#games-grid:has(.empty-games),
+#games-grid:has(.no-results) {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  min-height: 360px;
+  width: 100%;
+}
+
+#games-grid .no-games,
+#games-grid .empty-games,
+#games-grid .no-results {
+  width: 100%;
+  text-align: center;
+  margin: auto;
+}
+
+
+.games-empty-message {
+  grid-column: 1 / -1;
+  width: 100%;
+  min-height: 360px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
 </style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
@@ -4130,26 +4161,36 @@ async function loadGameData() {
     }
 
     const text = await response.text();
-    const parsedDocument = new DOMParser().parseFromString(text, "text/html");
-    const dataElement = parsedDocument.getElementById("sgs-game-data");
 
-    if (!dataElement) {
-      throw new Error("GD.html is missing the #sgs-game-data element.");
+    /*
+     * GD.html is a data-only HTML document. Read the JSON payload directly
+     * from its application/json script tag.
+     */
+    const match = text.match(
+      /<script[^>]+id=["']sgs-game-data["'][^>]*>([\s\S]*?)<\/script>/i
+    );
+
+    if (!match) {
+      throw new Error("GD.html is missing #sgs-game-data.");
     }
 
-    const data = JSON.parse(dataElement.textContent);
+    const data = JSON.parse(match[1].trim());
 
     if (!data || !Array.isArray(data.games)) {
       throw new Error("GD.html does not contain a valid games array.");
     }
 
+    games.length = 0;
     games.push(...data.games);
 
-    loadGameData();
+    renderFilters();
+    renderGames();
+
   } catch (error) {
     console.error("SGS: Failed to load GD.html.", error);
 
     const grid = document.getElementById("games-grid");
+
     if (grid) {
       grid.innerHTML = `
         <div class="games-data-error">
