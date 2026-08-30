@@ -27,7 +27,26 @@
   box-sizing: border-box;
 }
 
-html,
+html {
+  min-height: 100%;
+}
+
+#vanta-bg {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none !important;
+  overflow: hidden;
+}
+
+.navbar,
+.page {
+  position: relative;
+  z-index: 2;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -1777,13 +1796,15 @@ and (max-height: 700px) {
    ========================================================= */
 
 .game-player {
-  z-index: 12000;
+  z-index: 12000 !important;
+  pointer-events: auto;
   padding: clamp(8px, 2vw, 22px);
   background: rgba(0,0,0,.94);
 }
 
 #game-player-shell {
   width: 100%;
+  pointer-events: auto;
   height: 100%;
   min-height: 0;
   display: grid;
@@ -1796,7 +1817,7 @@ and (max-height: 700px) {
   box-shadow: 0 0 40px rgba(255,0,0,.7);
 }
 
-.player-toolbar {
+.player-topbar {
   min-height: 50px;
   display: flex;
   align-items: center;
@@ -1815,14 +1836,14 @@ and (max-height: 700px) {
   white-space: nowrap;
 }
 
-.player-actions {
+.player-top-actions {
   display: flex;
   align-items: center;
   flex: 0 0 auto;
   gap: 8px;
 }
 
-.player-actions button,
+.player-top-actions button,
 .note-action,
 .new-note-button {
   border: 1px solid #a40000;
@@ -1834,7 +1855,7 @@ and (max-height: 700px) {
   font: inherit;
 }
 
-.player-actions button:hover,
+.player-top-actions button:hover,
 .note-action:hover,
 .new-note-button:hover {
   background: #3a0000;
@@ -1852,19 +1873,6 @@ and (max-height: 700px) {
   min-height: 0;
   border: 0;
   background: #000;
-}
-
-.volume-control {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  color: #ddd;
-  font-size: .8em;
-}
-
-#game-volume {
-  width: clamp(70px, 10vw, 120px);
-  accent-color: #ff2222;
 }
 
 .notes-drawer {
@@ -1971,7 +1979,7 @@ and (max-height: 700px) {
 }
 
 @media (max-width: 700px) {
-  .player-toolbar {
+  .player-topbar {
     gap: 7px;
     padding: 7px 8px;
   }
@@ -1980,7 +1988,7 @@ and (max-height: 700px) {
     display: none;
   }
 
-  .player-actions {
+  .player-top-actions {
     width: 100%;
     justify-content: space-between;
   }
@@ -2102,45 +2110,15 @@ and (max-height: 700px) {
   grid-column: 1 / 2;
 }
 
-#volume-panel {
-  position: absolute;
-  top: 58px;
-  right: 54px;
-  z-index: 4;
-  display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: center;
-  gap: 10px;
-  justify-items: stretch;
-  min-width: 190px;
-  padding: 12px 10px;
-  background: #101010;
-  border: 1px solid #c40000;
-  border-radius: 10px;
-  box-shadow: 0 0 20px rgba(255,0,0,.45);
-  animation: volumeIn .18s ease-out;
-}
-
-#volume-panel[hidden] {
-  display: none;
-}
-
-#game-volume {
-  width: 130px;
-  height: 6px;
-  margin: 0;
-  appearance: auto;
-  accent-color: #ff2222;
-}
-
-.volume-value {
-  color: #ff8888;
-  font-size: .75em;
-  font-weight: 800;
+.notes-modal:not([hidden]) {
+  display: flex !important;
+  position: fixed !important;
+  inset: 0 !important;
 }
 
 .notes-modal {
-  z-index: 13000;
+  z-index: 13000 !important;
+  pointer-events: auto;
   padding: clamp(12px, 3vw, 42px);
   background: rgba(0,0,0,.9);
 }
@@ -2198,12 +2176,6 @@ and (max-height: 700px) {
   }
 }
 
-@keyframes volumeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-8px) scale(.94);
-  }
-
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -2219,11 +2191,6 @@ and (max-height: 700px) {
   .game-detail-button {
     padding: 7px;
     font-size: .77em;
-  }
-
-  #volume-panel {
-    right: 45px;
-    top: 52px;
   }
 }
 
@@ -3448,10 +3415,15 @@ and
 }
 
 </style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.fog.min.js"></script>
 </head>
 
 
 <body>
+
+<div id="vanta-bg" aria-hidden="true"></div>
 
 
 <!-- =====================================================
@@ -3686,110 +3658,16 @@ and
         <button
           class="player-icon-button"
           type="button"
-          onclick="toggleVolumePanel()"
-          aria-label="Volume"
-        >
-          🔊
-        </button>
-
-
-        <button
-          class="player-icon-button"
-          type="button"
           onclick="toggleNotesDrawer(true)"
           aria-label="Open notes"
         >
           📝
         </button>
 
-      </div>
-
-
-      <div
-        id="volume-panel"
-        hidden
-      >
-
-        <input
-          id="game-volume"
-          type="range"
-          min="0"
-          max="100"
-          value="100"
-          aria-label="Game volume"
-        >
-
-
-        <div
-          id="volume-value"
-          class="volume-value"
-        >
-          100%
-        </div>
-
-      </div>
-
-    </header>
+      </div></header>
 
 
     <div class="player-content">
-
-      <iframe
-        id="game-frame"
-        title="Game player"
-        allow="fullscreen"
-        allowfullscreen
-      ></iframe>
-
-
-    </div>
-
-
-    <footer class="player-footer">
-
-      <div
-        id="player-game-info-title"
-        class="game-info-title"
-      >
-        Game Information
-      </div>
-
-
-      <div class="player-detail-actions">
-
-        <button
-          class="game-detail-button"
-          type="button"
-          onclick="showPlayerInfo('controls')"
-        >
-          🎮 Controls
-        </button>
-
-
-        <button
-          class="game-detail-button"
-          type="button"
-          onclick="showPlayerInfo('howToPlay')"
-        >
-          ❔ How to Play
-        </button>
-
-
-        <button
-          class="game-detail-button side-notes-button"
-          type="button"
-          onclick="showPlayerInfo('sideNotes')"
-        >
-          ❗ Side Notes
-        </button>
-
-      </div>
-
-    </footer>
-
-  </section>
-
-</div>
 
 
 <!-- =======================================================
@@ -3901,6 +3779,65 @@ and
     <p class="notes-status">
       Saved in this browser.
     </p>
+
+  </section>
+
+</div>
+
+
+
+      <iframe
+        id="game-frame"
+        title="Game player"
+        allow="fullscreen"
+        allowfullscreen
+      ></iframe>
+
+
+    </div>
+
+
+    <footer class="player-footer">
+
+      <div
+        id="player-game-info-title"
+        class="game-info-title"
+      >
+        Game Information
+      </div>
+
+
+      <div class="player-detail-actions">
+
+        <button
+          class="game-detail-button"
+          type="button"
+          onclick="showPlayerInfo('controls')"
+        >
+          🎮 Controls
+        </button>
+
+
+        <button
+          class="game-detail-button"
+          type="button"
+          onclick="showPlayerInfo('howToPlay')"
+        >
+          ❔ How to Play
+        </button>
+
+
+        <button
+          class="game-detail-button side-notes-button"
+          type="button"
+          onclick="showPlayerInfo('sideNotes')"
+        >
+          ❗ Side Notes
+        </button>
+
+      </div>
+
+    </footer>
 
   </section>
 
@@ -4251,15 +4188,7 @@ const notesStatus =
     ".notes-status"
   );
 
-const volumeSlider =
-  document.getElementById(
-    "game-volume"
-  );
 
-const volumeValue =
-  document.getElementById(
-    "volume-value"
-  );
 
 const notesModalTitle =
   document.getElementById(
@@ -4717,8 +4646,6 @@ const NOTES_STATE_COOKIE =
 const NOTE_COOKIE_PREFIX =
   "sgs_note_";
 
-const VOLUME_COOKIE =
-  "sgs_game_volume";
 
 const MAX_NOTE_TABS =
   6;
@@ -4873,6 +4800,8 @@ function saveNotesState() {
 
 }
 
+
+notesState = loadNotesState();
 
 function getActiveNote() {
 
@@ -5104,95 +5033,34 @@ function toggleNotesDrawer(open) {
   const shouldOpen =
     typeof open === "boolean"
       ? open
-      : notesDrawer.hidden;
+      : notesDrawer.hasAttribute("hidden");
 
   if (shouldOpen) {
     renderActiveNote();
+    notesDrawer.removeAttribute("hidden");
+    notesDrawer.style.display = "flex";
+    setNotesStatus("Saved in this browser.");
   } else {
     saveActiveNoteTab(false);
-  }
-
-  notesDrawer.hidden =
-    !shouldOpen;
-
-}
-
-
-let gameVolume =
-  Number(
-    readCookie(VOLUME_COOKIE) ||
-    100
-  );
-
-if (
-  !Number.isFinite(gameVolume) ||
-  gameVolume < 0 ||
-  gameVolume > 100
-) {
-  gameVolume =
-    100;
-}
-
-
-function applyGameVolume() {
-
-  try {
-    gameFrame.contentDocument
-      ?.querySelectorAll("audio, video")
-      .forEach(media => {
-        media.volume =
-          gameVolume / 100;
-      });
-  } catch {
-    /* Some game engines do not expose their audio to the parent page. */
+    notesDrawer.setAttribute("hidden", "");
+    notesDrawer.style.display = "none";
   }
 
 }
 
-
-function toggleVolumePanel() {
-
-  const panel = document.getElementById("volume-panel");
-
-  panel.hidden = !panel.hidden;
-
-}
-
-
-function setGameVolume() {
-
-  gameVolume =
-    Number(volumeSlider.value);
-
-  writeCookie(
-    VOLUME_COOKIE,
-    String(gameVolume)
-  );
-
-  applyGameVolume();
-
-}
+[gameNotes, noteTitle].forEach(field => {
+  field.addEventListener("input", () => {
+    saveActiveNoteTab(false);
+    setNotesStatus("Saving...");
+    clearTimeout(window.__sgsNoteSaveTimer);
+    window.__sgsNoteSaveTimer = setTimeout(() => {
+      saveActiveNoteTab(false);
+      setNotesStatus("Saved in this browser.");
+    }, 250);
+  });
+});
 
 
-notesState =
-  loadNotesState();
-
-saveNotesState();
-
-renderActiveNote();
-
-volumeSlider.value =
-  String(gameVolume);
-
-volumeSlider.addEventListener(
-  "input",
-  setGameVolume
-);
-
-gameFrame.addEventListener(
-  "load",
-  applyGameVolume
-);
 
 
 function openGamePlayer(
@@ -5232,31 +5100,25 @@ function openGamePlayer(
 
 function closeGamePlayer() {
 
-  saveActiveNoteTab(false);
-
-  notesDrawer.hidden =
-    true;
-
-  if (document.fullscreenElement) {
-
-    document.exitFullscreen();
-
+  if (typeof saveActiveNoteTab === "function" && notesState) {
+    saveActiveNoteTab(false);
   }
 
+  if (notesDrawer) {
+    notesDrawer.setAttribute("hidden", "");
+    notesDrawer.style.display = "none";
+  }
 
-  gamePlayer.classList.remove(
-    "open"
-  );
+  if (document.fullscreenElement) {
+    document.exitFullscreen().catch(() => {});
+  }
 
+  gamePlayer.classList.remove("open");
 
-  gameFrame.src =
-    "about:blank";
+  gameFrame.src = "about:blank";
 
-  currentGameURL =
-    "";
-
-  currentGameTitle =
-    "";
+  currentGameURL = "";
+  currentGameTitle = "";
 
 }
 
@@ -5356,23 +5218,15 @@ function closeInfoBackdrop(event) {
 }
 
 
-document.addEventListener("click", event => {
 
-  const panel = document.getElementById("volume-panel");
-  const volumeButton = event.target.closest(
-    '.player-icon-button[aria-label="Volume"]'
-  );
 
-  if (!panel || panel.hidden || volumeButton) {
-    return;
+
+
+document.addEventListener("fullscreenchange", () => {
+  if (document.fullscreenElement) {
+    toggleNotesDrawer(false);
   }
-
-  if (!panel.contains(event.target)) {
-    panel.hidden = true;
-  }
-
 });
-
 
 /* =========================================================
    ESCAPE KEY
@@ -5406,5 +5260,52 @@ renderGames();
 
 </script>
 
+
+<script>
+(function () {
+  function initSGSVanta() {
+    if (!window.VANTA || !window.VANTA.FOG) return;
+    window.SGS_VANTA = window.VANTA.FOG({
+      el: "#vanta-bg",
+      mouseControls: true,
+      touchControls: true,
+      gyroControls: false,
+      minHeight: 200.00,
+      minWidth: 200.00,
+      highlightColor: 0x0,
+      lowlightColor: 0x5f0000,
+      baseColor: 0x0,
+      blurFactor: 0.51,
+      speed: 0.50,
+      zoom: 0.70
+    });
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initSGSVanta, { once: true });
+  } else {
+    initSGSVanta();
+  }
+})();
+</script>
 </body>
 </html>
+
+<style>
+/* SGS interaction safety layer */
+#vanta-bg,
+#vanta-bg canvas {
+  pointer-events: none !important;
+}
+
+.navbar,
+.page,
+.modal,
+#game-player-shell,
+#notes-modal-box,
+button,
+input,
+textarea,
+iframe {
+  pointer-events: auto;
+}
+</style>
