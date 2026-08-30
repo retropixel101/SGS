@@ -543,7 +543,7 @@ body {
 
 
 /* =========================================================
-   GAME PLAYER OVERLAY - NO FOOTER
+   GAME PLAYER OVERLAY WITH NOTES
    ========================================================= */
 
 .game-player {
@@ -635,6 +635,230 @@ body {
 
 
 /* =========================================================
+   NOTES MODAL
+   ========================================================= */
+
+.notes-modal:not([hidden]) {
+  display: flex !important;
+  position: fixed !important;
+  inset: 0 !important;
+}
+
+.notes-modal {
+  z-index: 13000 !important;
+  pointer-events: auto;
+  padding: clamp(12px, 3vw, 42px);
+  background: rgba(0,0,0,.9);
+  display: none;
+  position: fixed;
+  inset: 0;
+  justify-content: center;
+  align-items: center;
+}
+
+#notes-modal-box {
+  width: min(1180px, 100%);
+  height: min(820px, 100%);
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto auto auto auto minmax(0, 1fr) auto auto;
+  gap: 12px;
+  padding: clamp(14px, 2vw, 24px);
+  background: linear-gradient(180deg, #171717, #080808);
+  border: 2px solid #e00000;
+  border-radius: 14px;
+  box-shadow: 0 0 42px rgba(255,0,0,.68);
+  animation: notesModalIn .25s ease-out;
+}
+
+.notes-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+#notes-modal-title {
+  overflow: hidden;
+  margin: 0;
+  color: #fff;
+  font-size: clamp(1.15rem, 3vw, 1.6rem);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.notes-tabs-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  width: 100%;
+}
+
+.note-tabs {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  overflow-y: visible;
+  padding: 3px 4px 5px;
+  margin: -3px -4px -5px;
+  scrollbar-width: thin;
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: none;
+  white-space: nowrap;
+}
+
+.note-tab {
+  max-width: 150px;
+  overflow: hidden;
+  flex: 0 0 auto;
+  border: 1px solid #4c0000;
+  border-radius: 6px;
+  padding: 6px 8px;
+  background: #090909;
+  color: #aaa;
+  cursor: pointer;
+  font: inherit;
+  font-size: .78em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.note-tab.active {
+  border-color: #ff2222;
+  background: #390000;
+  color: #fff;
+  box-shadow: 0 0 5px rgba(255,0,0,.28);
+}
+
+.note-more-button {
+  display: none;
+  flex: 0 0 auto;
+  border: 1px solid rgba(255, 30, 30, .55);
+  background: rgba(24, 0, 0, .92);
+  color: #fff;
+  border-radius: 8px;
+  padding: 8px 11px;
+  font: inherit;
+  cursor: pointer;
+  box-shadow: 0 0 5px rgba(255,0,0,.16);
+}
+
+.note-more-button:hover {
+  border-color: #ff3030;
+  box-shadow: 0 0 8px rgba(255,0,0,.28);
+}
+
+.more-notes-menu {
+  position: absolute;
+  top: calc(100% + 7px);
+  right: 0;
+  z-index: 20;
+  min-width: 170px;
+  max-width: min(300px, 80vw);
+  max-height: 280px;
+  overflow-y: auto;
+  padding: 6px;
+  border: 1px solid rgba(255, 30, 30, .55);
+  border-radius: 10px;
+  background: rgba(12, 0, 0, .98);
+  box-shadow: 0 8px 28px rgba(0,0,0,.5);
+}
+
+.more-notes-menu button {
+  display: block;
+  width: 100%;
+  border: 0;
+  border-radius: 7px;
+  padding: 9px 10px;
+  text-align: left;
+  background: transparent;
+  color: #eee;
+  cursor: pointer;
+}
+
+.more-notes-menu button:hover,
+.more-notes-menu button.active {
+  background: #390000;
+  color: #fff;
+}
+
+.note-editor-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.note-action,
+.new-note-button {
+  border: 1px solid #a40000;
+  border-radius: 7px;
+  padding: 7px 9px;
+  background: #111;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+}
+
+.note-action:hover,
+.new-note-button:hover {
+  background: #3a0000;
+  box-shadow: 0 0 12px rgba(255,0,0,.55);
+}
+
+#note-title,
+#game-notes {
+  width: 100%;
+  border: 1px solid #5c0000;
+  border-radius: 8px;
+  padding: 10px;
+  outline: none;
+  background: #080808;
+  color: #fff;
+  font: inherit;
+  line-height: 1.45;
+  min-height: 0;
+  height: 100%;
+  max-height: none;
+  overflow-y: auto;
+  overflow-x: hidden;
+  resize: none;
+  box-sizing: border-box;
+}
+
+#game-notes {
+  min-height: 0;
+  resize: none;
+}
+
+#note-title:focus,
+#game-notes:focus {
+  border-color: #ff2222;
+  box-shadow: 0 0 12px rgba(255,0,0,.32);
+}
+
+.notes-status {
+  margin: 0;
+  color: #888;
+  font-size: .75em;
+}
+
+@keyframes notesModalIn {
+  from {
+    opacity: 0;
+    transform: scale(.93) translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+
+/* =========================================================
    ANIMATIONS
    ========================================================= */
 
@@ -716,7 +940,7 @@ body {
   .page { width: min(1500px, calc(100% - 36px)); margin: 0 auto; }
 }
 
-/* 1200px - 1400px: tabs centered, no flex-end */
+/* 1200px - 1400px: tabs centered */
 @media (max-width: 1400px) and (min-width: 901px) {
   .navbar {
     display: flex !important;
@@ -852,6 +1076,12 @@ body {
   .player-topbar { gap: 7px; padding: 6px 8px; }
   #game-player-title { display: none; }
   .player-top-actions { width: 100%; justify-content: space-between; }
+  
+  #notes-modal-box {
+    width: calc(100vw - 16px);
+    height: calc(100vh - 16px);
+    padding: 12px;
+  }
 }
 
 @media (max-width: 420px) {
@@ -1048,7 +1278,7 @@ iframe {
 
 
 <!-- =======================================================
-     GAME PLAYER - NO FOOTER
+     GAME PLAYER - WITH NOTES
      ======================================================= -->
 
 <div
@@ -1083,8 +1313,8 @@ iframe {
         <button
           class="player-icon-button"
           type="button"
-          onclick="alert('Notes feature coming soon!')"
-          aria-label="Notes"
+          onclick="toggleNotesDrawer(true)"
+          aria-label="Open notes"
         >📝</button>
       </div>
     </header>
@@ -1097,6 +1327,86 @@ iframe {
         allowfullscreen
       ></iframe>
     </div>
+
+  </section>
+
+</div>
+
+
+<!-- =======================================================
+     NOTES MODAL
+     ======================================================= -->
+
+<div
+  id="notes-modal"
+  class="notes-modal"
+  onclick="closeNotesBackdrop(event)"
+  hidden
+>
+
+  <section
+    id="notes-modal-box"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="notes-modal-title"
+    onclick="event.stopPropagation()"
+  >
+
+    <div class="notes-modal-header">
+      <h2 id="notes-modal-title">Notes</h2>
+      <button
+        class="note-action"
+        type="button"
+        onclick="toggleNotesDrawer(false)"
+      >
+        Exit notes
+      </button>
+    </div>
+
+    <div class="notes-tabs-wrap">
+      <div
+        id="note-tabs"
+        class="note-tabs"
+        role="tablist"
+        aria-label="Note tabs"
+      ></div>
+      <button class="note-more-button" type="button" onclick="toggleMoreNotes(event)" aria-label="More notes">
+        More <span aria-hidden="true">⌄</span>
+      </button>
+      <div id="more-notes-menu" class="more-notes-menu" hidden></div>
+    </div>
+
+    <div class="note-editor-actions">
+      <button
+        class="new-note-button"
+        type="button"
+        onclick="createNoteTab()"
+      >
+        + New tab
+      </button>
+      <button
+        class="note-action"
+        type="button"
+        onclick="closeActiveNoteTab()"
+      >
+        Close tab
+      </button>
+    </div>
+
+    <input
+      id="note-title"
+      type="text"
+      placeholder="Tab name"
+      aria-label="Note tab name"
+    >
+
+    <textarea
+      id="game-notes"
+      placeholder="Write notes here..."
+      aria-label="Note contents"
+    ></textarea>
+
+    <p class="notes-status">Saved in this browser.</p>
 
   </section>
 
@@ -1151,12 +1461,263 @@ let currentInfoData = {
 };
 let currentInfoTab = "description";
 
+// Notes elements
+const notesModal = document.getElementById("notes-modal");
+const notesModalTitle = document.getElementById("notes-modal-title");
+const noteTabs = document.getElementById("note-tabs");
+const noteTitle = document.getElementById("note-title");
+const gameNotes = document.getElementById("game-notes");
+const notesStatus = document.querySelector(".notes-status");
+
 
 /* =========================================================
    CATEGORIES
    ========================================================= */
 
 const categories = [];
+
+
+/* =========================================================
+   NOTES SYSTEM
+   ========================================================= */
+
+const NOTES_STATE_STORAGE_PREFIX = "sgsNotesState:";
+const NOTES_CONTENT_STORAGE_PREFIX = "sgsNoteContent:";
+
+let notesState;
+let currentNotesGameKey = "";
+
+function makeNoteId() {
+  return `note_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function getNotesGameKey() {
+  return currentGameURL || "sgs-home";
+}
+
+function getNotesStateStorageKey() {
+  return NOTES_STATE_STORAGE_PREFIX + encodeURIComponent(getNotesGameKey());
+}
+
+function noteStorageKey(id) {
+  return NOTES_CONTENT_STORAGE_PREFIX + encodeURIComponent(getNotesGameKey()) + ":" + id;
+}
+
+function createDefaultNoteState() {
+  const id = makeNoteId();
+  return {
+    activeId: id,
+    tabs: [{ id, title: "Note 1" }]
+  };
+}
+
+function loadNotesState() {
+  try {
+    const raw = localStorage.getItem(getNotesStateStorageKey());
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && Array.isArray(parsed.tabs) && parsed.tabs.length) {
+        return parsed;
+      }
+    }
+  } catch (error) {
+    console.warn("SGS: Could not load notes for this game.", error);
+  }
+  return createDefaultNoteState();
+}
+
+function saveNotesState() {
+  if (!notesState) return;
+  localStorage.setItem(getNotesStateStorageKey(), JSON.stringify(notesState));
+}
+
+function getActiveNote() {
+  return notesState.tabs.find(tab => tab.id === notesState.activeId);
+}
+
+function setNotesStatus(message) {
+  notesStatus.textContent = message;
+}
+
+function renderNoteTabs() {
+  noteTabs.innerHTML = notesState.tabs.map(tab => `
+    <button
+      class="note-tab ${tab.id === notesState.activeId ? "active" : ""}"
+      type="button"
+      role="tab"
+      aria-selected="${tab.id === notesState.activeId}"
+      data-note-id="${tab.id}"
+    >
+      ${escapeHTML(tab.title || "Untitled")}
+    </button>
+  `).join("");
+
+  noteTabs.querySelectorAll(".note-tab").forEach(button => {
+    button.addEventListener("click", () => {
+      switchNoteTab(button.dataset.noteId);
+    });
+  });
+
+  requestAnimationFrame(updateNoteTabOverflow);
+}
+
+function renderActiveNote() {
+  const activeNote = getActiveNote();
+  if (!activeNote) return;
+  noteTitle.value = activeNote.title || "Untitled";
+  gameNotes.value = localStorage.getItem(noteStorageKey(activeNote.id)) || "";
+  renderNoteTabs();
+}
+
+function saveActiveNoteTab(showStatus = true) {
+  const activeNote = getActiveNote();
+  if (!activeNote) return;
+  try {
+    localStorage.setItem(noteStorageKey(activeNote.id), gameNotes.value);
+    saveNotesState();
+  } catch (error) {
+    console.warn("SGS: Could not save note content.", error);
+  }
+  if (showStatus) {
+    setNotesStatus("Saved in this browser.");
+  }
+}
+
+function toggleMoreNotes(event) {
+  event.stopPropagation();
+  const menu = document.getElementById("more-notes-menu");
+  if (!menu) return;
+  renderMoreNotes();
+  menu.hidden = !menu.hidden;
+}
+
+function renderMoreNotes() {
+  const menu = document.getElementById("more-notes-menu");
+  if (!menu) return;
+  menu.innerHTML = "";
+  notesState.tabs.forEach(tab => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = tab.title || "Untitled";
+    if (tab.id === notesState.activeId) {
+      button.classList.add("active");
+    }
+    button.addEventListener("click", () => {
+      switchNoteTab(tab.id);
+      menu.hidden = true;
+    });
+    menu.appendChild(button);
+  });
+}
+
+function updateNoteTabOverflow() {
+  const tabsEl = document.getElementById("note-tabs");
+  const moreButton = document.querySelector(".note-more-button");
+  if (!tabsEl || !moreButton) return;
+  const buttons = Array.from(tabsEl.querySelectorAll(".note-tab"));
+  buttons.forEach(button => { button.style.display = "block"; });
+  let fits = true;
+  while (buttons.length && tabsEl.scrollWidth > tabsEl.clientWidth + 1) {
+    const visible = buttons.filter(button => button.style.display !== "none");
+    if (visible.length <= 1) break;
+    const last = visible[visible.length - 1];
+    last.style.display = "none";
+    fits = false;
+  }
+  moreButton.style.display = fits && notesState.tabs.length <= buttons.length ? "none" : "block";
+  renderMoreNotes();
+}
+
+function createNoteTab() {
+  saveActiveNoteTab(false);
+  const id = makeNoteId();
+  notesState.tabs.push({ id, title: `Note ${notesState.tabs.length + 1}` });
+  notesState.activeId = id;
+  saveNotesState();
+  renderActiveNote();
+  noteTitle.focus();
+  setNotesStatus("New tab ready.");
+}
+
+function switchNoteTab(id) {
+  if (!notesState.tabs.some(tab => tab.id === id)) return;
+  saveActiveNoteTab(false);
+  notesState.activeId = id;
+  saveNotesState();
+  renderActiveNote();
+}
+
+function closeActiveNoteTab() {
+  const index = notesState.tabs.findIndex(tab => tab.id === notesState.activeId);
+  if (index < 0) return;
+  const closedNote = notesState.tabs[index];
+  localStorage.removeItem(noteStorageKey(closedNote.id));
+  if (notesState.tabs.length === 1) {
+    notesState.tabs[0] = { id: makeNoteId(), title: "Note 1" };
+  } else {
+    notesState.tabs.splice(index, 1);
+  }
+  notesState.activeId = notesState.tabs[Math.min(index, notesState.tabs.length - 1)].id;
+  saveNotesState();
+  renderActiveNote();
+  setNotesStatus("Tab closed.");
+}
+
+function toggleNotesDrawer(open) {
+  const shouldOpen = typeof open === "boolean" ? open : notesModal.hasAttribute("hidden");
+  if (shouldOpen) {
+    notesModalTitle.textContent = currentGameTitle || "Notes";
+    renderActiveNote();
+    notesModal.removeAttribute("hidden");
+    notesModal.style.display = "flex";
+    requestAnimationFrame(updateNoteTabOverflow);
+    setNotesStatus("Saved in this browser.");
+    return;
+  }
+  try {
+    saveActiveNoteTab(false);
+  } finally {
+    notesModal.setAttribute("hidden", "");
+    notesModal.style.display = "none";
+    const menu = document.getElementById("more-notes-menu");
+    if (menu) menu.hidden = true;
+  }
+}
+
+function closeNotesBackdrop(event) {
+  if (event.target === notesModal) {
+    toggleNotesDrawer(false);
+  }
+}
+
+// Notes event listeners
+gameNotes.addEventListener("input", () => {
+  saveActiveNoteTab(false);
+  setNotesStatus("Saved in this browser.");
+});
+
+noteTitle.addEventListener("input", () => {
+  const activeNote = getActiveNote();
+  if (!activeNote) return;
+  activeNote.title = noteTitle.value || `Note ${notesState.tabs.indexOf(activeNote) + 1}`;
+  saveNotesState();
+  const activeTab = noteTabs.querySelector(`[data-note-id="${activeNote.id}"]`);
+  if (activeTab) {
+    activeTab.textContent = activeNote.title || "Untitled";
+  }
+  updateNoteTabOverflow();
+  setNotesStatus("Saved in this browser.");
+});
+
+document.addEventListener("click", event => {
+  const menu = document.getElementById("more-notes-menu");
+  const button = document.querySelector(".note-more-button");
+  if (menu && !menu.hidden && !menu.contains(event.target) && event.target !== button) {
+    menu.hidden = true;
+  }
+});
+
+window.addEventListener("resize", updateNoteTabOverflow);
 
 
 /* =========================================================
@@ -1458,6 +2019,10 @@ function openGamePlayer(url, title, controls, howToPlay, sideNotes, description)
     sideNotes: sideNotes || ""
   };
 
+  // Initialize notes for this game
+  currentNotesGameKey = url;
+  notesState = loadNotesState();
+
   gamePlayerTitle.textContent = title;
   gameFrame.src = url;
   gamePlayer.classList.add("open");
@@ -1465,6 +2030,21 @@ function openGamePlayer(url, title, controls, howToPlay, sideNotes, description)
 
 
 function closeGamePlayer() {
+  if (typeof saveActiveNoteTab === "function" && notesState) {
+    saveActiveNoteTab(false);
+  }
+
+  if (notesModal) {
+    notesModal.setAttribute("hidden", "");
+    notesModal.style.display = "none";
+    const menu = document.getElementById("more-notes-menu");
+    if (menu) menu.hidden = true;
+  }
+
+  if (document.fullscreenElement) {
+    document.exitFullscreen().catch(() => {});
+  }
+
   gamePlayer.classList.remove("open");
   gameFrame.src = "about:blank";
   currentGameURL = "";
@@ -1539,6 +2119,7 @@ document.addEventListener("keydown", event => {
   if (event.key === "Escape") {
     closeGamePlayer();
     closeInfoPopup();
+    toggleNotesDrawer(false);
   }
 });
 
