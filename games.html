@@ -1,288 +1,1170 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
- <script>
+<script>
 (function () {
-    "use strict";
 
-    /* ============================================================
-       DOMAIN PROTECTION
-       ============================================================ */
+    /* =====================================================
+       SGS DOMAIN PROTECTION
+       ===================================================== */
+
     const allowedOrigin = "https://retropixel101.github.io";
     const allowedPath = "/SGS/";
 
-    const isAllowed =
+    const allowed =
         window.location.origin === allowedOrigin &&
         window.location.pathname.startsWith(allowedPath);
 
-    /* ============================================================
-       CONSOLE GUARD – detect devtools opening/closing
-       ============================================================ */
-    let consoleOpen = false;
-    let storedHTML = null;
-    let guardInterval = null;
-    const CHECK_INTERVAL = 400;
+    /* =====================================================
+       BLOCK COPIED / UNAUTHORIZED VERSIONS
+       ===================================================== */
 
-    // Save the current page HTML (including doctype)
-    function savePageHTML() {
-        return new XMLSerializer().serializeToString(document);
-    }
+    if (!allowed) {
 
-    // Show the "console not allowed" overlay
-    function showConsoleBlock() {
-        if (storedHTML === null) {
-            storedHTML = savePageHTML();
-        }
-
-        // Clear everything inside <html> but keep <head> for styles
-        const html = document.documentElement;
-        while (html.firstChild) {
-            if (html.firstChild.tagName === 'HEAD') {
-                const head = html.firstChild;
-                // Clear head but keep it
-                while (head.firstChild) {
-                    head.removeChild(head.firstChild);
-                }
-                // Add our styles
-                const style = document.createElement('style');
-                style.textContent = `
-                    * { margin:0; padding:0; box-sizing:border-box; }
-                    html, body { 
-                        width:100%; 
-                        min-height:100%; 
-                        background:#0a0a0a; 
-                        display:flex; 
-                        align-items:center; 
-                        justify-content:center; 
-                        font-family:'Segoe UI',Arial,sans-serif;
-                    }
-                    .block-overlay {
-                        background:#111;
-                        border:3px solid #ff0000;
-                        border-radius:16px;
-                        padding:3rem 2.5rem;
-                        max-width:90%;
-                        width:500px;
-                        text-align:center;
-                        box-shadow:0 0 50px #ff000066, inset 0 0 30px rgba(255,0,0,0.1);
-                        animation:fadeIn 0.5s ease;
-                    }
-                    .block-overlay .icon {
-                        font-size:4rem;
-                        margin-bottom:0.5rem;
-                    }
-                    .block-overlay h1 {
-                        color:#ff2222;
-                        font-size:2rem;
-                        margin:0.5rem 0;
-                        text-shadow:0 0 20px #ff000088;
-                    }
-                    .block-overlay p {
-                        color:#ccc;
-                        font-size:1.1rem;
-                        line-height:1.6;
-                        margin:1rem 0 0.5rem;
-                    }
-                    .block-overlay .small {
-                        color:#666;
-                        font-size:0.85rem;
-                        margin-top:1.5rem;
-                        border-top:1px solid #333;
-                        padding-top:1rem;
-                    }
-                    @keyframes fadeIn {
-                        from { opacity:0; transform:scale(0.95); }
-                        to { opacity:1; transform:scale(1); }
-                    }
-                `;
-                head.appendChild(style);
-            } else {
-                html.removeChild(html.firstChild);
-            }
-        }
-
-        // Ensure body exists and add the overlay
-        let body = document.body;
-        if (!body) {
-            body = document.createElement('body');
-            document.documentElement.appendChild(body);
-        }
-        // Clear body
-        while (body.firstChild) {
-            body.removeChild(body.firstChild);
-        }
-
-        const overlay = document.createElement('div');
-        overlay.className = 'block-overlay';
-        overlay.innerHTML = `
-            <div class="icon">🛡️</div>
-            <h1>Console Not Allowed</h1>
-            <p>Developer tools are disabled on this page.<br>Please close the console to continue.</p>
-            <div class="small">🔒 SGS Protection Active</div>
-        `;
-        body.appendChild(overlay);
-
-        // Update title
-        const title = document.querySelector('title');
-        if (title) title.textContent = '🔒 Console Blocked';
-    }
-
-    // Restore the page to its original state
-    function restorePage() {
-        if (storedHTML === null) return;
-
-        try {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(storedHTML, 'text/html');
-            const newHtml = doc.documentElement;
-
-            const currentHtml = document.documentElement;
-            while (currentHtml.firstChild) {
-                currentHtml.removeChild(currentHtml.firstChild);
-            }
-            while (newHtml.firstChild) {
-                currentHtml.appendChild(newHtml.firstChild.cloneNode(true));
-            }
-
-            storedHTML = null;
-            consoleOpen = false;
-
-            // Restart the guard if it was stopped
-            if (guardInterval) {
-                clearInterval(guardInterval);
-                guardInterval = null;
-            }
-            startGuard();
-
-        } catch (e) {
-            // Fallback: reload the page
-            window.location.reload();
-        }
-    }
-
-    // Detect if console is open using multiple methods
-    function detectConsole() {
-        // Method 1: Check window size difference (most reliable)
-        const heightDiff = window.outerHeight - window.innerHeight;
-        const widthDiff = window.outerWidth - window.innerWidth;
-        if (heightDiff > 100 || widthDiff > 100) {
-            return true;
-        }
-
-        // Method 2: Check for devtools element trick (Firebug / older browsers)
-        let dummy = document.getElementById('__sgs_console_dummy');
-        if (!dummy) {
-            dummy = document.createElement('div');
-            dummy.id = '__sgs_console_dummy';
-            dummy.style.cssText = 'position:fixed;bottom:0;left:0;width:10px;height:10px;z-index:-9999;opacity:0;pointer-events:none;';
-            document.body.appendChild(dummy);
-        }
-
-        // If element is not visible or offsetParent is null, console might be open
-        if (dummy.offsetParent === null || dummy.offsetHeight === 0) {
-            return true;
-        }
-
-        // Method 3: Check if console.log is being intercepted (debugger statement)
-        // We'll use a simple time-based check
-        try {
-            const start = performance.now();
-            // eslint-disable-next-line no-debugger
-            debugger;
-            const end = performance.now();
-            // If debugger pauses, it's open, but this is unreliable
-            // We'll skip this as it's too intrusive
-        } catch (e) {
-            // Ignore
-        }
-
-        return false;
-    }
-
-    // Main guard function
-    function consoleGuard() {
-        const isOpen = detectConsole();
-
-        if (isOpen && !consoleOpen) {
-            // Console just opened
-            consoleOpen = true;
-            showConsoleBlock();
-        } else if (!isOpen && consoleOpen) {
-            // Console just closed
-            consoleOpen = false;
-            restorePage();
-        }
-    }
-
-    // Start the guard interval
-    function startGuard() {
-        if (guardInterval) {
-            clearInterval(guardInterval);
-        }
-        guardInterval = setInterval(consoleGuard, CHECK_INTERVAL);
-    }
-
-    /* ============================================================
-       INITIALIZATION
-       ============================================================ */
-
-    // If unauthorized, show block page and stop everything
-    if (!isAllowed) {
         document.documentElement.innerHTML = `
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>SGS • Unauthorized</title>
+
 <style>
-* { box-sizing: border-box; }
-html, body { margin:0; padding:0; min-height:100%; }
-body { background:#0a0a0a; color:#fff; font-family:'Segoe UI',Arial,sans-serif; overflow-x:hidden; }
-.topbar { min-height:58px; display:flex; align-items:center; justify-content:center; padding:12px 20px; background:linear-gradient(90deg,#ff0000,#660000); box-shadow:0 0 20px #ff0000; }
-.logo { font-size:1.5em; font-weight:bold; color:#fff; text-shadow:0 0 10px #ff0000; }
-.main { min-height:calc(100vh - 58px); display:flex; align-items:center; justify-content:center; padding:40px 20px; position:relative; overflow:hidden; }
-.glow { position:absolute; width:min(700px,90vw); height:500px; left:50%; top:50%; transform:translate(-50%,-50%); background:radial-gradient(ellipse,rgba(255,0,0,0.18),transparent 68%); filter:blur(14px); pointer-events:none; animation:pulse 4s ease-in-out infinite; }
-.card { position:relative; z-index:1; width:min(650px,92vw); padding:42px 35px; text-align:center; background:#111; border:2px solid #ff0000; border-radius:16px; box-shadow:0 0 25px #ff0000, inset 0 0 25px rgba(255,0,0,0.08); animation:cardIn .7s ease both; }
-.badge { display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:7px 13px; border:1px solid #660000; border-radius:999px; background:rgba(20,0,0,.75); color:#ff7777; font-size:.76em; font-weight:800; letter-spacing:1.8px; box-shadow:0 0 16px rgba(255,0,0,.28); margin-bottom:20px; }
-.dot { width:7px; height:7px; border-radius:50%; background:#ff2222; box-shadow:0 0 10px #ff0000; animation:blink 1.5s ease-in-out infinite; }
-h1 { margin:0; font-size:clamp(2em,5vw,3.2em); color:#ff0000; text-shadow:0 0 18px #ff0000, 0 0 35px rgba(255,0,0,.4); }
-p { margin:20px auto 0; max-width:520px; color:#ccc; font-size:1.08em; line-height:1.7; }
-p strong { color:#fff; text-shadow:0 0 8px rgba(255,0,0,.5); }
-.home-btn { display:inline-block; margin-top:30px; padding:14px 32px; background:#111; border:2px solid #ff0000; border-radius:10px; color:#fff; font-size:1.05em; font-weight:600; text-decoration:none; box-shadow:0 0 15px #ff0000; transition:.3s ease; }
-.home-btn:hover { background:#330000; box-shadow:0 0 25px #ff3333; transform:scale(1.05); }
-@keyframes pulse { 0%,100% { opacity:.65; transform:translate(-50%,-50%) scale(.96); } 50% { opacity:1; transform:translate(-50%,-50%) scale(1.04); } }
-@keyframes blink { 0%,100% { opacity:1; } 50% { opacity:.35; } }
-@keyframes cardIn { from { opacity:0; transform:translateY(15px) scale(.98); } to { opacity:1; transform:translateY(0) scale(1); } }
-img,video,iframe { max-width:100%; }
-body { min-width:0; }
-@media (max-width:1200px) { .topbar { min-height:54px; padding:10px 16px; } .main { min-height:calc(100vh - 54px); padding:clamp(25px,5vw,45px) clamp(14px,3vw,28px); } .card { width:min(650px,94vw); } }
-@media (max-width:900px) { .topbar { padding:9px 12px; } .logo { font-size:1.3em; } .main { padding:30px clamp(12px,4vw,25px); } .card { padding:36px 28px; } }
-@media (max-width:600px) { .topbar { padding:9px 8px; } .logo { font-size:1.2em; } .main { min-height:calc(100vh - 50px); padding:25px 12px; } .card { width:calc(100vw - 24px); padding:30px 20px; border-radius:13px; } .badge { font-size:.65em; padding:6px 10px; } h1 { font-size:clamp(1.8rem,10vw,2.5rem); } p { font-size:.92rem; line-height:1.55; } .home-btn { width:100%; padding:13px 15px; font-size:.95em; } }
-@media (max-width:420px) { .topbar { padding:8px; } .logo { font-size:1.1em; } .main { padding:20px 10px; } .card { width:calc(100vw - 20px); padding:26px 16px; } h1 { font-size:1.8em; } p { font-size:.88em; } }
-@media (max-height:700px) and (min-width:601px) { .main { padding-top:25px; padding-bottom:25px; } .card { padding:28px 30px; } .badge { margin-bottom:12px; } p { margin-top:12px; } .home-btn { margin-top:20px; } }
-@media (hover:none) { .home-btn:hover { transform:none; background:#111; box-shadow:0 0 15px #ff0000; } }
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+}
+
+body {
+    background: #0a0a0a;
+    color: #fff;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    overflow-x: hidden;
+}
+
+/* =========================
+   TOPBAR
+========================= */
+
+.topbar {
+    min-height: 58px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 12px 20px;
+
+    background: linear-gradient(
+        90deg,
+        #ff0000,
+        #660000
+    );
+
+    box-shadow: 0 0 20px #ff0000;
+}
+
+.logo {
+    font-size: 1.5em;
+    font-weight: bold;
+
+    color: #fff;
+
+    text-shadow:
+        0 0 10px #ff0000;
+}
+
+/* =========================
+   MAIN
+========================= */
+
+.main {
+    min-height: calc(100vh - 58px);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 40px 20px;
+
+    position: relative;
+    overflow: hidden;
+}
+
+/* Background glow */
+
+.glow {
+    position: absolute;
+
+    width: min(700px, 90vw);
+    height: 500px;
+
+    left: 50%;
+    top: 50%;
+
+    transform: translate(-50%, -50%);
+
+    background:
+        radial-gradient(
+            ellipse,
+            rgba(255, 0, 0, 0.18),
+            transparent 68%
+        );
+
+    filter: blur(14px);
+
+    pointer-events: none;
+
+    animation: pulse 4s ease-in-out infinite;
+}
+
+/* =========================
+   CARD
+========================= */
+
+.card {
+    position: relative;
+    z-index: 1;
+
+    width: min(650px, 92vw);
+
+    padding: 42px 35px;
+
+    text-align: center;
+
+    background: #111;
+
+    border: 2px solid #ff0000;
+
+    border-radius: 16px;
+
+    box-shadow:
+        0 0 25px #ff0000,
+        inset 0 0 25px rgba(255, 0, 0, 0.08);
+
+    animation: cardIn .7s ease both;
+}
+
+/* =========================
+   BADGE
+========================= */
+
+.badge {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    padding: 7px 13px;
+
+    border: 1px solid #660000;
+
+    border-radius: 999px;
+
+    background: rgba(20, 0, 0, .75);
+
+    color: #ff7777;
+
+    font-size: .76em;
+    font-weight: 800;
+
+    letter-spacing: 1.8px;
+
+    box-shadow:
+        0 0 16px rgba(255, 0, 0, .28);
+
+    margin-bottom: 20px;
+}
+
+.dot {
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: #ff2222;
+
+    box-shadow:
+        0 0 10px #ff0000;
+
+    animation: blink 1.5s ease-in-out infinite;
+}
+
+/* =========================
+   TEXT
+========================= */
+
+h1 {
+    margin: 0;
+
+    font-size: clamp(
+        2em,
+        5vw,
+        3.2em
+    );
+
+    color: #ff0000;
+
+    text-shadow:
+        0 0 18px #ff0000,
+        0 0 35px rgba(255, 0, 0, .4);
+}
+
+p {
+    margin: 20px auto 0;
+
+    max-width: 520px;
+
+    color: #ccc;
+
+    font-size: 1.08em;
+
+    line-height: 1.7;
+}
+
+p strong {
+    color: #fff;
+
+    text-shadow:
+        0 0 8px rgba(255, 0, 0, .5);
+}
+
+/* =========================
+   HOME BUTTON
+========================= */
+
+.home-btn {
+    display: inline-block;
+
+    margin-top: 30px;
+
+    padding: 14px 32px;
+
+    background: #111;
+
+    border: 2px solid #ff0000;
+
+    border-radius: 10px;
+
+    color: #fff;
+
+    font-size: 1.05em;
+    font-weight: 600;
+
+    text-decoration: none;
+
+    box-shadow:
+        0 0 15px #ff0000;
+
+    transition: .3s ease;
+}
+
+.home-btn:hover {
+    background: #330000;
+
+    box-shadow:
+        0 0 25px #ff3333;
+
+    transform: scale(1.05);
+}
+
+/* =========================
+   ANIMATIONS
+========================= */
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: .65;
+        transform:
+            translate(-50%, -50%)
+            scale(.96);
+    }
+
+    50% {
+        opacity: 1;
+        transform:
+            translate(-50%, -50%)
+            scale(1.04);
+    }
+}
+
+@keyframes blink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: .35;
+    }
+}
+
+@keyframes cardIn {
+
+    from {
+        opacity: 0;
+        transform:
+            translateY(15px)
+            scale(.98);
+    }
+
+    to {
+        opacity: 1;
+        transform:
+            translateY(0)
+            scale(1);
+    }
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+img,
+video,
+iframe {
+    max-width: 100%;
+}
+
+body {
+    min-width: 0;
+}
+
+/* Chromebook / tablet */
+
+@media (max-width: 1200px) {
+
+    .topbar {
+        min-height: 54px;
+        padding: 10px 16px;
+    }
+
+    .main {
+        min-height: calc(100vh - 54px);
+
+        padding:
+            clamp(25px, 5vw, 45px)
+            clamp(14px, 3vw, 28px);
+    }
+
+    .card {
+        width: min(650px, 94vw);
+    }
+}
+
+/* Smaller Chromebook */
+
+@media (max-width: 900px) {
+
+    .topbar {
+        padding: 9px 12px;
+    }
+
+    .logo {
+        font-size: 1.3em;
+    }
+
+    .main {
+        padding:
+            30px
+            clamp(12px, 4vw, 25px);
+    }
+
+    .card {
+        padding: 36px 28px;
+    }
+}
+
+/* Phone */
+
+@media (max-width: 600px) {
+
+    .topbar {
+        padding: 9px 8px;
+    }
+
+    .logo {
+        font-size: 1.2em;
+    }
+
+    .main {
+        min-height: calc(100vh - 50px);
+
+        padding: 25px 12px;
+    }
+
+    .card {
+        width: calc(100vw - 24px);
+
+        padding: 30px 20px;
+
+        border-radius: 13px;
+    }
+
+    .badge {
+        font-size: .65em;
+        padding: 6px 10px;
+    }
+
+    h1 {
+        font-size:
+            clamp(
+                1.8rem,
+                10vw,
+                2.5rem
+            );
+    }
+
+    p {
+        font-size: .92rem;
+        line-height: 1.55;
+    }
+
+    .home-btn {
+        width: 100%;
+        padding: 13px 15px;
+        font-size: .95em;
+    }
+}
+
+/* Very narrow screens */
+
+@media (max-width: 420px) {
+
+    .topbar {
+        padding: 8px;
+    }
+
+    .logo {
+        font-size: 1.1em;
+    }
+
+    .main {
+        padding: 20px 10px;
+    }
+
+    .card {
+        width: calc(100vw - 20px);
+        padding: 26px 16px;
+    }
+
+    h1 {
+        font-size: 1.8em;
+    }
+
+    p {
+        font-size: .88em;
+    }
+}
+
+/* Short laptop screens */
+
+@media (
+    max-height: 700px
+) and (
+    min-width: 601px
+) {
+
+    .main {
+        padding-top: 25px;
+        padding-bottom: 25px;
+    }
+
+    .card {
+        padding: 28px 30px;
+    }
+
+    .badge {
+        margin-bottom: 12px;
+    }
+
+    p {
+        margin-top: 12px;
+    }
+
+    .home-btn {
+        margin-top: 20px;
+    }
+}
+
+/* Touch devices */
+
+@media (hover: none) {
+
+    .home-btn:hover {
+        transform: none;
+        background: #111;
+        box-shadow: 0 0 15px #ff0000;
+    }
+}
+
 </style>
 </head>
+
 <body>
-<div class="topbar"><div class="logo">Secret Game Site</div></div>
-<div class="main">
-    <div class="glow"></div>
-    <div class="card">
-        <div class="badge"><span class="dot"></span> UNAUTHORIZED</div>
-        <h1>Uh Oh!</h1>
-        <p>You aren't supposed to be here.<br>This page is only available through <strong>SGS</strong>.<br><br>Please return to the home page.</p>
-        <a class="home-btn" href="https://retropixel101.github.io/SGS/">← Back to Home</a>
+
+<div class="topbar">
+    <div class="logo">
+        Secret Game Site
     </div>
 </div>
+
+<div class="main">
+
+    <div class="glow"></div>
+
+    <div class="card">
+
+        <div class="badge">
+            <span class="dot"></span>
+            UNAUTHORIZED
+        </div>
+
+        <h1>
+            Uh Oh!
+        </h1>
+
+        <p>
+            You aren't supposed to be here.
+            <br>
+            This page is only available through
+            <strong>SGS</strong>.
+            <br><br>
+            Please return to the home page.
+        </p>
+
+        <a
+            class="home-btn"
+            href="https://retropixel101.github.io/SGS/"
+        >
+            ← Back to Home
+        </a>
+
+    </div>
+
+</div>
+
 </body>
 </html>
 `;
+
         throw new Error("SGS: Unauthorized origin.");
     }
 
-    // If authorized, start the console guard
-    startGuard();
+
+    /* =====================================================
+       SGS DEVTOOLS PROTECTION
+       =====================================================
+
+       IMPORTANT:
+       JavaScript cannot directly ask Chrome:
+       "Is DevTools open?"
+
+       Therefore we use two detection methods:
+
+       1. Window dimension difference
+       2. Debugger execution timing
+
+       The site's ORIGINAL DOM is moved into a DocumentFragment
+       while DevTools is detected. This means the elements are
+       not destroyed and can be restored exactly afterward.
+    */
+
+
+    let devToolsOpen = false;
+    let siteHidden = false;
+
+    const savedNodes = document.createDocumentFragment();
+
+    let protectionUI = null;
+
+
+    /* =====================================================
+       CREATE DEVTOOLS WARNING
+       ===================================================== */
+
+    function createProtectionUI() {
+
+        if (protectionUI) return;
+
+        protectionUI = document.createElement("div");
+
+        protectionUI.id = "sgs-devtools-warning";
+
+        protectionUI.innerHTML = `
+            <div class="sgs-warning-glow"></div>
+
+            <div class="sgs-warning-card">
+
+                <div class="sgs-warning-badge">
+                    <span></span>
+                    SGS SECURITY
+                </div>
+
+                <h1>
+                    Close Developer Tools
+                </h1>
+
+                <p>
+                    Developer Tools are currently open.
+                    <br><br>
+                    Please close the DevTools window
+                    or press <strong>F12</strong> to continue.
+                </p>
+
+                <div class="sgs-warning-hint">
+                    Your SGS page will automatically return
+                    when Developer Tools are closed.
+                </div>
+
+            </div>
+        `;
+
+        const style = document.createElement("style");
+
+        style.id = "sgs-devtools-style";
+
+        style.textContent = `
+            #sgs-devtools-warning {
+                position: fixed;
+                inset: 0;
+                z-index: 2147483647;
+
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                min-height: 100vh;
+
+                background:
+                    radial-gradient(
+                        ellipse at center,
+                        rgba(255,0,0,.14),
+                        transparent 65%
+                    ),
+                    #080808;
+
+                color: white;
+
+                font-family:
+                    'Segoe UI',
+                    Arial,
+                    sans-serif;
+
+                overflow: hidden;
+            }
+
+            .sgs-warning-glow {
+                position: absolute;
+
+                width: 650px;
+                height: 650px;
+
+                left: 50%;
+                top: 50%;
+
+                transform:
+                    translate(-50%, -50%);
+
+                background:
+                    radial-gradient(
+                        circle,
+                        rgba(255,0,0,.2),
+                        transparent 68%
+                    );
+
+                filter: blur(25px);
+
+                pointer-events: none;
+            }
+
+            .sgs-warning-card {
+                position: relative;
+                z-index: 2;
+
+                width: min(650px, 92vw);
+
+                padding: 45px 35px;
+
+                text-align: center;
+
+                background: #111;
+
+                border:
+                    2px solid
+                    #ff0000;
+
+                border-radius: 18px;
+
+                box-shadow:
+                    0 0 25px #ff0000,
+                    0 0 70px rgba(255,0,0,.25),
+                    inset 0 0 25px rgba(255,0,0,.08);
+            }
+
+            .sgs-warning-badge {
+                display: inline-flex;
+
+                align-items: center;
+                justify-content: center;
+
+                gap: 9px;
+
+                padding: 8px 15px;
+
+                border:
+                    1px solid
+                    #660000;
+
+                border-radius: 999px;
+
+                background:
+                    rgba(35,0,0,.8);
+
+                color: #ff7777;
+
+                font-size: .75rem;
+
+                font-weight: 800;
+
+                letter-spacing: 2px;
+
+                margin-bottom: 22px;
+            }
+
+            .sgs-warning-badge span {
+                width: 8px;
+                height: 8px;
+
+                border-radius: 50%;
+
+                background: #ff0000;
+
+                box-shadow:
+                    0 0 12px #ff0000;
+
+                animation:
+                    sgsWarningBlink 1s
+                    ease-in-out
+                    infinite;
+            }
+
+            .sgs-warning-card h1 {
+                margin: 0;
+
+                color: #ff0000;
+
+                font-size:
+                    clamp(
+                        2rem,
+                        5vw,
+                        3.2rem
+                    );
+
+                text-shadow:
+                    0 0 15px #ff0000,
+                    0 0 35px rgba(255,0,0,.45);
+            }
+
+            .sgs-warning-card p {
+                margin:
+                    22px auto 0;
+
+                max-width: 520px;
+
+                color: #ccc;
+
+                font-size: 1.05rem;
+
+                line-height: 1.7;
+            }
+
+            .sgs-warning-card strong {
+                color: white;
+
+                text-shadow:
+                    0 0 8px
+                    rgba(255,0,0,.6);
+            }
+
+            .sgs-warning-hint {
+                margin-top: 28px;
+
+                padding:
+                    12px 16px;
+
+                border-radius: 9px;
+
+                background:
+                    rgba(255,0,0,.06);
+
+                border:
+                    1px solid
+                    rgba(255,0,0,.2);
+
+                color: #888;
+
+                font-size: .85rem;
+            }
+
+            @keyframes sgsWarningBlink {
+
+                0%,
+                100% {
+                    opacity: 1;
+                }
+
+                50% {
+                    opacity: .35;
+                }
+
+            }
+
+            @media (max-width: 600px) {
+
+                .sgs-warning-card {
+                    width:
+                        calc(100vw - 24px);
+
+                    padding:
+                        32px 20px;
+                }
+
+                .sgs-warning-card p {
+                    font-size: .92rem;
+                }
+
+                .sgs-warning-hint {
+                    font-size: .78rem;
+                }
+
+            }
+        `;
+
+        document.head.appendChild(style);
+
+        document.body.appendChild(protectionUI);
+    }
+
+
+    /* =====================================================
+       REMOVE WARNING
+    ===================================================== */
+
+    function removeProtectionUI() {
+
+        if (!protectionUI) return;
+
+        protectionUI.remove();
+        protectionUI = null;
+
+        const style =
+            document.getElementById(
+                "sgs-devtools-style"
+            );
+
+        if (style) {
+            style.remove();
+        }
+    }
+
+
+    /* =====================================================
+       HIDE THE ENTIRE SGS SITE
+    ===================================================== */
+
+    function hideSite() {
+
+        if (siteHidden) return;
+
+        siteHidden = true;
+
+        /*
+         * Move EVERY body child into memory.
+         *
+         * This is preferable to:
+         *
+         * document.body.innerHTML = "";
+         *
+         * because replacing innerHTML would destroy
+         * event listeners and references.
+         */
+
+        while (document.body.firstChild) {
+
+            const node =
+                document.body.firstChild;
+
+            /*
+             * Don't move our warning if it somehow
+             * already exists.
+             */
+
+            if (node === protectionUI) {
+                node.remove();
+                continue;
+            }
+
+            savedNodes.appendChild(node);
+        }
+
+        createProtectionUI();
+    }
+
+
+    /* =====================================================
+       RESTORE THE SGS SITE
+    ===================================================== */
+
+    function restoreSite() {
+
+        if (!siteHidden) return;
+
+        siteHidden = false;
+
+        removeProtectionUI();
+
+        /*
+         * Put the ORIGINAL nodes back.
+         *
+         * Their event listeners and JS references
+         * remain intact because the nodes themselves
+         * were never destroyed.
+         */
+
+        document.body.appendChild(savedNodes);
+    }
+
+
+    /* =====================================================
+       WINDOW-SIZE DEVTOOLS DETECTION
+    ===================================================== */
+
+    function checkWindowDimensions() {
+
+        const widthDifference =
+            window.outerWidth -
+            window.innerWidth;
+
+        const heightDifference =
+            window.outerHeight -
+            window.innerHeight;
+
+        /*
+         * Chromium commonly produces a large difference
+         * when DevTools is docked.
+         *
+         * The threshold is deliberately not tiny so normal
+         * browser UI does not trigger it as easily.
+         */
+
+        const widthDetected =
+            widthDifference > 160;
+
+        const heightDetected =
+            heightDifference > 160;
+
+        return widthDetected || heightDetected;
+    }
+
+
+    /* =====================================================
+       DEBUGGER TIMING DETECTION
+    ===================================================== */
+
+    function checkDebugger() {
+
+        const start =
+            performance.now();
+
+        /*
+         * When DevTools is paused/open in certain
+         * Chromium configurations, debugger execution
+         * can take significantly longer.
+         */
+
+        debugger;
+
+        const elapsed =
+            performance.now() - start;
+
+        return elapsed > 100;
+    }
+
+
+    /* =====================================================
+       COMBINED DEVTOOLS CHECK
+    ===================================================== */
+
+    function checkDevTools() {
+
+        let detected = false;
+
+        /*
+         * Method 1:
+         * Window dimensions.
+         */
+
+        if (checkWindowDimensions()) {
+            detected = true;
+        }
+
+        /*
+         * Method 2:
+         * Debugger timing.
+         *
+         * Only run this if the dimension check didn't
+         * already detect DevTools.
+         */
+
+        if (!detected) {
+
+            try {
+
+                if (checkDebugger()) {
+                    detected = true;
+                }
+
+            } catch (e) {
+                /*
+                 * Ignore debugger errors.
+                 */
+            }
+
+        }
+
+        return detected;
+    }
+
+
+    /* =====================================================
+       STATE HANDLER
+    ===================================================== */
+
+    function updateProtection() {
+
+        const detected =
+            checkDevTools();
+
+        /*
+         * DevTools opened
+         */
+
+        if (detected && !devToolsOpen) {
+
+            devToolsOpen = true;
+
+            hideSite();
+
+            return;
+        }
+
+        /*
+         * DevTools still open
+         */
+
+        if (detected && devToolsOpen) {
+
+            if (!siteHidden) {
+                hideSite();
+            }
+
+            return;
+        }
+
+        /*
+         * DevTools closed
+         */
+
+        if (!detected && devToolsOpen) {
+
+            devToolsOpen = false;
+
+            restoreSite();
+
+            return;
+        }
+    }
+
+
+    /* =====================================================
+       START PROTECTION
+    ===================================================== */
+
+    function startDevToolsProtection() {
+
+        /*
+         * Wait until the page has something to protect.
+         */
+
+        if (
+            document.readyState ===
+            "loading"
+        ) {
+
+            document.addEventListener(
+                "DOMContentLoaded",
+                startDevToolsProtection,
+                { once: true }
+            );
+
+            return;
+        }
+
+        /*
+         * Check immediately.
+         */
+
+        updateProtection();
+
+        /*
+         * Continuously check.
+         *
+         * 500ms keeps it responsive without
+         * constantly hammering the browser.
+         */
+
+        setInterval(
+            updateProtection,
+            500
+        );
+
+        /*
+         * Also check when the window changes size.
+         */
+
+        window.addEventListener(
+            "resize",
+            updateProtection
+        );
+
+        /*
+         * Also check when the page becomes visible
+         * again after switching tabs/windows.
+         */
+
+        document.addEventListener(
+            "visibilitychange",
+            updateProtection
+        );
+    }
+
+
+    startDevToolsProtection();
 
 })();
 </script>
