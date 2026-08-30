@@ -3533,6 +3533,45 @@ and
   text-align: center;
 }
 
+
+/* Empty game results are centered in the full grid area. */
+.games-grid .games-empty-message,
+.games-grid .empty {
+  grid-column: 1 / -1;
+  width: 100%;
+  min-height: 360px;
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin: 0 auto;
+}
+
+
+#games-grid {
+  position: relative;
+}
+
+#games-grid .games-empty-message {
+  grid-column: 1 / -1;
+  width: 100%;
+  min-height: 360px;
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin: 0;
+  padding: 40px 20px;
+  box-sizing: border-box;
+}
+#games-grid .games-empty-message span {
+  display: block;
+  margin-top: 6px;
+  color: #888;
+}
+
 </style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
@@ -4009,7 +4048,7 @@ and
    GAME DATA
    ========================================================= */
 
-const games = [];
+let games = [];
 
 
 /* =========================================================
@@ -4137,14 +4176,7 @@ const playerGameInfoTitle =
    CATEGORIES
    ========================================================= */
 
-const categories = [
-  "All",
-  ...new Set(
-    games.map(
-      game => game.category
-    )
-  )
-];
+const categories = [];
 
 
 /* =========================================================
@@ -4154,51 +4186,80 @@ const categories = [
 
 async function loadGameData() {
   try {
-    const response = await fetch("GD.html", { cache: "no-cache" });
+    const response = await fetch("./GD.html", {
+      cache: "no-store"
+    });
 
     if (!response.ok) {
-      throw new Error(`GD.html returned HTTP ${response.status}`);
+      throw new Error("GD.html returned HTTP " + response.status);
     }
 
-    const text = await response.text();
+    const source = await response.text();
 
     /*
-     * GD.html is a data-only HTML document. Read the JSON payload directly
-     * from its application/json script tag.
+     * GD.html stores its dataset inside:
+     * <script id="sgs-game-data" type="application/json">... data ...<\/script>
+     *
+     * Extract only that script's contents. Do not DOM-parse the data as page
+     * markup, because the game URLs/names can contain HTML-looking text.
      */
-    const match = text.match(
-      /<script[^>]+id=["']sgs-game-data["'][^>]*>([\s\S]*?)<\/script>/i
+    const match = source.match(
+      /<script\b[^>]*\bid=["']sgs-game-data["'][^>]*>([\s\S]*?)<\/script>/i
     );
 
     if (!match) {
-      throw new Error("GD.html is missing #sgs-game-data.");
+      throw new Error("Could not find #sgs-game-data in GD.html");
     }
 
     const data = JSON.parse(match[1].trim());
 
     if (!data || !Array.isArray(data.games)) {
-      throw new Error("GD.html does not contain a valid games array.");
+      throw new Error("GD.html contains no valid games array");
     }
 
-    games.length = 0;
-    games.push(...data.games);
+    games = data.games.filter(game =>
+      game &&
+      typeof game.name === "string" &&
+      typeof game.url === "string" &&
+      typeof game.image === "string" &&
+      typeof game.category === "string"
+    );
+
+    /* Shuffle after the external data has loaded. */
+    for (let i = games.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [games[i], games[j]] = [games[j], games[i]];
+    }
+
+    if (!games.length) {
+      throw new Error("GD.html loaded successfully, but contains zero games");
+    }
+
+    /* Categories must be created AFTER GD.html loads. */
+    categories.length = 0;
+    categories.push(
+      "All",
+      ...new Set(games.map(game => game.category))
+    );
 
     renderFilters();
     renderGames();
 
   } catch (error) {
-    console.error("SGS: Failed to load GD.html.", error);
+    console.error("SGS GD.html loader:", error);
 
-    const grid = document.getElementById("games-grid");
+    gameCount.textContent = "0";
+    activeFilterText.textContent = "All Games";
 
-    if (grid) {
-      grid.innerHTML = `
-        <div class="games-data-error">
-          <strong>Unable to load game data.</strong>
-          <span>Make sure <b>GD.html</b> is in the same folder as this page.</span>
-        </div>
-      `;
-    }
+    grid.innerHTML = `
+      <div class="empty games-empty-message">
+        <div style="font-size:2em;margin-bottom:8px;">⚠</div>
+        <strong>Game data could not be loaded.</strong><br>
+        <span style="font-size:.9em;">
+          Make sure GD.html is in the same folder as this page.
+        </span>
+      </div>
+    `;
   }
 }
 
@@ -4263,153 +4324,135 @@ function renderFilters() {
 
 function renderGames() {
 
-  const term =
-    search.value
-      .trim()
-      .toLowerCase();
+  const term = search.value.trim().toLowerCase();
 
+  const visibleGames = games.filter(game => {
+    const categoryMatch =
+      selectedCategory === "All" ||
+      game.category === selectedCategory;
 
-  const visibleGames =
-    games.filter(game => {
+    const searchMatch =
+      !term ||
+      String(game.name || "").toLowerCase().includes(term) ||
+      String(game.category || "").toLowerCase().includes(term) ||
+      String(game.description || "").toLowerCase().includes(term);
 
-      const categoryMatch =
-        selectedCategory === "All" ||
-        game.category ===
-          selectedCategory;
+    return categoryMatch && searchMatch;
+  });
 
-
-      const searchMatch =
-        !term ||
-        game.name
-          .toLowerCase()
-          .includes(term) ||
-
-        game.category
-          .toLowerCase()
-          .includes(term) ||
-
-        game.description
-          .toLowerCase()
-          .includes(term);
-
-
-      return (
-        categoryMatch &&
-        searchMatch
-      );
-
-    });
-
-
-  gameCount.textContent =
-    visibleGames.length;
-
+  gameCount.textContent = visibleGames.length;
 
   activeFilterText.textContent =
     selectedCategory === "All"
       ? "All Games"
       : selectedCategory;
 
+  grid.innerHTML = "";
 
   if (!visibleGames.length) {
+    const empty = document.createElement("div");
+    empty.className = "games-empty-message";
 
-    grid.innerHTML = `
+    empty.innerHTML =
+      '<div style="font-size:2em;margin-bottom:8px;">🔎</div>' +
+      '<strong>No games found.</strong>' +
+      '<span>Try another search or category.</span>';
 
-      <div class="empty">
-
-        <div
-          style="
-            font-size:2em;
-            margin-bottom:8px;
-          "
-        >
-          🔎
-        </div>
-
-        No games found.<br>
-
-        <span style="font-size:.9em;">
-          Try another search or category.
-        </span>
-
-      </div>
-
-    `;
-
+    grid.appendChild(empty);
     return;
   }
 
+  visibleGames.forEach((game, index) => {
 
-  grid.innerHTML =
-    visibleGames
-      .map(
-        (game, index) => `
+    const card = document.createElement("article");
+    card.className = "game-card";
+    card.style.animationDelay =
+      Math.min(index * 45, 400) + "ms";
 
-          <article
-            class="game-card"
-            style="
-              animation-delay:
-                ${Math.min(index * 45, 400)}ms
-            "
-          >
+    const thumb = document.createElement("div");
+    thumb.className = "game-thumb";
+    thumb.setAttribute("role", "img");
+    thumb.setAttribute("aria-label", String(game.name || ""));
 
-            <div
-              class="game-thumb"
-              style="
-                background-image:
-                  url('${escapeAttribute(game.image)}')
-              "
-              role="img"
-              aria-label="${escapeAttribute(game.name)}"
-            ></div>
+    if (game.image) {
+      thumb.style.backgroundImage =
+        'url("' +
+        String(game.image).replace(/"/g, '\\"') +
+        '")';
+    }
 
+    const name = document.createElement("div");
+    name.className = "game-name";
+    name.textContent = String(game.name || "Unnamed Game");
 
-            <div class="game-name">
+    const bar = document.createElement("div");
+    bar.className = "game-bar";
 
-              ${escapeHTML(game.name)}
+    const play = document.createElement("button");
+    play.type = "button";
+    play.textContent = "▶ Play";
 
-            </div>
+    play.addEventListener("click", () => {
+      openGamePlayer(
+        String(game.url || ""),
+        String(game.name || ""),
+        String(game.controls || ""),
+        String(game.howToPlay || ""),
+        String(game.sideNotes || "")
+      );
+    });
 
+    const info = document.createElement("button");
+    info.type = "button";
+    info.textContent = "ℹ Info";
 
-            <div class="game-bar">
+    info.addEventListener("click", () => {
+      openInfoPopup(
+        String(game.name || ""),
+        String(game.description || ""),
+        String(game.category || "")
+      );
+    });
 
-              <button
-                onclick="
-                  openGamePlayer(
-                    '${escapeJS(game.url)}',
-                    '${escapeJS(game.name)}',
-                    '${escapeJS(game.controls)}',
-                    '${escapeJS(game.howToPlay)}',
-                    '${escapeJS(game.sideNotes)}'
-                  )
-                "
-              >
-                ▶ Play
-              </button>
+    bar.appendChild(play);
+    bar.appendChild(info);
 
+    card.appendChild(thumb);
+    card.appendChild(name);
+    card.appendChild(bar);
 
-              <button
-                onclick="
-                  openInfoPopup(
-                    '${escapeJS(game.name)}',
-                    '${escapeJS(game.description)}',
-                    '${escapeJS(game.category)}'
-                  )
-                "
-              >
-                ℹ Info
-              </button>
-
-            </div>
-
-          </article>
-
-        `
-      )
-      .join("");
-
+    grid.appendChild(card);
+  });
 }
 
+/* =========================================================
+   CATEGORY SELECTION
+   ========================================================= */
+
+function setCategory(category) {
+
+  if (!categories.includes(category)) {
+    category = "All";
+  }
+
+  selectedCategory = category;
+
+  document
+    .querySelectorAll(".filter")
+    .forEach(button => {
+
+      const isActive =
+        button.dataset.category === selectedCategory;
+
+      button.classList.toggle("active", isActive);
+      button.setAttribute(
+        "aria-pressed",
+        String(isActive)
+      );
+    });
+
+  renderGames();
+}
 
 /* =========================================================
    CATEGORY SELECTION
@@ -4455,16 +4498,6 @@ function setCategory(category) {
 
 
   renderGames();
-window.addEventListener("resize", updateNoteTabOverflow);
-document.addEventListener("click", event => {
-  const menu = document.getElementById("more-notes-menu");
-  const button = document.querySelector(".note-more-button");
-  if (menu && !menu.hidden && !menu.contains(event.target) && event.target !== button) {
-    menu.hidden = true;
-  }
-});
-
-
 }
 
 
@@ -5221,10 +5254,6 @@ document.addEventListener(
    INITIALIZE
    ========================================================= */
 
-renderFilters();
-
-renderGames();
-
 window.addEventListener("resize", updateNoteTabOverflow);
 
 document.addEventListener("click", event => {
@@ -5269,6 +5298,9 @@ document.addEventListener("click", event => {
     initSGSVanta();
   }
 })();
+
+
+loadGameData();
 </script>
 </body>
 </html>
