@@ -1,123 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-  <script>
-  (async function () {
-
-    /* =====================================================
-       SGS PASSWORD PROTECTION
-       ===================================================== */
-
-    const VERIFY_SERVER =
-      "https://sgs-pswrd.retropixel404.workers.dev";
-
-    const PASSWORD_PAGE =
-      "https://retropixel101.github.io/SGS/PSP.html";
-
-
-    /* =====================================================
-       DON'T PROTECT THE PASSWORD PAGE ITSELF
-       ===================================================== */
-
-    const currentPath =
-      window.location.pathname.replace(/\/+$/, "");
-
-    const passwordPath =
-      new URL(PASSWORD_PAGE).pathname.replace(/\/+$/, "");
-
-    if (currentPath === passwordPath) {
-      return;
-    }
-
-
-    /* =====================================================
-       CHECK SESSION WITH WORKER
-       ===================================================== */
-
-    try {
-
-      const response = await fetch(
-        `${VERIFY_SERVER}/current`,
-        {
-          method: "GET",
-          credentials: "include",
-          cache: "no-store"
-        }
-      );
-
-
-      if (!response.ok) {
-
-        console.error(
-          "SGS: Password server returned HTTP",
-          response.status
-        );
-
-        window.location.replace(
-          PASSWORD_PAGE
-        );
-
-        return;
-      }
-
-
-      let data;
-
-      try {
-
-        data = await response.json();
-
-      } catch {
-
-        console.error(
-          "SGS: Invalid response from password server."
-        );
-
-        window.location.replace(
-          PASSWORD_PAGE
-        );
-
-        return;
-      }
-
-
-      if (!data.authenticated) {
-
-        console.log(
-          "SGS: No valid session."
-        );
-
-        window.location.replace(
-          PASSWORD_PAGE
-        );
-
-        return;
-      }
-
-
-      console.log(
-        "SGS: Access verified."
-      );
-
-
-    } catch (error) {
-
-      console.error(
-        "SGS: Could not contact password server.",
-        error
-      );
-
-      window.location.replace(
-        PASSWORD_PAGE
-      );
-
-    }
-
-  })();
-  </script>
-
-
   <meta charset="UTF-8">
 
   <meta
@@ -178,32 +61,131 @@ body {
    ========================================================= */
 
 .navbar {
-  min-height: 58px;
 
-  display: flex;
+    display: flex;
 
-  justify-content: space-between;
-  align-items: center;
+    justify-content: space-between;
 
-  background:
-    linear-gradient(
-      90deg,
-      #ff0000,
-      #660000
-    );
+    align-items: center;
 
-  box-shadow:
-    0 0 20px #ff0000;
+    background:
+        linear-gradient(
+            90deg,
+            #ff0000,
+            #660000
+        );
 
-  padding:
-    9px 18px;
+    box-shadow:
+        0 0 20px #ff0000;
 
-  position: relative;
+    padding:
+        12px 20px;
 
-  top: auto;
+    position: sticky;
 
-  z-index: 6000;
+    top: 0;
+
+    z-index: 10;
+
+    width: 100vw;
+
+    max-width: 100vw;
 }
+
+
+.left {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 20px;
+}
+
+
+.logo {
+
+    font-size: 1.5em;
+
+    font-weight: bold;
+}
+
+
+.datetime {
+
+    font-size: 0.95em;
+
+    color: #ffd6d6;
+
+    text-shadow:
+        0 0 10px #ff0000;
+}
+
+
+.center {
+
+    position: absolute;
+
+    left: 50%;
+
+    transform:
+        translateX(-50%);
+}
+
+
+.tabs {
+
+    display: flex;
+
+    gap: 10px;
+}
+
+
+.tab {
+
+    display: block;
+
+    background: #111;
+
+    padding:
+        8px 16px;
+
+    border-radius: 6px;
+
+    transition:
+        0.3s ease;
+
+    cursor: pointer;
+
+    color: #fff;
+
+    text-decoration: none;
+}
+
+
+.tab:hover {
+
+    transform:
+        translateY(-1px);
+
+    background: #222;
+
+    box-shadow:
+        0 0 10px #ff0000;
+}
+
+
+.active {
+
+    background: #330000;
+
+    box-shadow:
+        0 0 12px #ff0000;
+
+    transform:
+        scale(1.03);
+}
+
 
 
 /* =========================================================
@@ -1070,6 +1052,35 @@ body {
 }
 
 
+function showPlayerInfo(type) {
+
+  const labels = {
+    controls: "Controls",
+    howToPlay: "How to Play",
+    sideNotes: "Side Notes"
+  };
+
+  playerGameInfoTitle.textContent =
+    labels[type] || "Game Information";
+
+  const text =
+    currentGameDetails[type] ||
+    "No information has been added yet.";
+
+  document.getElementById("info-title").textContent =
+    currentGameTitle || "Game";
+
+  document.getElementById("info-category").textContent =
+    labels[type] || "Game Information";
+
+  document.getElementById("info-text").textContent =
+    text;
+
+  document.getElementById("info-popup").classList.add("open");
+
+}
+
+
 /* =========================================================
    INFO POPUP
    ========================================================= */
@@ -1760,6 +1771,1682 @@ and (max-height: 700px) {
 
 }
 
+
+/* =========================================================
+   GAME PLAYER OVERLAY
+   ========================================================= */
+
+.game-player {
+  z-index: 12000;
+  padding: clamp(8px, 2vw, 22px);
+  background: rgba(0,0,0,.94);
+}
+
+#game-player-shell {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  position: relative;
+  overflow: hidden;
+  background: #050505;
+  border: 2px solid #ff1111;
+  border-radius: 12px;
+  box-shadow: 0 0 40px rgba(255,0,0,.7);
+}
+
+.player-toolbar {
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 12px;
+  background: #070707;
+  border-top: 1px solid #5b0000;
+}
+
+#game-player-title {
+  overflow: hidden;
+  color: #fff;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.player-actions {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  gap: 8px;
+}
+
+.player-actions button,
+.note-action,
+.new-note-button {
+  border: 1px solid #a40000;
+  border-radius: 7px;
+  padding: 7px 9px;
+  background: #111;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+}
+
+.player-actions button:hover,
+.note-action:hover,
+.new-note-button:hover {
+  background: #3a0000;
+  box-shadow: 0 0 12px rgba(255,0,0,.55);
+}
+
+.player-content {
+  min-height: 0;
+  position: relative;
+}
+
+#game-frame {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  border: 0;
+  background: #000;
+}
+
+.volume-control {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #ddd;
+  font-size: .8em;
+}
+
+#game-volume {
+  width: clamp(70px, 10vw, 120px);
+  accent-color: #ff2222;
+}
+
+.notes-drawer {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  z-index: 2;
+  width: 100%;
+  max-width: min(410px, calc(100% - 28px));
+  height: min(470px, calc(100% - 28px));
+  min-height: 300px;
+  display: grid;
+  grid-template-rows: auto auto auto auto minmax(0, 1fr) auto auto;
+  gap: 10px;
+  padding: 14px;
+  background: #101010;
+  border: 1px solid #c40000;
+  border-radius: 10px;
+  box-shadow: 0 0 26px rgba(255,0,0,.42);
+}
+
+.notes-drawer[hidden] {
+  display: none;
+}
+
+.notes-heading,
+.note-tabs,
+.note-editor-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.notes-heading {
+  justify-content: space-between;
+}
+
+.notes-heading h3 {
+  margin: 0;
+  color: #ff7777;
+  font-size: .9em;
+  letter-spacing: 1.4px;
+}
+
+.note-tabs {
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.note-tab {
+  max-width: 150px;
+  overflow: hidden;
+  flex: 0 0 auto;
+  border: 1px solid #4c0000;
+  border-radius: 6px;
+  padding: 6px 8px;
+  background: #090909;
+  color: #aaa;
+  cursor: pointer;
+  font: inherit;
+  font-size: .78em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.note-tab.active {
+  border-color: #ff2222;
+  background: #390000;
+  color: #fff;
+}
+
+#note-title,
+#game-notes {
+  width: 100%;
+  border: 1px solid #5c0000;
+  border-radius: 8px;
+  padding: 10px;
+  outline: none;
+  background: #080808;
+  color: #fff;
+  font: inherit;
+  line-height: 1.45;
+}
+
+#game-notes {
+  min-height: 0;
+  resize: none;
+}
+
+#note-title:focus,
+#game-notes:focus {
+  border-color: #ff2222;
+  box-shadow: 0 0 12px rgba(255,0,0,.32);
+}
+
+.note-editor-actions {
+  justify-content: space-between;
+}
+
+.notes-status {
+  margin: 0;
+  color: #888;
+  font-size: .75em;
+}
+
+@media (max-width: 700px) {
+  .player-toolbar {
+    gap: 7px;
+    padding: 7px 8px;
+  }
+
+  #game-player-title {
+    display: none;
+  }
+
+  .player-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .player-actions button {
+    padding: 7px;
+    font-size: .78em;
+  }
+
+  .notes-drawer {
+    right: 8px;
+    bottom: 8px;
+    max-width: calc(100% - 16px);
+    height: min(440px, calc(100% - 16px));
+  }
+}
+
+
+/* =========================================================
+   PLAYER V2 LAYOUT
+   ========================================================= */
+
+#game-player-shell {
+  grid-template-rows: auto minmax(0, 1fr) auto;
+}
+
+.player-topbar,
+.player-footer {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(90deg, #250000, #111 52%, #250000);
+}
+
+.player-topbar {
+  min-height: 54px;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 12px;
+  border-bottom: 1px solid #8b0000;
+}
+
+.player-footer {
+  min-height: 94px;
+  display: grid;
+  grid-template-rows: auto auto;
+  gap: 8px;
+  padding: 8px 14px 11px;
+  border-top: 1px solid #8b0000;
+}
+
+#game-player-title {
+  min-width: 0;
+  flex: 1;
+  text-align: center;
+  font-size: clamp(1rem, 2vw, 1.28rem);
+}
+
+.player-top-actions {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  gap: 7px;
+}
+
+.player-icon-button,
+.game-detail-button {
+  border: 1px solid #a40000;
+  border-radius: 7px;
+  background: #111;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+}
+
+.player-icon-button {
+  min-width: 34px;
+  min-height: 34px;
+  padding: 5px 8px;
+  font-size: 1.05em;
+}
+
+.player-icon-button:hover,
+.game-detail-button:hover {
+  background: #3a0000;
+  box-shadow: 0 0 12px rgba(255,0,0,.55);
+}
+
+.player-content {
+  padding: clamp(6px, 1.2vw, 14px);
+  background: #060606;
+}
+
+#game-frame {
+  border: 1px solid #510000;
+  border-radius: 4px;
+}
+
+.game-info-title {
+  color: #ff7777;
+  font-size: .9em;
+  font-weight: 800;
+  letter-spacing: .9px;
+  text-align: center;
+}
+
+.player-detail-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.game-detail-button {
+  min-width: 0;
+  padding: 7px 10px;
+  text-align: left;
+}
+
+.game-detail-button.side-notes-button {
+  grid-column: 1 / 2;
+}
+
+#volume-panel {
+  position: absolute;
+  top: 58px;
+  right: 54px;
+  z-index: 4;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 10px;
+  justify-items: stretch;
+  min-width: 190px;
+  padding: 12px 10px;
+  background: #101010;
+  border: 1px solid #c40000;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(255,0,0,.45);
+  animation: volumeIn .18s ease-out;
+}
+
+#volume-panel[hidden] {
+  display: none;
+}
+
+#game-volume {
+  width: 130px;
+  height: 6px;
+  margin: 0;
+  appearance: auto;
+  accent-color: #ff2222;
+}
+
+.volume-value {
+  color: #ff8888;
+  font-size: .75em;
+  font-weight: 800;
+}
+
+.notes-modal {
+  z-index: 13000;
+  padding: clamp(12px, 3vw, 42px);
+  background: rgba(0,0,0,.9);
+}
+
+#notes-modal-box {
+  width: min(1180px, 100%);
+  height: min(820px, 100%);
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto auto auto auto minmax(0, 1fr) auto auto;
+  gap: 12px;
+  padding: clamp(14px, 2vw, 24px);
+  background: linear-gradient(180deg, #171717, #080808);
+  border: 2px solid #e00000;
+  border-radius: 14px;
+  box-shadow: 0 0 42px rgba(255,0,0,.68);
+  animation: notesModalIn .25s ease-out;
+}
+
+.notes-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+#notes-modal-title {
+  overflow: hidden;
+  margin: 0;
+  color: #fff;
+  font-size: clamp(1.15rem, 3vw, 1.6rem);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#notes-modal-box .note-tabs {
+  min-height: 38px;
+}
+
+#notes-modal-box #game-notes {
+  min-height: 0;
+  resize: none;
+  font-size: 1em;
+}
+
+@keyframes notesModalIn {
+  from {
+    opacity: 0;
+    transform: scale(.93) translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes volumeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(.94);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 700px) {
+  .player-topbar {
+    gap: 7px;
+    padding: 6px 8px;
+  }
+
+  .game-detail-button {
+    padding: 7px;
+    font-size: .77em;
+  }
+
+  #volume-panel {
+    right: 45px;
+    top: 52px;
+  }
+}
+
+
+
+/* =========================================================
+   HOMEPAGE NAVBAR TRANSFER
+   ========================================================= */
+
+/* =========================================================
+   NAVBAR
+   ========================================================= */
+
+.navbar {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    background:
+        linear-gradient(
+            90deg,
+            #ff0000,
+            #660000
+        );
+
+    box-shadow:
+        0 0 20px #ff0000;
+
+    padding:
+        12px 20px;
+
+    position: sticky;
+
+    top: 0;
+
+    z-index: 10;
+
+    width: 100vw;
+
+    max-width: 100vw;
+}
+
+
+.left {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 20px;
+}
+
+
+.logo {
+
+    font-size: 1.5em;
+
+    font-weight: bold;
+}
+
+
+.datetime {
+
+    font-size: 0.95em;
+
+    color: #ffd6d6;
+
+    text-shadow:
+        0 0 10px #ff0000;
+}
+
+
+.center {
+
+    position: absolute;
+
+    left: 50%;
+
+    transform:
+        translateX(-50%);
+}
+
+
+.tabs {
+
+    display: flex;
+
+    gap: 10px;
+}
+
+
+.tab {
+
+    display: block;
+
+    background: #111;
+
+    padding:
+        8px 16px;
+
+    border-radius: 6px;
+
+    transition:
+        0.3s ease;
+
+    cursor: pointer;
+
+    color: #fff;
+
+    text-decoration: none;
+}
+
+
+.tab:hover {
+
+    transform:
+        translateY(-1px);
+
+    background: #222;
+
+    box-shadow:
+        0 0 10px #ff0000;
+}
+
+
+.active {
+
+    background: #330000;
+
+    box-shadow:
+        0 0 12px #ff0000;
+
+    transform:
+        scale(1.03);
+}
+
+
+/* =========================================================
+   MAIN / HERO
+   ========================================================= */
+
+.main {
+
+    position: relative;
+
+    overflow: visible;
+
+    text-align: center;
+
+    width: 100%;
+
+    max-width: 1400px;
+
+    margin:
+        100px auto 0;
+
+    padding:
+        0 20px;
+}
+
+
+.hero-glow {
+
+    position: absolute;
+
+    width:
+        min(620px, 90vw);
+
+    height: 300px;
+
+    left: 50%;
+
+    top: 20px;
+
+    transform:
+        translateX(-50%);
+
+    background:
+        radial-gradient(
+            ellipse,
+            rgba(
+                255,
+                0,
+                0,
+                0.18
+            ),
+            transparent 68%
+        );
+
+    filter:
+        blur(12px);
+
+    pointer-events: none;
+
+    animation:
+        heroPulse 4s
+        ease-in-out
+        infinite;
+
+    z-index: 0;
+}
+
+
+.hero-badge {
+
+    position: relative;
+
+    z-index: 1;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    padding:
+        7px 13px;
+
+    border:
+        1px solid #660000;
+
+    border-radius: 999px;
+
+    background:
+        rgba(
+            20,
+            0,
+            0,
+            0.75
+        );
+
+    color: #ff7777;
+
+    font-size: 0.76em;
+
+    font-weight: 800;
+
+    letter-spacing: 1.8px;
+
+    box-shadow:
+        0 0 16px
+        rgba(
+            255,
+            0,
+            0,
+            0.28
+        );
+
+    animation:
+        badgeFloat 3s
+        ease-in-out
+        infinite;
+}
+
+
+.status-dot {
+
+    width: 7px;
+
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: #ff2222;
+
+    box-shadow:
+        0 0 10px #ff0000;
+
+    animation:
+        statusBlink 1.5s
+        ease-in-out
+        infinite;
+}
+
+
+.main h1 {
+
+    position: relative;
+
+    z-index: 1;
+
+    margin:
+        18px 0 0;
+
+    font-size:
+        clamp(
+            2.6em,
+            6vw,
+            4.2em
+        );
+
+    letter-spacing: -1px;
+
+    color: #ff0000;
+
+    text-shadow:
+        0 0 18px #ff0000,
+        0 0 45px
+        rgba(
+            255,
+            0,
+            0,
+            0.35
+        );
+
+    animation:
+        titleIn
+        0.8s
+        ease
+        both;
+}
+
+
+.main h1 span {
+
+    color: #fff;
+
+    text-shadow:
+        0 0 14px #fff,
+        0 0 28px
+        rgba(
+            255,
+            0,
+            0,
+            0.9
+        );
+}
+
+
+.summary {
+
+    position: relative;
+
+    z-index: 1;
+
+    font-size: 1.12em;
+
+    max-width: 760px;
+
+    margin:
+        18px auto 0;
+
+    color: #cfcfcf;
+
+    line-height: 1.75em;
+
+    animation:
+        titleIn
+        0.8s
+        0.12s
+        ease
+        both;
+}
+
+
+.summary strong {
+
+    color: #fff;
+}
+
+
+.hero-pills {
+
+    position: relative;
+
+    z-index: 1;
+
+    display: flex;
+
+    justify-content: center;
+
+    flex-wrap: wrap;
+
+    gap: 9px;
+
+    margin-top: 22px;
+
+    animation:
+        titleIn
+        0.8s
+        0.2s
+        ease
+        both;
+}
+
+
+.hero-pills span {
+
+    padding:
+        7px 12px;
+
+    border:
+        1px solid #3d1111;
+
+    border-radius: 999px;
+
+    background:
+        rgba(
+            17,
+            17,
+            17,
+            0.9
+        );
+
+    color: #aaa;
+
+    font-size: 0.82em;
+
+    box-shadow:
+        inset
+        0 0 12px
+        rgba(
+            255,
+            0,
+            0,
+            0.06
+        );
+
+    transition:
+        0.25s ease;
+}
+
+
+.hero-pills span:hover {
+
+    color: #fff;
+
+    border-color:
+        #ff0000;
+
+    box-shadow:
+        0 0 13px
+        rgba(
+            255,
+            0,
+            0,
+            0.35
+        );
+
+    transform:
+        translateY(-2px);
+}
+
+
+
+/* =========================================================
+   NAVBAR RESPONSIVE FIX
+   ========================================================= */
+
+@media
+(max-width: 1200px)
+and
+(min-width: 901px) {
+
+    .navbar {
+
+        display: flex !important;
+
+        align-items:
+            center !important;
+
+        justify-content:
+            space-between !important;
+
+        gap:
+            14px !important;
+
+        padding:
+            9px 16px !important;
+
+        min-height:
+            54px !important;
+    }
+
+    .left {
+
+        flex:
+            0 1 auto !important;
+
+        min-width:
+            0 !important;
+
+        gap:
+            12px !important;
+
+        white-space:
+            nowrap !important;
+    }
+
+    .logo {
+
+        font-size:
+            1.25em !important;
+    }
+
+    .datetime {
+
+        font-size:
+            .78em !important;
+
+        white-space:
+            nowrap !important;
+    }
+
+    .center {
+
+        position:
+            static !important;
+
+        left: auto !important;
+
+        transform:
+            none !important;
+
+        flex:
+            0 1 auto !important;
+
+        min-width:
+            0 !important;
+
+        width:
+            auto !important;
+
+        margin-left:
+            auto !important;
+    }
+
+    .tabs {
+
+        display:
+            flex !important;
+
+        flex-wrap:
+            nowrap !important;
+
+        justify-content:
+            flex-end !important;
+
+        gap:
+            6px !important;
+    }
+
+    .tab {
+
+        flex:
+            0 0 auto !important;
+
+        padding:
+            8px 11px !important;
+
+        font-size:
+            .78em !important;
+
+        white-space:
+            nowrap !important;
+    }
+
+    .main {
+
+        margin-top:
+            24px !important;
+
+        padding-top:
+            18px !important;
+    }
+
+    .main h1 {
+
+        font-size:
+            clamp(
+                2.4rem,
+                5vw,
+                3.5rem
+            ) !important;
+    }
+
+}
+
+
+/* =========================================================
+   900px
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+    .navbar {
+
+        display:
+            flex !important;
+
+        flex-direction:
+            column !important;
+
+        align-items:
+            stretch !important;
+
+        justify-content:
+            center !important;
+
+        gap:
+            8px !important;
+
+        padding:
+            9px 10px !important;
+    }
+
+    .left {
+
+        width:
+            100% !important;
+
+        justify-content:
+            center !important;
+
+        gap:
+            8px 12px !important;
+    }
+
+    .center {
+
+        position:
+            static !important;
+
+        width:
+            100% !important;
+
+        transform:
+            none !important;
+    }
+
+    .tabs {
+
+        width:
+            100% !important;
+
+        justify-content:
+            center !important;
+
+        flex-wrap:
+            wrap !important;
+
+        gap:
+            5px !important;
+    }
+
+    .tab {
+
+        padding:
+            7px 10px !important;
+
+        font-size:
+            .76em !important;
+
+        white-space:
+            nowrap !important;
+    }
+
+    .main {
+
+        margin-top:
+            22px !important;
+
+        padding-top:
+            12px !important;
+    }
+
+}
+
+
+/* =========================================================
+   600px
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+    .left {
+
+        flex-direction:
+            column !important;
+
+        gap:
+            3px !important;
+    }
+
+    .logo {
+
+        font-size:
+            1.25em !important;
+    }
+
+    .datetime {
+
+        font-size:
+            .72em !important;
+    }
+
+    .tabs {
+
+        gap:
+            4px !important;
+    }
+
+    .tab {
+
+        padding:
+            6px 8px !important;
+
+        font-size:
+            .7em !important;
+    }
+
+    .main {
+
+        margin-top:
+            14px !important;
+
+        padding-top:
+            8px !important;
+    }
+
+    .hero-badge {
+
+        margin-top:
+            4px !important;
+    }
+
+}
+
+
+/* =========================================================
+   NAVBAR OVERLAP FIX
+   ========================================================= */
+
+.navbar .tab,
+.navbar .tab:hover,
+.navbar .tab.active,
+.navbar .active {
+
+    box-sizing:
+        border-box !important;
+}
+
+
+.navbar .tab:hover {
+
+    transform:
+        translateY(-1px) !important;
+}
+
+
+.navbar .active {
+
+    transform:
+        none !important;
+}
+
+
+/* =========================================================
+   LARGE SCREEN NAVBAR
+   ========================================================= */
+
+@media (min-width: 1401px) {
+
+    .navbar {
+
+        min-height:
+            58px !important;
+
+        display:
+            flex !important;
+
+        align-items:
+            center !important;
+
+        justify-content:
+            space-between !important;
+
+        gap:
+            20px !important;
+
+        padding:
+            9px 18px !important;
+    }
+
+    .navbar .left {
+
+        flex:
+            0 1 auto !important;
+
+        min-width:
+            0 !important;
+
+        display:
+            flex !important;
+
+        align-items:
+            center !important;
+
+        gap:
+            16px !important;
+    }
+
+    .navbar .center {
+
+        position:
+            static !important;
+
+        left: auto !important;
+
+        transform:
+            none !important;
+
+        flex:
+            0 0 auto !important;
+
+        min-width:
+            0 !important;
+
+        margin-left:
+            auto !important;
+    }
+
+    .navbar .tabs {
+
+        display:
+            flex !important;
+
+        flex-wrap:
+            nowrap !important;
+
+        gap:
+            7px !important;
+    }
+
+    .navbar .tab {
+
+        flex:
+            0 0 auto !important;
+
+        padding:
+            8px 13px !important;
+
+        white-space:
+            nowrap !important;
+
+        font-size:
+            .86em !important;
+    }
+
+}
+
+
+/* =========================================================
+   1400px AND BELOW
+   ========================================================= */
+
+@media (max-width: 1400px) {
+
+    .navbar {
+
+        display:
+            flex !important;
+
+        flex-direction:
+            column !important;
+
+        align-items:
+            center !important;
+
+        justify-content:
+            center !important;
+
+        gap:
+            8px !important;
+
+        min-height:
+            auto !important;
+
+        padding:
+            9px 12px 10px !important;
+    }
+
+    .navbar .left {
+
+        width:
+            100% !important;
+
+        min-width:
+            0 !important;
+
+        display:
+            flex !important;
+
+        align-items:
+            center !important;
+
+        justify-content:
+            center !important;
+
+        gap:
+            12px !important;
+    }
+
+    .navbar .logo {
+
+        font-size:
+            clamp(
+                1.15em,
+                1.7vw,
+                1.5em
+            ) !important;
+
+        white-space:
+            nowrap !important;
+    }
+
+    .navbar .datetime {
+
+        font-size:
+            clamp(
+                .72em,
+                1vw,
+                .9em
+            ) !important;
+
+        white-space:
+            nowrap !important;
+    }
+
+    .navbar .center {
+
+        position:
+            static !important;
+
+        width:
+            100% !important;
+
+        min-width:
+            0 !important;
+
+        transform:
+            none !important;
+    }
+
+    .navbar .tabs {
+
+        width:
+            100% !important;
+
+        display:
+            flex !important;
+
+        justify-content:
+            center !important;
+
+        align-items:
+            center !important;
+
+        flex-wrap:
+            wrap !important;
+
+        gap:
+            6px !important;
+    }
+
+    .navbar .tab {
+
+        flex:
+            0 0 auto !important;
+
+        padding:
+            7px 11px !important;
+
+        font-size:
+            clamp(
+                .72em,
+                1.15vw,
+                .86em
+            ) !important;
+
+        line-height:
+            1.1 !important;
+
+        white-space:
+            nowrap !important;
+    }
+
+    .main {
+
+        margin-top:
+            24px !important;
+    }
+
+}
+
+
+/* =========================================================
+   900px FINAL
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+    .navbar {
+
+        gap:
+            7px !important;
+
+        padding:
+            8px 8px 9px !important;
+    }
+
+    .navbar .left {
+
+        gap:
+            7px 10px !important;
+
+        flex-wrap:
+            wrap !important;
+    }
+
+    .navbar .tabs {
+
+        gap:
+            5px !important;
+    }
+
+    .navbar .tab {
+
+        padding:
+            6px 9px !important;
+
+        font-size:
+            .73em !important;
+    }
+
+    .main {
+
+        margin-top:
+            16px !important;
+
+        padding-top:
+            10px !important;
+    }
+
+}
+
+
+/* =========================================================
+   600px FINAL
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+    .navbar .left {
+
+        flex-direction:
+            column !important;
+
+        gap:
+            2px !important;
+    }
+
+    .navbar .logo {
+
+        font-size:
+            1.2em !important;
+    }
+
+    .navbar .datetime {
+
+        font-size:
+            .68em !important;
+    }
+
+    .navbar .tabs {
+
+        gap:
+            4px !important;
+    }
+
+    .navbar .tab {
+
+        padding:
+            6px 7px !important;
+
+        font-size:
+            .68em !important;
+    }
+
+}
+
+
+/* =========================================================
+   FULL SCREEN CENTERING
+   ========================================================= */
+
+@media (min-width: 1401px) {
+
+    .navbar {
+
+        position:
+            relative !important;
+
+        display:
+            flex !important;
+
+        align-items:
+            center !important;
+
+        min-height:
+            58px !important;
+
+        width:
+            100vw !important;
+
+        max-width:
+            100vw !important;
+    }
+
+    .navbar .left {
+
+        position:
+            absolute !important;
+
+        left:
+            18px !important;
+
+        top:
+            50% !important;
+
+        transform:
+            translateY(-50%) !important;
+
+        z-index:
+            2 !important;
+    }
+
+    .navbar .center {
+
+        position:
+            absolute !important;
+
+        left:
+            50% !important;
+
+        top:
+            50% !important;
+
+        transform:
+            translate(
+                -50%,
+                -50%
+            ) !important;
+
+        width:
+            auto !important;
+
+        margin:
+            0 !important;
+
+        z-index:
+            3 !important;
+    }
+
+    .navbar .tabs {
+
+        display:
+            flex !important;
+
+        justify-content:
+            center !important;
+
+        align-items:
+            center !important;
+
+        flex-wrap:
+            nowrap !important;
+
+        gap:
+            7px !important;
+    }
+
+    .navbar .tab {
+
+        flex:
+            0 0 auto !important;
+
+        white-space:
+            nowrap !important;
+    }
+
+}
+
+
+/* =========================================================
+   FINAL NAVBAR WIDTH FIX
+   ========================================================= */
+
+.navbar {
+
+    width:
+        100vw !important;
+
+    max-width:
+        100vw !important;
+}
+
+
+
+/* =========================================================
+   IFRAME FULLSCREEN
+   ========================================================= */
+
+#game-frame:fullscreen {
+  width: 100vw;
+  height: 100vh;
+  border: 0;
+  background: #000;
+}
+
 </style>
 </head>
 
@@ -1767,89 +3454,83 @@ and (max-height: 700px) {
 <body>
 
 
-<!-- =======================================================
-     TOP BAR
-     ======================================================= -->
+<!-- =====================================================
+     NAVBAR
+     ===================================================== -->
 
 <div class="navbar">
 
-  <div class="left">
+    <div class="left">
 
-    <div class="logo">
-      Secret Game Site
-    </div>
+        <div class="logo">
+            Secret Game Site
+        </div>
 
-    <div
-      class="datetime"
-      id="datetime"
-    >
-      Loading...
-    </div>
-
-  </div>
-
-
-  <div class="center">
-
-    <div class="tabs">
-
-      <div
-        class="tab"
-        onclick="goHome()"
-      >
-        Home
-      </div>
-
-
-      <!-- GAMES IS MANUALLY ACTIVE ON THIS PAGE -->
-
-      <div class="tab active">
-        Games
-      </div>
-
-
-      <div
-        class="tab"
-        onclick="blocked()"
-      >
-        Utilities
-      </div>
-
-
-      <div
-        class="tab"
-        onclick="blocked()"
-      >
-        Browser
-      </div>
-
-
-      <div
-        class="tab"
-        onclick="blocked()"
-      >
-        Music Player
-      </div>
-
-
-      <div
-        class="tab"
-        onclick="blocked()"
-      >
-        Forums
-      </div>
-
-
-      <div
-        class="tab"
-        onclick="blocked()"
-      >
-        Settings
-      </div>
+        <div
+            class="datetime"
+            id="datetime"
+        >
+            Loading...
+        </div>
 
     </div>
 
-  </div>
+    <div class="center">
+
+        <div class="tabs">
+
+            <a
+                class="tab"
+                href="index.html"
+            >
+                Home
+            </a>
+
+            <a
+                class="tab active"
+                href="games.html"
+            >
+                Games
+            </a>
+
+            <a
+                class="tab"
+                href="utilities.html"
+            >
+                Utilities
+            </a>
+
+            <a
+                class="tab"
+                href="browser.html"
+            >
+                Browser
+            </a>
+
+            <a
+                class="tab"
+                href="music.html"
+            >
+                Music Player
+            </a>
+
+            <a
+                class="tab"
+                href="forums.html"
+            >
+                Forums
+            </a>
+
+            <a
+                class="tab"
+                href="settings.html"
+            >
+                Settings
+            </a>
+
+        </div>
+
+    </div>
 
 </div>
 
@@ -1956,74 +3637,272 @@ and (max-height: 700px) {
 
 
 <!-- =======================================================
-     PLAY / LAUNCH OPTIONS
+     GAME PLAYER
      ======================================================= -->
 
 <div
-  id="popup"
-  class="modal"
-  onclick="closePlayBackdrop(event)"
+  id="game-player"
+  class="modal game-player"
+  onclick="closeGameBackdrop(event)"
 >
 
-  <div
-    id="popup-box"
+  <section
+    id="game-player-shell"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="game-player-title"
     onclick="event.stopPropagation()"
   >
 
-    <div class="popup-header">
+    <header class="player-topbar">
 
-      <h3>
-        Launch Options
-      </h3>
+      <button
+        class="player-icon-button"
+        type="button"
+        onclick="closeGamePlayer()"
+        aria-label="Back to games"
+      >
+        ‹
+      </button>
+
+
+      <div id="game-player-title">
+        Game
+      </div>
+
+
+      <div class="player-top-actions">
+
+        <button
+          class="player-icon-button"
+          type="button"
+          onclick="toggleGameFullscreen()"
+          aria-label="Fullscreen"
+        >
+          ⛶
+        </button>
+
+
+        <button
+          class="player-icon-button"
+          type="button"
+          onclick="toggleVolumePanel()"
+          aria-label="Volume"
+        >
+          🔊
+        </button>
+
+
+        <button
+          class="player-icon-button"
+          type="button"
+          onclick="toggleNotesDrawer(true)"
+          aria-label="Open notes"
+        >
+          📝
+        </button>
+
+      </div>
 
 
       <div
-        class="close"
-        onclick="closePlayPopup()"
+        id="volume-panel"
+        hidden
       >
-        ✕
+
+        <input
+          id="game-volume"
+          type="range"
+          min="0"
+          max="100"
+          value="100"
+          aria-label="Game volume"
+        >
+
+
+        <div
+          id="volume-value"
+          class="volume-value"
+        >
+          100%
+        </div>
+
       </div>
 
+    </header>
+
+
+    <div class="player-content">
+
+      <iframe
+        id="game-frame"
+        title="Game player"
+        allow="fullscreen"
+        allowfullscreen
+      ></iframe>
+
+
     </div>
 
 
-    <div class="launch-grid">
+    <footer class="player-footer">
+
+      <div
+        id="player-game-info-title"
+        class="game-info-title"
+      >
+        Game Information
+      </div>
+
+
+      <div class="player-detail-actions">
+
+        <button
+          class="game-detail-button"
+          type="button"
+          onclick="showPlayerInfo('controls')"
+        >
+          🎮 Controls
+        </button>
+
+
+        <button
+          class="game-detail-button"
+          type="button"
+          onclick="showPlayerInfo('howToPlay')"
+        >
+          ❔ How to Play
+        </button>
+
+
+        <button
+          class="game-detail-button side-notes-button"
+          type="button"
+          onclick="showPlayerInfo('sideNotes')"
+        >
+          ❗ Side Notes
+        </button>
+
+      </div>
+
+    </footer>
+
+  </section>
+
+</div>
+
+
+<!-- =======================================================
+     FULL-SCREEN NOTES
+     ======================================================= -->
+
+<div
+  id="notes-modal"
+  class="modal notes-modal"
+  onclick="closeNotesBackdrop(event)"
+  hidden
+>
+
+  <section
+    id="notes-modal-box"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="notes-modal-title"
+    onclick="event.stopPropagation()"
+  >
+
+    <div class="notes-modal-header">
+
+      <h2 id="notes-modal-title">
+        Note
+      </h2>
 
 
       <button
-        class="popup-btn"
-        onclick="openTab()"
+        class="note-action"
+        type="button"
+        onclick="toggleNotesDrawer(false)"
       >
-        Open In Normal Tab
-      </button>
-
-
-      <button
-        class="popup-btn"
-        onclick="openABTab()"
-      >
-        Open In About:Blank Tab
-      </button>
-
-
-      <button
-        class="popup-btn"
-        onclick="openWindow()"
-      >
-        Open In Normal Window
-      </button>
-
-
-      <button
-        class="popup-btn"
-        onclick="openABWindow()"
-      >
-        Open In About:Blank Window
+        Exit notes
       </button>
 
     </div>
 
-  </div>
+
+    <div
+      id="note-tabs"
+      class="note-tabs"
+      role="tablist"
+      aria-label="Note tabs"
+    ></div>
+
+
+    <div class="note-editor-actions">
+
+      <button
+        class="new-note-button"
+        type="button"
+        onclick="createNoteTab()"
+      >
+        + New tab
+      </button>
+
+
+      <button
+        class="note-action"
+        type="button"
+        onclick="closeActiveNoteTab()"
+      >
+        Close tab
+      </button>
+
+    </div>
+
+
+    <input
+      id="note-title"
+      type="text"
+      maxlength="28"
+      placeholder="Tab name"
+      aria-label="Note tab name"
+    >
+
+
+    <textarea
+      id="game-notes"
+      maxlength="600"
+      placeholder="Write notes here..."
+      aria-label="Note contents"
+    ></textarea>
+
+
+    <div class="note-editor-actions">
+
+      <button
+        class="note-action"
+        type="button"
+        onclick="renameActiveNoteTab()"
+      >
+        Rename
+      </button>
+
+
+      <button
+        class="note-action"
+        type="button"
+        onclick="saveActiveNoteTab()"
+      >
+        Save
+      </button>
+
+    </div>
+
+
+    <p class="notes-status">
+      Saved in this browser.
+    </p>
+
+  </section>
 
 </div>
 
@@ -2191,6 +4070,99 @@ const games = [
 
 
 /* =========================================================
+   PLAYER INFORMATION — EDIT THESE TEXTS IN CODE
+   ========================================================= */
+
+const playerDetails = {
+
+  "Retrobowl": {
+    controls: "Use the mouse or touch controls to manage your team and make plays.",
+    howToPlay: "Build your roster, play games, and lead your team through the season.",
+    sideNotes: "Edit this note in the playerDetails section of the code."
+  },
+
+  "Minecraft <vers>": {
+    controls: "Use the keyboard and mouse to move, look around, build, and interact.",
+    howToPlay: "Explore the world, gather resources, build, and survive.",
+    sideNotes: "Edit this note in the playerDetails section of the code."
+  },
+
+  "Cookie Clicker": {
+    controls: "Click or tap cookies and use the on-screen upgrade buttons.",
+    howToPlay: "Bake cookies, buy upgrades, and grow your cookie empire.",
+    sideNotes: "Edit this note in the playerDetails section of the code."
+  },
+
+  "1v1.LOL": {
+    controls: "Use keyboard movement controls, mouse aim, and the game's build keys.",
+    howToPlay: "Outbuild and outshoot opponents in quick arena rounds.",
+    sideNotes: "Edit this note in the playerDetails section of the code."
+  },
+
+  "Drift Hunters": {
+    controls: "Use the keyboard to steer, accelerate, brake, and drift.",
+    howToPlay: "Drift around tracks, earn points, and tune your cars.",
+    sideNotes: "Edit this note in the playerDetails section of the code."
+  },
+
+  "BitLife": {
+    controls: "Use the mouse or touch controls to select life choices.",
+    howToPlay: "Make choices for each year of your character's life.",
+    sideNotes: "Edit this note in the playerDetails section of the code."
+  },
+
+  "Slope": {
+    controls: "Use left and right movement controls to steer the ball.",
+    howToPlay: "Stay on the track and survive for as long as possible.",
+    sideNotes: "Edit this note in the playerDetails section of the code."
+  },
+
+  "Run 3": {
+    controls: "Use the arrow keys or WASD to move and jump.",
+    howToPlay: "Run through tunnels and use the walls to change gravity.",
+    sideNotes: "Edit this note in the playerDetails section of the code."
+  },
+
+  "Escape Road": {
+    controls: "Use the keyboard to steer, accelerate, and avoid traffic.",
+    howToPlay: "Escape the police and survive the chase for as long as you can.",
+    sideNotes: "Edit this note in the playerDetails section of the code."
+  }
+
+};
+
+
+games.forEach(game => {
+
+  Object.assign(
+    game,
+    playerDetails[game.name] || {
+      controls: "Controls have not been added yet.",
+      howToPlay: "How-to-play instructions have not been added yet.",
+      sideNotes: "No side notes have been added yet."
+    }
+  );
+
+});
+
+
+/* Shuffle the source list once per page load, before filters render it. */
+for (let index = games.length - 1; index > 0; index--) {
+
+  const randomIndex =
+    Math.floor(
+      Math.random() *
+      (index + 1)
+    );
+
+
+  [games[index], games[randomIndex]] =
+    [games[randomIndex], games[index]];
+
+}
+
+
+/* =========================================================
    ELEMENTS
    ========================================================= */
 
@@ -2224,6 +4196,80 @@ let selectedCategory =
 
 let currentGameURL =
   "";
+
+let currentGameTitle =
+  "";
+
+let currentGameDetails = {
+  controls: "",
+  howToPlay: "",
+  sideNotes: ""
+};
+
+const gamePlayer =
+  document.getElementById(
+    "game-player"
+  );
+
+const gamePlayerShell =
+  document.getElementById(
+    "game-player-shell"
+  );
+
+const gameFrame =
+  document.getElementById(
+    "game-frame"
+  );
+
+const gamePlayerTitle =
+  document.getElementById(
+    "game-player-title"
+  );
+
+const gameNotes =
+  document.getElementById(
+    "game-notes"
+  );
+
+const noteTitle =
+  document.getElementById(
+    "note-title"
+  );
+
+const noteTabs =
+  document.getElementById(
+    "note-tabs"
+  );
+
+const notesDrawer =
+  document.getElementById(
+    "notes-modal"
+  );
+
+const notesStatus =
+  document.querySelector(
+    ".notes-status"
+  );
+
+const volumeSlider =
+  document.getElementById(
+    "game-volume"
+  );
+
+const volumeValue =
+  document.getElementById(
+    "volume-value"
+  );
+
+const notesModalTitle =
+  document.getElementById(
+    "notes-modal-title"
+  );
+
+const playerGameInfoTitle =
+  document.getElementById(
+    "player-game-info-title"
+  );
 
 
 /* =========================================================
@@ -2417,8 +4463,12 @@ function renderGames() {
 
               <button
                 onclick="
-                  openPlayPopup(
-                    '${escapeJS(game.url)}'
+                  openGamePlayer(
+                    '${escapeJS(game.url)}',
+                    '${escapeJS(game.name)}',
+                    '${escapeJS(game.controls)}',
+                    '${escapeJS(game.howToPlay)}',
+                    '${escapeJS(game.sideNotes)}'
                   )
                 "
               >
@@ -2658,41 +4708,590 @@ function blocked() {
 
 
 /* =========================================================
-   PLAY POPUP
+   GAME PLAYER + NOTES
    ========================================================= */
 
-function openPlayPopup(url) {
+const NOTES_STATE_COOKIE =
+  "sgs_note_tabs_v1";
+
+const NOTE_COOKIE_PREFIX =
+  "sgs_note_";
+
+const VOLUME_COOKIE =
+  "sgs_game_volume";
+
+const MAX_NOTE_TABS =
+  6;
+
+let notesState;
+
+
+function readCookie(name) {
+
+  const prefix =
+    `${name}=`;
+
+  const cookie =
+    document.cookie
+      .split(";")
+      .map(item => item.trim())
+      .find(item => item.startsWith(prefix));
+
+  if (!cookie) {
+    return "";
+  }
+
+  try {
+    return decodeURIComponent(
+      cookie.slice(prefix.length)
+    );
+  } catch {
+    return "";
+  }
+
+}
+
+
+function writeCookie(name, value) {
+
+  document.cookie =
+    `${name}=${encodeURIComponent(value)}; ` +
+    "max-age=31536000; path=/; SameSite=Lax";
+
+}
+
+
+function removeCookie(name) {
+
+  document.cookie =
+    `${name}=; max-age=0; path=/; SameSite=Lax`;
+
+}
+
+
+function makeNoteId() {
+
+  return `note_${Date.now()}_${Math.random()
+    .toString(36)
+    .slice(2, 8)}`;
+
+}
+
+
+function noteCookieName(id) {
+
+  return `${NOTE_COOKIE_PREFIX}${id}`;
+
+}
+
+
+function createDefaultNoteState() {
+
+  const id =
+    makeNoteId();
+
+  return {
+    activeId: id,
+    tabs: [
+      {
+        id,
+        title: "Note 1"
+      }
+    ]
+  };
+
+}
+
+
+function loadNotesState() {
+
+  const saved =
+    readCookie(NOTES_STATE_COOKIE);
+
+  if (saved) {
+
+    try {
+      const state =
+        JSON.parse(saved);
+
+      if (
+        Array.isArray(state.tabs) &&
+        state.tabs.length
+      ) {
+
+        const tabs =
+          state.tabs
+            .filter(tab =>
+              typeof tab.id === "string" &&
+              typeof tab.title === "string"
+            )
+            .slice(0, MAX_NOTE_TABS);
+
+        if (tabs.length) {
+          return {
+            activeId:
+              tabs.some(tab =>
+                tab.id === state.activeId
+              )
+                ? state.activeId
+                : tabs[0].id,
+            tabs
+          };
+        }
+
+      }
+    } catch {
+      /* Start a fresh notebook if an old cookie is invalid. */
+    }
+
+  }
+
+  const freshState =
+    createDefaultNoteState();
+
+  const oldNote =
+    readCookie("sgs_game_notes");
+
+  if (oldNote) {
+    writeCookie(
+      noteCookieName(freshState.activeId),
+      oldNote
+    );
+  }
+
+  return freshState;
+
+}
+
+
+function saveNotesState() {
+
+  writeCookie(
+    NOTES_STATE_COOKIE,
+    JSON.stringify(notesState)
+  );
+
+}
+
+
+function getActiveNote() {
+
+  return notesState.tabs.find(tab =>
+    tab.id === notesState.activeId
+  );
+
+}
+
+
+function setNotesStatus(message) {
+
+  notesStatus.textContent =
+    message;
+
+}
+
+
+function renderNoteTabs() {
+
+  noteTabs.innerHTML =
+    notesState.tabs
+      .map(tab => `
+
+        <button
+          class="note-tab ${
+            tab.id === notesState.activeId
+              ? "active"
+              : ""
+          }"
+          type="button"
+          role="tab"
+          aria-selected="${
+            tab.id === notesState.activeId
+          }"
+          onclick="switchNoteTab('${escapeJS(tab.id)}')"
+        >
+          ${escapeHTML(tab.title)}
+        </button>
+
+      `)
+      .join("");
+
+}
+
+
+function renderActiveNote() {
+
+  const activeNote =
+    getActiveNote();
+
+  if (!activeNote) {
+    return;
+  }
+
+  noteTitle.value =
+    activeNote.title;
+
+  gameNotes.value =
+    readCookie(
+      noteCookieName(activeNote.id)
+    );
+
+  renderNoteTabs();
+
+}
+
+
+function saveActiveNoteTab(showStatus = true) {
+
+  const activeNote =
+    getActiveNote();
+
+  if (!activeNote) {
+    return;
+  }
+
+  writeCookie(
+    noteCookieName(activeNote.id),
+    gameNotes.value
+  );
+
+  saveNotesState();
+
+  if (showStatus) {
+    setNotesStatus(
+      "Note saved."
+    );
+  }
+
+}
+
+
+function renameActiveNoteTab() {
+
+  const activeNote =
+    getActiveNote();
+
+  if (!activeNote) {
+    return;
+  }
+
+  activeNote.title =
+    noteTitle.value.trim() ||
+    `Note ${
+      notesState.tabs.indexOf(activeNote) +
+      1
+    }`;
+
+  saveNotesState();
+
+  renderNoteTabs();
+
+  setNotesStatus(
+    "Tab renamed."
+  );
+
+}
+
+
+function createNoteTab() {
+
+  saveActiveNoteTab(false);
+
+  if (
+    notesState.tabs.length >=
+    MAX_NOTE_TABS
+  ) {
+    setNotesStatus(
+      `You can keep up to ${MAX_NOTE_TABS} note tabs.`
+    );
+
+    return;
+  }
+
+  const id =
+    makeNoteId();
+
+  notesState.tabs.push({
+    id,
+    title: `Note ${notesState.tabs.length + 1}`
+  });
+
+  notesState.activeId =
+    id;
+
+  saveNotesState();
+
+  renderActiveNote();
+
+  noteTitle.focus();
+
+  setNotesStatus(
+    "New tab ready."
+  );
+
+}
+
+
+function switchNoteTab(id) {
+
+  if (
+    !notesState.tabs.some(tab =>
+      tab.id === id
+    )
+  ) {
+    return;
+  }
+
+  saveActiveNoteTab(false);
+
+  notesState.activeId =
+    id;
+
+  saveNotesState();
+
+  renderActiveNote();
+
+}
+
+
+function closeActiveNoteTab() {
+
+  const index =
+    notesState.tabs.findIndex(tab =>
+      tab.id === notesState.activeId
+    );
+
+  if (index < 0) {
+    return;
+  }
+
+  const closedNote =
+    notesState.tabs[index];
+
+  removeCookie(
+    noteCookieName(closedNote.id)
+  );
+
+  if (notesState.tabs.length === 1) {
+
+    notesState.tabs[0] = {
+      id: makeNoteId(),
+      title: "Note 1"
+    };
+
+  } else {
+    notesState.tabs.splice(index, 1);
+  }
+
+  notesState.activeId =
+    notesState.tabs[
+      Math.min(index, notesState.tabs.length - 1)
+    ].id;
+
+  saveNotesState();
+
+  renderActiveNote();
+
+  setNotesStatus(
+    "Tab closed."
+  );
+
+}
+
+
+function toggleNotesDrawer(open) {
+
+  const shouldOpen =
+    typeof open === "boolean"
+      ? open
+      : notesDrawer.hidden;
+
+  if (shouldOpen) {
+    renderActiveNote();
+  } else {
+    saveActiveNoteTab(false);
+  }
+
+  notesDrawer.hidden =
+    !shouldOpen;
+
+}
+
+
+let gameVolume =
+  Number(
+    readCookie(VOLUME_COOKIE) ||
+    100
+  );
+
+if (
+  !Number.isFinite(gameVolume) ||
+  gameVolume < 0 ||
+  gameVolume > 100
+) {
+  gameVolume =
+    100;
+}
+
+
+function applyGameVolume() {
+
+  try {
+    gameFrame.contentDocument
+      ?.querySelectorAll("audio, video")
+      .forEach(media => {
+        media.volume =
+          gameVolume / 100;
+      });
+  } catch {
+    /* Some game engines do not expose their audio to the parent page. */
+  }
+
+}
+
+
+function toggleVolumePanel() {
+
+  const panel = document.getElementById("volume-panel");
+
+  panel.hidden = !panel.hidden;
+
+}
+
+
+function setGameVolume() {
+
+  gameVolume =
+    Number(volumeSlider.value);
+
+  writeCookie(
+    VOLUME_COOKIE,
+    String(gameVolume)
+  );
+
+  applyGameVolume();
+
+}
+
+
+notesState =
+  loadNotesState();
+
+saveNotesState();
+
+renderActiveNote();
+
+volumeSlider.value =
+  String(gameVolume);
+
+volumeSlider.addEventListener(
+  "input",
+  setGameVolume
+);
+
+gameFrame.addEventListener(
+  "load",
+  applyGameVolume
+);
+
+
+function openGamePlayer(
+  url,
+  title,
+  controls = "",
+  howToPlay = "",
+  sideNotes = ""
+) {
 
   currentGameURL =
     url;
 
+  currentGameTitle =
+    title;
 
-  document
-    .getElementById("popup")
-    .classList.add("open");
+  currentGameDetails = {
+    controls,
+    howToPlay,
+    sideNotes
+  };
+
+
+  gamePlayerTitle.textContent =
+    title;
+
+  gameFrame.src =
+    url;
+
+
+  gamePlayer.classList.add(
+    "open"
+  );
 
 }
 
 
-function closePlayPopup() {
+function closeGamePlayer() {
 
-  document
-    .getElementById("popup")
-    .classList.remove("open");
+  saveActiveNoteTab(false);
 
-}
+  notesDrawer.hidden =
+    true;
 
+  if (document.fullscreenElement) {
 
-function closePlayBackdrop(event) {
-
-  if (
-    event.target ===
-    document.getElementById("popup")
-  ) {
-
-    closePlayPopup();
+    document.exitFullscreen();
 
   }
+
+
+  gamePlayer.classList.remove(
+    "open"
+  );
+
+
+  gameFrame.src =
+    "about:blank";
+
+  currentGameURL =
+    "";
+
+  currentGameTitle =
+    "";
+
+}
+
+
+function closeGameBackdrop(event) {
+
+  if (event.target === gamePlayer) {
+
+    closeGamePlayer();
+
+  }
+
+}
+
+
+function toggleGameFullscreen() {
+
+  if (document.fullscreenElement) {
+
+    document.exitFullscreen();
+
+    return;
+
+  }
+
+  gameFrame
+    .requestFullscreen()
+    .catch(error => {
+
+      console.error(
+        "SGS: Game iframe fullscreen could not be started.",
+        error
+      );
+
+    });
 
 }
 
@@ -2757,6 +5356,24 @@ function closeInfoBackdrop(event) {
 }
 
 
+document.addEventListener("click", event => {
+
+  const panel = document.getElementById("volume-panel");
+  const volumeButton = event.target.closest(
+    '.player-icon-button[aria-label="Volume"]'
+  );
+
+  if (!panel || panel.hidden || volumeButton) {
+    return;
+  }
+
+  if (!panel.contains(event.target)) {
+    panel.hidden = true;
+  }
+
+});
+
+
 /* =========================================================
    ESCAPE KEY
    ========================================================= */
@@ -2769,7 +5386,7 @@ document.addEventListener(
       event.key === "Escape"
     ) {
 
-      closePlayPopup();
+      closeGamePlayer();
 
       closeInfoPopup();
 
@@ -2777,166 +5394,6 @@ document.addEventListener(
 
   }
 );
-
-
-/* =========================================================
-   GAME LAUNCHERS
-   ========================================================= */
-
-function openTab() {
-
-  window.open(
-    currentGameURL,
-    "_blank"
-  );
-
-  closePlayPopup();
-
-}
-
-
-/* =========================================================
-   ABOUT:BLANK WRAPPER
-   ========================================================= */
-
-function wrapper(url) {
-
-  return `
-
-    <!DOCTYPE html>
-
-    <html>
-
-    <head>
-
-      <meta charset="UTF-8">
-
-      <title>SGS</title>
-
-      <style>
-
-        html,
-        body {
-          margin: 0;
-          padding: 0;
-          width: 100%;
-          height: 100%;
-          overflow: hidden;
-          background: #000;
-        }
-
-        iframe {
-          position: fixed;
-          inset: 0;
-          width: 100vw;
-          height: 100vh;
-          border: 0;
-          background: #000;
-        }
-
-      </style>
-
-    </head>
-
-    <body>
-
-      <iframe
-        src="${escapeAttribute(url)}"
-      ></iframe>
-
-    </body>
-
-    </html>
-
-  `;
-
-}
-
-
-/* =========================================================
-   ABOUT:BLANK TAB
-   ========================================================= */
-
-function openABTab() {
-
-  const win =
-    window.open(
-      "about:blank",
-      "_blank"
-    );
-
-
-  if (!win) {
-    return;
-  }
-
-
-  win.document.open();
-
-
-  win.document.write(
-    wrapper(currentGameURL)
-  );
-
-
-  win.document.close();
-
-
-  closePlayPopup();
-
-}
-
-
-/* =========================================================
-   NORMAL WINDOW
-   ========================================================= */
-
-function openWindow() {
-
-  window.open(
-    currentGameURL,
-    "",
-    "width=1100,height=700,resizable=yes,scrollbars=yes"
-  );
-
-  closePlayPopup();
-
-}
-
-
-/* =========================================================
-   ABOUT:BLANK WINDOW
-   ========================================================= */
-
-function openABWindow() {
-
-  const win =
-    window.open(
-      "about:blank",
-      "",
-      "width=1100,height=700,resizable=yes,scrollbars=yes"
-    );
-
-
-  if (!win) {
-    return;
-  }
-
-
-  win.document.open();
-
-
-  win.document.write(
-    wrapper(currentGameURL)
-  );
-
-
-  win.document.close();
-
-
-  closePlayPopup();
-
-}
 
 
 /* =========================================================
