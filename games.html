@@ -4722,7 +4722,12 @@ function makeNoteId() {
 
 
 function noteStorageKey(id) {
-  return `${NOTES_CONTENT_STORAGE_PREFIX}${id}`;
+  return (
+    NOTES_CONTENT_STORAGE_PREFIX +
+    encodeURIComponent(getNotesGameKey()) +
+    ":" +
+    id
+  );
 }
 
 
@@ -4746,34 +4751,21 @@ function createDefaultNoteState() {
 
 function loadNotesState() {
   try {
-    const saved = localStorage.getItem(NOTES_STATE_STORAGE);
+    const raw = localStorage.getItem(getNotesStateStorageKey());
 
-    if (saved) {
-      const state = JSON.parse(saved);
+    if (raw) {
+      const parsed = JSON.parse(raw);
 
       if (
-        state &&
-        Array.isArray(state.tabs) &&
-        state.tabs.length
+        parsed &&
+        Array.isArray(parsed.tabs) &&
+        parsed.tabs.length
       ) {
-        const tabs = state.tabs.filter(tab =>
-          tab &&
-          typeof tab.id === "string" &&
-          typeof tab.title === "string"
-        );
-
-        if (tabs.length) {
-          return {
-            activeId: tabs.some(tab => tab.id === state.activeId)
-              ? state.activeId
-              : tabs[0].id,
-            tabs
-          };
-        }
+        return parsed;
       }
     }
   } catch (error) {
-    console.warn("SGS: Could not load notes.", error);
+    console.warn("SGS: Could not load notes for this game.", error);
   }
 
   return createDefaultNoteState();
@@ -4781,14 +4773,11 @@ function loadNotesState() {
 
 
 function saveNotesState() {
-  try {
-    localStorage.setItem(
-      NOTES_STATE_STORAGE,
-      JSON.stringify(notesState)
-    );
-  } catch (error) {
-    console.warn("SGS: Could not save note tabs.", error);
-  }
+  if (!notesState) return;
+  localStorage.setItem(
+    getNotesStateStorageKey(),
+    JSON.stringify(notesState)
+  );
 }
 
 
@@ -5112,6 +5101,10 @@ function openGamePlayer(
 
   currentGameTitle =
     title;
+
+  /* Every game gets its own independent notebook. */
+  currentNotesGameKey = url;
+  notesState = loadNotesState();
 
   currentGameDetails = {
     controls,
